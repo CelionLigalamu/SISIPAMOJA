@@ -96,7 +96,9 @@ def register_view(request):
                 physical_address=physical_address,
                 marital_status=marital_status,
                 passport_photo=passport_photo,
-                id_copy=id_copy
+                id_copy=id_copy,
+                contribution_amount=0,
+                member_type='last_expense'
             )
 
         # Send welcome email

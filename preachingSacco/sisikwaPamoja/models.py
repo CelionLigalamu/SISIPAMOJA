@@ -58,6 +58,11 @@ class MemberProfile(models.Model):
         ('married', 'Married'),
     )
 
+    MEMBER_TYPE_CHOICES = (
+        ('last_expense', 'Last Expense Member'),
+        ('sacco', 'Sacco Member'),
+    )
+
     user = models.OneToOneField(
         CustomUser,
         on_delete=models.CASCADE,
@@ -77,7 +82,9 @@ class MemberProfile(models.Model):
     physical_address = models.TextField()
     marital_status = models.CharField(
         max_length=10,
-        choices=MARITAL_STATUS_CHOICES
+        choices=MARITAL_STATUS_CHOICES,
+        blank=True,
+        null=True
     )
 
     passport_photo = models.ImageField(
@@ -89,6 +96,13 @@ class MemberProfile(models.Model):
         upload_to='id_copies/',
         blank=True,
         null=True
+    )
+
+    contribution_amount = models.PositiveIntegerField(default=0)
+    member_type = models.CharField(
+        max_length=20,
+        choices=MEMBER_TYPE_CHOICES,
+        default='last_expense'
     )
 
     date_registered = models.DateTimeField(
