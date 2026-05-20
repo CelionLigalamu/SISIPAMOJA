@@ -78,7 +78,7 @@ WSGI_APPLICATION = 'preachingSacco.wsgi.application'
 
 DATABASES = {
     'default': dj_database_url.config(
-        default='postgresql://sisipamoja_user:4KBge5fobGE80TdPgsSXIdhP8OsMq2N8@dpg-d86sauojs32c73f0s7og-a/sisipamoja'
+        default='postgresql://sisipamoja_user:4KBge5fobGE80TdPgsSXIdhP8OsMq2N8@dpg-d86sauojs32c73f0s7og-a.virginia-postgres.render.com/sisipamoja'
         )  
 }
 
