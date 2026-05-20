@@ -1,0 +1,632 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SisiPamoja Welfare Sacco | Together in Times of Need</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700;900&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'sisikwaPamoja/css/main.css' %}">
+</head>
+<body>
+
+<!-- ═══════════════════ NAVBAR ═══════════════════ -->
+<nav class="navbar navbar-expand-lg">
+    <div class="container">
+        <a href="#" class="text-decoration-none d-flex align-items-center gap-3">
+            <div>
+                <div class="brand-line">
+                    <span class="brand-sisi">SISIPAMOJA</span>
+                    <span class="brand-welfare">WELFARE</span>
+                </div>
+                <div class="brand-tagline">Together in Times of Need</div>
+            </div>
+        </a>
+
+        <button class="navbar-toggler border-0 p-0" type="button"
+                data-bs-toggle="collapse" data-bs-target="#mainNav">
+            <i class="fas fa-bars text-white fs-5"></i>
+        </button>
+
+        <div class="collapse navbar-collapse" id="mainNav">
+            <ul class="navbar-nav mx-auto gap-1 mt-3 mt-lg-0">
+                <li><a href="#about"    class="nav-link-item">About</a></li>
+                <li><a href="#services" class="nav-link-item">Services</a></li>
+                <li><a href="#how"      class="nav-link-item">How It Works</a></li>
+                <li><a href="#contact"  class="nav-link-item">Contact</a></li>
+            </ul>
+            <div class="d-flex gap-2 mt-3 mt-lg-0">
+                <a href="/login/"    class="btn-login">
+                    <i class="fas fa-sign-in-alt me-1"></i> Login
+                </a>
+                <a href="/register/" class="btn-join">
+                    <i class="fas fa-user-plus me-1"></i> Join Now
+                </a>
+            </div>
+        </div>
+    </div>
+</nav>
+    
+    <!-- ═══════════════════ MARQUEE (moved below navbar) ═══════════════════ -->
+    <div class="marquee-bar">
+        <div class="marquee-track">
+            <span>🌿 Registered Welfare Sacco</span>
+            <span class="dot">•</span>
+            <span>💰 Affordable Emergency Loans</span>
+            <span class="dot">•</span>
+            <span>🏠 Last Expense Support</span>
+            <span class="dot">•</span>
+            <span>📈 Grow Your Savings</span>
+            <span class="dot">•</span>
+            <span>🤝 Community Support</span>
+            <span class="dot">•</span>
+            <span>📱 M-Pesa Payments</span>
+            <span class="dot">•</span>
+            <span>🌿 Registered Welfare Sacco</span>
+            <span class="dot">•</span>
+            <span>💰 Affordable Emergency Loans</span>
+            <span class="dot">•</span>
+            <span>🏠 Last Expense Support</span>
+            <span class="dot">•</span>
+            <span>📈 Grow Your Savings</span>
+            <span class="dot">•</span>
+            <span>🤝 Community Support</span>
+            <span class="dot">•</span>
+            <span>📱 M-Pesa Payments</span>
+            <span class="dot">•</span>
+        </div>
+    </div>
+
+    <!-- ═══════════════════ HERO ═══════════════════ -->
+<section class="hero">
+    <div class="hero-bg-pattern"></div>
+    <div class="hero-dots"></div>
+
+    <div class="container">
+        <div class="row align-items-center g-5">
+
+            <!-- Left -->
+            <div class="col-lg-6 hero-content">
+                <div class="hero-eyebrow">
+                    <i class="fas fa-shield-alt"></i>
+                    Registered Welfare Sacco · Kenya
+                </div>
+
+                <h1>
+                    <span class="gold">Together</span> We Rise,<br>
+                    Together We <span class="accent">Thrive</span>
+                </h1>
+
+                <p class="hero-desc">
+                    SisiPamoja Welfare Sacco is your trusted partner in financial
+                    growth and social welfare. We stand with you in every season
+                    of life — savings, loans, and community support, all in one place.
+                </p>
+
+                <div class="d-flex gap-3 flex-wrap">
+                    <a href="/register/" class="btn-hero-main">
+                        <i class="fas fa-user-plus me-2"></i>Become a Member
+                    </a>
+                    <a href="#about" class="btn-hero-ghost">
+                        <i class="fas fa-info-circle me-2"></i>Learn More
+                    </a>
+                </div>
+
+                <div class="hero-stats">
+                    <div>
+                        <div class="hero-stat-num">500+</div>
+                        <div class="hero-stat-lbl">Members</div>
+                    </div>
+                    <div class="hero-stat-divider">
+                        <div class="hero-stat-num">KES 5M+</div>
+                        <div class="hero-stat-lbl">Total Savings</div>
+                    </div>
+                    <div class="hero-stat-divider">
+                        <div class="hero-stat-num">10+ Yrs</div>
+                        <div class="hero-stat-lbl">Serving Kenya</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right -->
+            <div class="col-lg-6 position-relative d-flex justify-content-center">
+                <div class="hero-pillar-panel reveal delay-2">
+                    <div class="pillar-step pillar-save">
+                        <div class="pillar-icon">
+                            <i class="fas fa-piggy-bank"></i>
+                        </div>
+                        <div class="pillar-copy">
+                            <div class="pillar-kicker">Save</div>
+                            <div class="pillar-text">Build steady savings with confidence.</div>
+                        </div>
+                    </div>
+
+                    <div class="pillar-arrow">
+                        <i class="fas fa-arrow-down"></i>
+                    </div>
+
+                    <div class="pillar-step pillar-borrow">
+                        <div class="pillar-icon">
+                            <i class="fas fa-hand-holding-usd"></i>
+                        </div>
+                        <div class="pillar-copy">
+                            <div class="pillar-kicker">Borrow</div>
+                            <div class="pillar-text">Access fair, affordable emergency loans.</div>
+                        </div>
+                    </div>
+
+                    <div class="pillar-arrow">
+                        <i class="fas fa-arrow-down"></i>
+                    </div>
+
+                    <div class="pillar-step pillar-protect">
+                        <div class="pillar-icon">
+                            <i class="fas fa-shield-heart"></i>
+                        </div>
+                        <div class="pillar-copy">
+                            <div class="pillar-kicker">Protect</div>
+                            <div class="pillar-text">Stay covered with member welfare support.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════════ MARQUEE ═══════════════════ -->
+ 
+
+<!-- ═══════════════════ ABOUT ═══════════════════ -->
+<section class="about-section" id="about">
+    <div class="container">
+        <div class="row align-items-center g-5">
+
+            <!-- Left Text -->
+            <div class="col-lg-5 reveal">
+                <div class="sec-pill">Who We Are</div>
+                <h2 class="sec-title">
+                    Built on Trust,<br>
+                    <span class="text-accent-orange">Rooted in Community</span>
+                </h2>
+                <p class="section-copy mb-3">
+                    SisiPamoja Welfare Sacco was founded on the belief that
+                    communities grow stronger when they support one another.
+                    We provide financial services and welfare support to members
+                    across Kenya.
+                </p>
+                <p class="section-copy mb-4">
+                    From savings and loans to last expense cover and emergency
+                    support — we are there for our members in every season of life.
+                    <em class="text-primary-theme fw-bold">
+                        Together in Times of Need.
+                    </em>
+                </p>
+                <a href="/register/" class="btn-about">
+                    <i class="fas fa-arrow-right me-2"></i>Join Our Community
+                </a>
+            </div>
+
+            <!-- Right Cards -->
+            <div class="col-lg-7">
+                <div class="row g-4">
+                    <div class="col-md-6 reveal delay-1">
+                        <div class="about-value-card">
+                            <div class="val-icon vi-green">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <h5 class="fw-bold mb-2">Secure & Reliable</h5>
+                            <p class="text-muted-sm">
+                                Your savings and personal data are protected with top-level security and transparency.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-md-6 reveal delay-2">
+                        <div class="about-value-card orange">
+                            <div class="val-icon vi-orange">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <h5 class="fw-bold mb-2">Community First</h5>
+                            <p class="text-muted-sm">
+                                Every decision we make centres our members and their families above all else.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-md-6 reveal delay-3">
+                        <div class="about-value-card blue">
+                            <div class="val-icon vi-blue">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <h5 class="fw-bold mb-2">Financial Growth</h5>
+                            <p class="text-muted-sm">
+                                Competitive savings rates and affordable loans designed to help you grow.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-md-6 reveal delay-4">
+                        <div class="about-value-card gold">
+                            <div class="val-icon vi-gold">
+                                <i class="fas fa-heart"></i>
+                            </div>
+                            <h5 class="fw-bold mb-2">Welfare Support</h5>
+                            <p class="text-muted-sm">
+                                We stand with members and families during bereavement and hardship.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════════ TRUST BADGES ═══════════════════ -->
+<section class="trust-section">
+    <div class="container">
+        <div class="text-center mb-5 reveal">
+            <div class="sec-pill sec-pill-center">Why Members Trust Us</div>
+            <h2 class="sec-title">Our Commitment to You</h2>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-3 col-6 reveal delay-1">
+                <div class="trust-badge">
+                    <div class="trust-icon bg-accent-green-soft text-primary-theme">
+                        <i class="fas fa-lock fa-lg"></i>
+                    </div>
+                    <div>
+                        <div class="micro-title">100% Secure</div>
+                        <div class="micro-subtitle">Data protected</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6 reveal delay-2">
+                <div class="trust-badge">
+                    <div class="trust-icon bg-accent-blue-soft text-accent-blue">
+                        <i class="fas fa-bolt fa-lg"></i>
+                    </div>
+                    <div>
+                        <div class="micro-title">Fast Loans</div>
+                        <div class="micro-subtitle">Quick processing</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6 reveal delay-3">
+                <div class="trust-badge">
+                    <div class="trust-icon bg-accent-yellow-soft text-golden">
+                        <i class="fas fa-medal fa-lg"></i>
+                    </div>
+                    <div>
+                        <div class="micro-title">10+ Years</div>
+                        <div class="micro-subtitle">Serving Kenya</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6 reveal delay-4">
+                <div class="trust-badge">
+                    <div class="trust-icon bg-accent-orange-soft text-accent-orange">
+                        <i class="fas fa-headset fa-lg"></i>
+                    </div>
+                    <div>
+                        <div class="micro-title">24/7 Support</div>
+                        <div class="micro-subtitle">Always available</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════════ SERVICES ═══════════════════ -->
+<section class="services-section" id="services">
+    <div class="container position-relative z-2">
+        <div class="text-center mb-5 reveal">
+            <div class="sec-pill sec-pill-center sec-pill-gold">
+                What We Offer
+            </div>
+            <h2 class="cta-title-sm font-heading">
+                Our Services
+            </h2>
+            <p class="text-white-95 copy-narrow mx-auto mt-3">
+                Everything you need for financial wellness and community welfare — all in one trusted platform.
+            </p>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-6 col-lg-3 reveal delay-1">
+                <div class="svc-card">
+                    <div class="svc-icon"><i class="fas fa-piggy-bank"></i></div>
+                    <h5>Savings</h5>
+                    <p>Grow your money with competitive interest rates through our structured savings programme.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3 reveal delay-2">
+                <div class="svc-card">
+                    <div class="svc-icon"><i class="fas fa-hand-holding-usd"></i></div>
+                    <h5>Emergency Loans</h5>
+                    <p>Access affordable loans quickly with flexible repayment terms tailored to your needs.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3 reveal delay-3">
+                <div class="svc-card">
+                    <div class="svc-icon"><i class="fas fa-heart"></i></div>
+                    <h5>Last Expense Cover</h5>
+                    <p>Welfare support for members and families during bereavement and times of hardship.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3 reveal delay-4">
+                <div class="svc-card">
+                    <div class="svc-icon"><i class="fas fa-mobile-alt"></i></div>
+                    <h5>M-Pesa Payments</h5>
+                    <p>Seamless M-Pesa integration for deposits, loan repayments and withdrawals anywhere.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════════ HOW IT WORKS ═══════════════════ -->
+<section class="how-section" id="how">
+    <div class="container">
+        <div class="text-center mb-5 reveal">
+            <div class="sec-pill sec-pill-center">Simple Process</div>
+            <h2 class="sec-title">How It Works</h2>
+            <p class="text-muted-95 copy-narrow mx-auto">
+                Getting started with SisiPamoja Welfare Sacco is quick and straightforward.
+            </p>
+        </div>
+
+        <div class="row g-4 justify-content-center">
+            <div class="col-6 col-md-3 reveal delay-1">
+                <div class="step-wrap">
+                    <div class="step-num">1</div>
+                    <span class="step-arrow">→</span>
+                    <h5 class="fw-bold mb-2">Register</h5>
+                    <p class="text-muted-sm">
+                        Create your account with personal details and ID documents.
+                    </p>
+                </div>
+            </div>
+            <div class="col-6 col-md-3 reveal delay-2">
+                <div class="step-wrap">
+                    <div class="step-num">2</div>
+                    <span class="step-arrow">→</span>
+                    <h5 class="fw-bold mb-2">Get Verified</h5>
+                    <p class="text-muted-sm">
+                        Admin reviews and approves your membership application.
+                    </p>
+                </div>
+            </div>
+            <div class="col-6 col-md-3 reveal delay-3">
+                <div class="step-wrap">
+                    <div class="step-num">3</div>
+                    <span class="step-arrow">→</span>
+                    <h5 class="fw-bold mb-2">Start Saving</h5>
+                    <p class="text-muted-sm">
+                        Make your first deposit via M-Pesa and begin growing.
+                    </p>
+                </div>
+            </div>
+            <div class="col-6 col-md-3 reveal delay-4">
+                <div class="step-wrap">
+                    <div class="step-num">4</div>
+                    <h5 class="fw-bold mb-2">Enjoy Benefits</h5>
+                    <p class="text-muted-sm">
+                        Access loans, welfare cover and full community benefits.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════════ TESTIMONIALS ═══════════════════ -->
+<section class="testi-section">
+    <div class="container">
+        <div class="text-center mb-5 reveal">
+            <div class="sec-pill sec-pill-center">Member Stories</div>
+            <h2 class="sec-title">What Our Members Say</h2>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-4 reveal delay-1">
+                <div class="testi-card">
+                    <div class="testi-stars mb-3">
+                        <i class="fas fa-star"></i><i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i><i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <p class="text-muted-md mb-20">
+                        "SisiPamoja came through for my family during a difficult time.
+                        The last expense support was fast and dignified. I will never leave this Sacco."
+                    </p>
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="testi-avatar">JM</div>
+                        <div>
+                            <div class="micro-title">Jane Mwangi</div>
+                            <div class="micro-subtitle">Member since 2019</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 reveal delay-2">
+                <div class="testi-card">
+                    <div class="testi-stars mb-3">
+                        <i class="fas fa-star"></i><i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i><i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <p class="text-muted-md mb-20">
+                        "I got an emergency loan within 48 hours. The process was simple,
+                        transparent and the interest was very fair. Highly recommended!"
+                    </p>
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="testi-avatar bg-accent-orange text-white">PO</div>
+                        <div>
+                            <div class="micro-title">Peter Otieno</div>
+                            <div class="micro-subtitle">Member since 2021</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 reveal delay-3">
+                <div class="testi-card">
+                    <div class="testi-stars mb-3">
+                        <i class="fas fa-star"></i><i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i><i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <p class="text-muted-md mb-20">
+                        "My savings have grown every month. The M-Pesa integration
+                        makes it so easy. SisiPamoja truly lives their tagline — together!"
+                    </p>
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="testi-avatar bg-secondary-theme text-white">AW</div>
+                        <div>
+                            <div class="micro-title">Amina Wanjiru</div>
+                            <div class="micro-subtitle">Member since 2020</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════════ CTA ═══════════════════ -->
+<section class="cta-section">
+    <div class="container position-relative z-2">
+        <div class="row justify-content-center text-center">
+            <div class="col-lg-7 reveal">
+                <div class="cta-pill">
+                    <i class="fas fa-star"></i> Join 500+ Members Today
+                </div>
+                <h2 class="cta-title font-heading">
+                    Ready to Join<br>SisiPamoja Welfare?
+                </h2>
+                <p class="cta-copy">
+                    Become part of a growing community that saves together,
+                    supports one another, and stands firm in times of need.
+                    Registration is free and takes just minutes.
+                </p>
+                <div class="d-flex gap-3 justify-content-center flex-wrap">
+                    <a href="/register/" class="btn-cta-solid">
+                        <i class="fas fa-user-plus me-2"></i>Register Now — Free
+                    </a>
+                    <a href="/login/" class="btn-cta-border">
+                        <i class="fas fa-sign-in-alt me-2"></i>Member Login
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════════ FOOTER ═══════════════════ -->
+<footer id="contact">
+    <div class="container">
+        <div class="row g-5">
+
+            <div class="col-lg-4">
+                <div class="footer-brand mb-1">SISIPAMOJA WELFARE</div>
+                <div class="footer-sub mb-3">Together in Times of Need</div>
+                <p class="footer-copy">
+                    A trusted welfare Sacco providing savings, emergency loans,
+                    last expense cover and community support to members across Kenya.
+                </p>
+                <div>
+                    <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="social-icon"><i class="fab fa-whatsapp"></i></a>
+                    <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+
+            <div class="col-lg-2 col-6">
+                <div class="footer-head">Quick Links</div>
+                <a href="#about"    class="footer-link">About Us</a>
+                <a href="#services" class="footer-link">Services</a>
+                <a href="#how"      class="footer-link">How It Works</a>
+                <a href="/register/" class="footer-link">Register</a>
+                <a href="/login/"   class="footer-link">Login</a>
+            </div>
+
+            <div class="col-lg-2 col-6">
+                <div class="footer-head">Services</div>
+                <a href="#" class="footer-link">Savings</a>
+                <a href="#" class="footer-link">Emergency Loans</a>
+                <a href="#" class="footer-link">Last Expense</a>
+                <a href="#" class="footer-link">M-Pesa</a>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="footer-head">Contact Us</div>
+                <div class="footer-contact">
+                    <i class="fas fa-map-marker-alt"></i>
+                    Nairobi, Kenya
+                </div>
+                <div class="footer-contact">
+                    <i class="fas fa-phone"></i>
+                    +254 700 000 000
+                </div>
+                <div class="footer-contact">
+                    <i class="fas fa-envelope"></i>
+                    info@sisipamoja.co.ke
+                </div>
+                <div class="footer-contact">
+                    <i class="fas fa-clock"></i>
+                    Mon – Fri: 8:00 AM – 5:00 PM
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="footer-bottom">
+        <div class="container">
+            © 2026 SisiPamoja Welfare Sacco · All rights reserved &nbsp;|&nbsp;
+            <span class="text-accent-yellow fw-bold">Together in Times of Need</span>
+        </div>
+    </div>
+</footer>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+// ── Scroll reveal
+const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+        if (e.isIntersecting) {
+            e.target.classList.add('visible');
+            revealObserver.unobserve(e.target);
+        }
+    });
+}, { threshold: 0.12 });
+
+document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+// ── Smooth scroll
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', function(e) {
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+            e.preventDefault();
+            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    });
+});
+
+// ── Navbar shadow on scroll
+const navbar = document.querySelector('.navbar');
+window.addEventListener('scroll', () => {
+    if (navbar) {
+        navbar.classList.toggle('navbar-scroll', window.scrollY > 60);
+    }
+});
+</script>
+
+</body>
+</html>

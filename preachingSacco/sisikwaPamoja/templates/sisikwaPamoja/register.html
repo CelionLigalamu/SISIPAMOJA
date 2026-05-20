@@ -1,0 +1,574 @@
+{% extends 'sisikwaPamoja/base.html' %}
+
+{% block title %}SISIPAMOJA | Register{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-7">
+            <div class="card p-4 p-md-5">
+
+                <!-- Header -->
+                <div class="text-center mb-4">
+                          <i class="fas fa-user-plus fa-3x mb-3 text-primary-theme"></i>
+                    <h3 class="fw-bold">Create Account</h3>
+                    <p class="text-muted">
+                        Join SISIPAMOJA today
+                    </p>
+                </div>
+
+                <!-- Messages -->
+                {% if messages %}
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} 
+                            alert-dismissible fade show">
+                    {{ message }}
+                    <button type="button" 
+                            class="btn-close" 
+                            data-bs-dismiss="alert">
+                    </button>
+                </div>
+                {% endfor %}
+                {% endif %}
+
+                <!-- Form -->
+                <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+
+                    <!-- Name Row -->
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">
+                                First Name *
+                            </label>
+                            <input type="text" 
+                                   name="first_name"
+                                   class="form-control"
+                                   placeholder="First name"
+                                   required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">
+                                Middle Name
+                            </label>
+                            <input type="text" 
+                                   name="middle_name"
+                                   class="form-control"
+                                   placeholder="Middle name">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">
+                                Last Name *
+                            </label>
+                            <input type="text" 
+                                   name="last_name"
+                                   class="form-control"
+                                   placeholder="Last name"
+                                   required>
+                        </div>
+                    </div>
+
+                   <!-- Gender & DOB -->
+<div class="row g-3 mb-3">
+    <div class="col-md-6">
+        <label class="form-label fw-semibold">
+            Gender *
+        </label>
+        <select name="gender" 
+                class="form-select" 
+                required>
+            <option value="">Select gender</option>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+        </select>
+    </div>
+
+    <div class="col-md-6">
+        <label class="form-label fw-semibold">
+            Date of Birth *
+        </label>
+
+        <div class="row g-2">
+            
+            <!-- Day -->
+            <div class="col-md-4">
+                <select id="day" class="form-select
+    form-select-lg"
+                required>
+                    <option value="">Day</option>
+                    {% for i in "123456789"|make_list %}
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Month -->
+            <div class="col-md-4">
+                <select id="month" class="form-select
+    form-select"
+                 required>
+                    <option value="">Month</option>
+                    <option value="1">January</option>
+                    <option value="2">February</option>
+                    <option value="3">March</option>
+                    <option value="4">April</option>
+                    <option value="5">May</option>
+                    <option value="6">June</option>
+                    <option value="7">July</option>
+                    <option value="8">August</option>
+                    <option value="9">September</option>
+                    <option value="10">October</option>
+                    <option value="11">November</option>
+                    <option value="12">December</option>
+                </select>
+            </div>
+
+            <!-- Year -->
+            <div class="col-md-4">
+                <select id="year" class="form-select
+    form-select-lg"    
+             required> 
+                    <option value="">Year</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Hidden input sent to Django -->
+        <input type="hidden" 
+               name="date_of_birth" 
+               id="dob">
+
+        <small class="text-muted">
+            Age: <span id="age-display">--</span> years
+        </small>
+    </div>
+</div>
+
+                    <!-- ID & Phone -->
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">
+                                National ID Number *
+                            </label>
+                            <input type="text" 
+                                   name="national_id"
+                                   class="form-control"
+                                   placeholder="e.g. 12345678"
+                                   required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">
+                                Phone Number *
+                            </label>
+                            <input type="tel" 
+                                   name="phone_number"
+                                   class="form-control"
+                                   placeholder="e.g. 0712345678"
+                                   required>
+                        </div>
+                    </div>
+
+                    <!-- Email -->
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">
+                            Email Address *
+                        </label>
+                        <input type="email" 
+                               name="email"
+                               class="form-control"
+                               placeholder="example@email.com"
+                               required>
+                    </div>
+
+                    <!-- County & Sub County of Birth -->
+                <div class="row g-3 mb-3">
+                     <div class="col-md-6">
+                    <label class="form-label fw-semibold">
+                        County of Birth*
+                    </label>
+                    <select name="county"
+                            id="county-select"
+                            class="form-select"
+                            required>
+                        <option value="">Select County</option>
+                    </select>
+                <script id="counties-data" type="application/json">
+                    {{ counties|safe }}
+                </script>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">
+                       Sub County of Birth*
+                    </label>
+                   <select name="sub_county"
+                           id="sub-county-select"
+                           class="form-select"
+                           required>
+                        <option value="">Select Sub County</option>
+                     </select>
+                </div>
+                </div>
+                    <!-- Physical Address -->
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">
+                            Physical Address *
+                        </label>
+                        <textarea name="physical_address"
+                                  class="form-control"
+                                  rows="2"
+                                  placeholder="Your physical address"
+                                  required></textarea>
+                    </div>
+
+                    <!-- Marital Status -->
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">
+                            Marital Status *
+                        </label>
+                        <select name="marital_status"
+                                id="marital-status"
+                                class="form-select"
+                                required>
+                            <option value="">Select status</option>
+                            <option value="single">Single</option>
+                            <option value="married">Married</option>
+                         </select>
+                    </div>
+
+                <!-- Password -->
+                <div class="row g-3 mb-3">
+                    <!-- Password -->
+                    <div class="col-md-6">
+                            <label class="form-label fw-semibold">
+                                Password *
+                            </label>
+                            <div class="input-group">
+                                <input type="password"
+                                   name="password1"
+                                   class="form-control"
+                                   placeholder="Create password"
+                                   required>
+                                <button class="btn btn-outline-secondary"
+                                        type="button"
+                                        id="togglePassword">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                        </div>
+                        <small class="text-muted">
+                            Password must contain:
+                            <br>
+                            - At least 8 characters
+                            <br>
+                            - One uppercase letter
+                            <br>
+                            - One lowercase letter
+                            <br>
+                            - One number
+                        </small>
+                    </div>
+                    <!-- Confirm Password -->   
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">
+                            Confirm Password *
+                        </label>
+                        <div class="input-group">
+                        <input type="password"
+                               name="password2"
+                                   class="form-control"
+                                   placeholder="Repeat password"
+                                   required>
+                        <button class="btn btn-outline-secondary"
+                                type="button"
+                                id="toggleConfirmPassword">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        </div>
+                    </div>
+                </div>
+
+                    <!-- Passport Photo -->
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">
+                            Passport Photo
+                        </label>
+                        <input type="file"
+                               name="passport_photo"
+                               class="form-control"
+                               accept="jpg,.jpeg,.png"
+                               required>
+                        <small class="text-muted">
+                            Accepted formats strictly: JPG, JPEG, PNG
+                        </small>
+                    </div>
+
+                    <!-- ID Upload -->
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">
+                            National ID Copy *
+                        </label>
+                        <input type="file"
+                               name="id_copy"
+                               class="form-control"
+                               accept=".pdf,.jpg,.jpeg,.png"
+                               required>
+                        <small class="text-muted">
+                            Accepted formats strictly: PDF, JPG, JPEG, PNG
+                        </small>
+                    </div>
+
+                    <!-- Submit -->
+                    <div class="d-grid mb-3">
+                        <button type="submit" 
+                                class="btn btn-primary btn-lg">
+                            <i class="fas fa-user-plus me-2"></i>
+                            Create Account
+                        </button>
+                    </div>
+
+                    <!-- Login Link -->
+                <div class="alert alert-info small">
+                    <i class="fas fa-info-circle me-1"></i>
+                    Your <strong>National ID Number</strong> will be used as your username to log in, so please ensure it is correct.
+                </div>
+                    <p class="text-center text-muted mb-0">
+                        Already have an account? 
+                                <a href="{% url 'login' %}" 
+                                    class="text-decoration-none fw-semibold text-primary-theme">
+                            Sign In
+                        </a>
+                    </p>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Populate years
+const yearSelect = document.getElementById('year');
+const currentYear = new Date().getFullYear();
+
+for (let year = currentYear; year >= 1900; year--) {
+    const option = document.createElement('option');
+    option.value = year;
+    option.textContent = year;
+    yearSelect.appendChild(option);
+}
+
+// Populate days
+const daySelect = document.getElementById('day');
+
+for (let day = 1; day <= 31; day++) {
+    const option = document.createElement('option');
+    option.value = day;
+    option.textContent = day;
+    daySelect.appendChild(option);
+}
+
+// Auto calculate age + create hidden DOB value
+function updateDOB() {
+    const day = document.getElementById('day').value;
+    const month = document.getElementById('month').value;
+    const year = document.getElementById('year').value;
+
+    if (day && month && year) {
+
+        // Format YYYY-MM-DD for Django
+        const dobValue = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+
+        document.getElementById('dob').value = dobValue;
+
+        // Calculate age
+        const dob = new Date(dobValue);
+        const today = new Date();
+
+        let age = today.getFullYear() - dob.getFullYear();
+
+        const m = today.getMonth() - dob.getMonth();
+
+        if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
+            age--;
+        }
+
+        document.getElementById('age-display').textContent = age;
+    }
+}
+
+// Listen for changes
+document.getElementById('day').addEventListener('change', updateDOB);
+document.getElementById('month').addEventListener('change', updateDOB);
+document.getElementById('year').addEventListener('change', updateDOB);
+
+// Toggle Password
+document.getElementById('togglePassword')
+    .addEventListener('click', function() {
+        const pwd = document.querySelector('input[name="password1"]');
+        const icon = this.querySelector('i');
+        if (pwd.type === 'password') {
+            pwd.type = 'text';
+            icon.classList.replace('fa-eye', 'fa-eye-slash');
+        } else {
+            pwd.type = 'password';
+            icon.classList.replace('fa-eye-slash', 'fa-eye');
+        }
+    });
+
+// Toggle Confirm Password
+document.getElementById('toggleConfirmPassword')
+    .addEventListener('click', function() {
+        const pwd = document.querySelector('input[name="password2"]');
+        const icon = this.querySelector('i');
+        if (pwd.type === 'password') {
+            pwd.type = 'text';
+            icon.classList.replace('fa-eye', 'fa-eye-slash');
+        } else {
+            pwd.type = 'password';
+            icon.classList.replace('fa-eye-slash', 'fa-eye');
+        }
+    });
+
+// Password Validation
+const password1 = document.querySelector('input[name="password1"]');
+const password2 = document.querySelector('input[name="password2"]');
+const submitBtn = document.querySelector('button[type="submit"]');
+
+// Rules
+const rules = {
+    length: str => str.length >= 8,
+    uppercase: str => /[A-Z]/.test(str),
+    lowercase: str => /[a-z]/.test(str),
+    number: str => /[0-9]/.test(str),
+};
+
+// Add indicator below password field
+const indicator = document.createElement('div');
+indicator.className = 'mt-2 small';
+indicator.innerHTML = `
+    <div id="rule-length" class="text-danger">
+        <i class="fas fa-times-circle me-1"></i>
+        At least 8 characters
+    </div>
+    <div id="rule-upper" class="text-danger">
+        <i class="fas fa-times-circle me-1"></i>
+        One uppercase letter
+    </div>
+    <div id="rule-lower" class="text-danger">
+        <i class="fas fa-times-circle me-1"></i>
+        One lowercase letter
+    </div>
+    <div id="rule-number" class="text-danger">
+        <i class="fas fa-times-circle me-1"></i>
+        One number
+    </div>
+`;
+password1.closest('.col-md-6').appendChild(indicator);
+
+// Match indicator
+const matchMsg = document.createElement('div');
+matchMsg.className = 'mt-2 small text-danger';
+matchMsg.id = 'match-msg';
+matchMsg.innerHTML = `
+    <i class="fas fa-times-circle me-1"></i>
+    Passwords do not match
+`;
+password2.closest('.col-md-6').appendChild(matchMsg);
+
+function updateRule(id, passed) {
+    const el = document.getElementById(id);
+    if (passed) {
+        el.className = 'text-success';
+        el.innerHTML = `
+            <i class="fas fa-check-circle me-1"></i>
+            ${el.textContent.trim()}
+        `;
+    } else {
+        el.className = 'text-danger';
+        el.innerHTML = `
+            <i class="fas fa-times-circle me-1"></i>
+            ${el.textContent.trim()}
+        `;
+    }
+}
+
+function checkPassword() {
+    const val = password1.value;
+    updateRule('rule-length', rules.length(val));
+    updateRule('rule-upper', rules.uppercase(val));
+    updateRule('rule-lower', rules.lowercase(val));
+    updateRule('rule-number', rules.number(val));
+
+    return rules.length(val) && 
+           rules.uppercase(val) && 
+           rules.lowercase(val) && 
+           rules.number(val);
+}
+
+function checkMatch() {
+    const match = password1.value === password2.value 
+                  && password2.value !== '';
+    const el = document.getElementById('match-msg');
+    if (match) {
+        el.className = 'mt-2 small text-success';
+        el.innerHTML = `
+            <i class="fas fa-check-circle me-1"></i>
+            Passwords match
+        `;
+    } else {
+        el.className = 'mt-2 small text-danger';
+        el.innerHTML = `
+            <i class="fas fa-times-circle me-1"></i>
+            Passwords do not match
+        `;
+    }
+    return match;
+}
+
+password1.addEventListener('input', checkPassword);
+password2.addEventListener('input', checkMatch);
+
+// Block form submission if rules not met
+document.querySelector('form').addEventListener('submit', function(e) {
+    if (!checkPassword()) {
+        e.preventDefault();
+        password1.focus();
+        alert('Please meet all password requirements.');
+    } else if (!checkMatch()) {
+        e.preventDefault();
+        password2.focus();
+        alert('Passwords do not match.');
+    }
+});
+
+// Load counties and sub counties
+const countiesData = JSON.parse(
+    document.getElementById('counties-data').textContent
+)
+
+const countySelect = document.getElementById('county-select');
+const subCountySelect = document.getElementById('sub-county-select');
+
+// Populate counties
+Object.keys(countiesData).sort().forEach(county => {
+    const option = document.createElement('option');
+    option.value = county;
+    option.textContent = county;
+    countySelect.appendChild(option);
+});
+
+// Populate sub counties based on selected county
+countySelect.addEventListener('change', function() {
+    subCountySelect.innerHTML = 
+        '<option value="">Select Sub County</option>';
+    
+    const subCounties = countiesData[this.value] || [];
+    subCounties.forEach(sub => {
+        const option = document.createElement('option');
+        option.value = sub;
+        option.textContent = sub;
+        subCountySelect.appendChild(option);
+    });
+});
+</script>
+{% endblock %}

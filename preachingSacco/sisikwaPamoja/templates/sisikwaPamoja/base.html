@@ -1,0 +1,157 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}SISIPAMOJA{% endblock %}</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700;900&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'sisikwaPamoja/css/main.css' %}">
+
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg">
+    <div class="container">
+        <a class="navbar-brand d-flex align-items-center gap-2" href="#">
+            <div>
+                <div class="brand-line">
+                    <span class="brand-sisi">SISIPAMOJA</span>
+                    <span class="brand-welfare">WELFARE</span>
+                </div>
+                <div class="brand-tagline">Together in Times of Need</div>
+            </div>
+        </a>
+
+        <div class="ms-auto">
+            {% if user.is_authenticated %}
+<div class="dropdown">
+    <button class="btn btn-outline-light 
+            dropdown-toggle" 
+            type="button"
+            data-bs-toggle="dropdown">
+        <i class="fas fa-user-circle me-1"></i>
+        {{ user.official_name }}
+    </button>
+    <ul class="dropdown-menu 
+               dropdown-menu-end">
+        <li>
+            <span class="dropdown-item-text 
+                         text-muted small">
+                Logged in as 
+                <strong>{{ user.role }}</strong>
+            </span>
+        </li>
+        <li><hr class="dropdown-divider"></li>
+        <li>
+            <a class="dropdown-item text-danger" 
+               href="#" 
+               id="logoutBtn">
+                <i class="fas fa-sign-out-alt me-2"></i>
+                Logout
+            </a>
+        </li>
+    </ul>
+</div>
+{% else %}
+<div class="d-flex gap-2">
+    <a href="{% url 'login' %}" 
+       class="btn btn-outline-light">
+        <i class="fas fa-sign-in-alt me-1"></i>
+        Login
+    </a>
+        <a href="{% url 'register' %}" class="btn btn-light text-primary-theme">
+        <i class="fas fa-user-plus me-1"></i>
+        Register
+    </a>
+</div>
+{% endif %}
+        </div>
+
+    </div>
+</nav>
+
+<!-- Main Content -->
+<main>
+    {% block content %}
+    {% endblock %}
+</main>
+
+<footer class="site-footer py-3 mt-5">
+    <div class="container text-center text-muted small">
+        © {% now "Y" %} SISIPAMOJA. All rights reserved.
+    </div>
+</footer>
+
+{% if user.is_authenticated %}
+<!-- Logout Modal -->
+<div class="modal fade" id="logoutModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 rounded-4 shadow">
+            <div class="modal-body text-center p-5">
+                <div class="logout-icon-circle d-inline-flex align-items-center justify-content-center mb-3 bg-accent-orange-soft">
+                    <i class="fas fa-sign-out-alt fa-2x text-accent-orange"></i>
+                </div>
+                <h5 class="fw-bold mb-1">
+                    Leaving so soon?
+                </h5>
+                <p class="text-muted mb-4">
+                    Are you sure you want to logout,
+                    <strong>
+                        {{ user.official_name }}
+                    </strong>?
+                </p>
+                <div class="d-flex gap-3 
+                            justify-content-center">
+                    <button type="button"
+                            class="btn btn-outline-secondary
+                                   px-4 rounded-pill"
+                            data-bs-dismiss="modal">
+                        <i class="fas fa-times me-2"></i>
+                        Cancel
+                    </button>
+                    <a href="{% url 'logout' %}"
+                       class="btn btn-danger px-4 
+                              rounded-pill">
+                        <i class="fas fa-sign-out-alt 
+                                  me-2"></i>
+                        Yes, Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js">
+</script>
+
+<!-- Page specific scripts go here -->
+{% block extra_js %}{% endblock %}
+
+<!-- Logout Script - Always last -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var btn = document.getElementById('logoutBtn');
+    var modalEl = document.getElementById('logoutModal');
+    if (btn && modalEl) {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            var modal = new bootstrap.Modal(modalEl);
+            modal.show();
+        });
+    }
+});
+</script>
+<!--link js-->
+<script src="{% static 'sisikwaPamoja/js/main.js' %}"></script>
+</body>
+</html>
