@@ -20,9 +20,6 @@ def _dashboard_redirect(user):
     return redirect('member_dashboard')
 
 def register_view(request):
-    if request.user.is_authenticated:
-        return _dashboard_redirect(request.user)
-
     if request.method == 'POST':
         first_name = request.POST.get('first_name')
         middle_name = request.POST.get('middle_name')
