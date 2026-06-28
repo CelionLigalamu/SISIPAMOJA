@@ -1,0 +1,164 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static jazzmin log %}
+
+{% block bodyclass %}{{ block.super }} dashboard{% endblock %}
+
+{% block title %}Dashboard | {{ site_title|default:_('Django site admin') }}{% endblock %}
+
+{% block extrahead %}
+{{ block.super }}
+<script src="{% static 'js/admin_dashboard.js' %}" defer></script>
+{% endblock %}
+
+{% block content_title %}{% trans 'Dashboard' %}{% endblock %}
+
+{% block breadcrumbs %}
+<ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'admin:index' %}">{% trans 'Dashboard' %}</a></li>
+</ol>
+{% endblock %}
+
+{% block content %}
+{% get_admin_log 8 as admin_log for_user user %}
+<div class="sacco-dashboard">
+    <div class="dashboard-hero">
+        <div>
+            <p class="dashboard-kicker">SisiPamoja Welfare</p>
+            <h1>Admin Dashboard</h1>
+            <p class="dashboard-subtitle">Live figures from your members, contributions, and registrations.</p>
+        </div>
+        <div class="dashboard-status">
+            <span class="status-dot"></span>
+            <span>Live statistics</span>
+            <small id="dashboard-updated-at">Updating now</small>
+        </div>
+    </div>
+
+    <div class="stats-grid">
+        <article class="stat-card stat-green">
+            <i class="fas fa-users stat-icon" aria-hidden="true"></i>
+            <span class="stat-label">Total Members</span>
+            <strong class="stat-value" data-stat="total_members">{{ dashboard_data.total_members }}</strong>
+            <span class="stat-note">All registered members</span>
+        </article>
+        <article class="stat-card stat-orange">
+            <i class="fas fa-coins stat-icon" aria-hidden="true"></i>
+            <span class="stat-label">Total Contributions</span>
+            <strong class="stat-value" data-stat="total_contributions" data-format="currency">KES {{ dashboard_data.total_contributions }}</strong>
+            <span class="stat-note">All time savings</span>
+        </article>
+        <article class="stat-card stat-blue">
+            <i class="fas fa-id-card stat-icon" aria-hidden="true"></i>
+            <span class="stat-label">Sacco Members</span>
+            <strong class="stat-value" data-stat="sacco_members">{{ dashboard_data.sacco_members }}</strong>
+            <span class="stat-note">Active sacco accounts</span>
+        </article>
+        <article class="stat-card stat-gold">
+            <i class="fas fa-exclamation-triangle stat-icon" aria-hidden="true"></i>
+            <span class="stat-label">Unpaid Members</span>
+            <strong class="stat-value" data-stat="unpaid_members">{{ dashboard_data.unpaid_members }}</strong>
+            <span class="stat-note">Pending payments</span>
+        </article>
+        <article class="stat-card stat-forest">
+            <i class="fas fa-check-circle stat-icon" aria-hidden="true"></i>
+            <span class="stat-label">Paid Members</span>
+            <strong class="stat-value" data-stat="paid_members">{{ dashboard_data.paid_members }}</strong>
+            <span class="stat-note">Registration complete</span>
+        </article>
+        <article class="stat-card stat-brown">
+            <i class="fas fa-box-open stat-icon" aria-hidden="true"></i>
+            <span class="stat-label">Last Expense</span>
+            <strong class="stat-value" data-stat="last_expense_members">{{ dashboard_data.last_expense_members }}</strong>
+            <span class="stat-note">Cover members</span>
+        </article>
+        <article class="stat-card stat-green">
+            <i class="fas fa-heart stat-icon" aria-hidden="true"></i>
+            <span class="stat-label">Spouses</span>
+            <strong class="stat-value" data-stat="total_spouses">{{ dashboard_data.total_spouses }}</strong>
+            <span class="stat-note">Registered spouses</span>
+        </article>
+        <article class="stat-card stat-orange">
+            <i class="fas fa-child stat-icon" aria-hidden="true"></i>
+            <span class="stat-label">Dependants</span>
+            <strong class="stat-value" data-stat="total_dependants">{{ dashboard_data.total_dependants }}</strong>
+            <span class="stat-note">Registered dependants</span>
+        </article>
+    </div>
+
+    <div class="dashboard-panels">
+        <section class="panel panel-wide recent-panel">
+            <div class="panel-header">
+                <h2>Recent members</h2>
+                <span>Latest registrations</span>
+            </div>
+            <div class="table-responsive">
+                <table class="dashboard-table">
+                    <thead>
+                        <tr>
+                            <th>Member</th>
+                            <th>Type</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for member in dashboard_data.recent_members %}
+                        <tr>
+                            <td>
+                                <a class="member-cell" href="{{ member.detail_url }}">
+                                    <div class="avatar {% if member.membership_key == 'last_expense' %}avatar-brown{% elif member.membership_key == 'sacco' %}avatar-default{% else %}avatar-blue{% endif %}">{{ member.full_name|slice:":2"|upper }}</div>
+                                    <div class="recent-body">
+                                        <strong>{{ member.full_name }}</strong>
+                                        <span>{{ member.county }}</span>
+                                    </div>
+                                </a>
+                            </td>
+                            <td>
+                                <span class="badge {% if member.membership_key == 'sacco' %}badge-soft{% else %}badge-last-expense{% endif %}">{{ member.membership_type }}</span>
+                            </td>
+                            <td>
+                                <span class="badge {% if member.paid %}badge-paid{% else %}badge-unpaid{% endif %}">{{ member.paid_label }}</span>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="3" class="empty-state">No members yet.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="panel panel-wide">
+            <div class="panel-header">
+                <h2>Quick actions</h2>
+                <span>Common admin tasks</span>
+            </div>
+            <div class="action-grid">
+                <a href="{% url 'admin:sisikwaPamoja_memberprofile_add' %}" class="action-btn">Add member</a>
+                <a href="{% url 'admin:sisikwaPamoja_contribution_add' %}" class="action-btn">Add contribution</a>
+                <a href="{% url 'admin:sisikwaPamoja_spouse_add' %}" class="action-btn">Add spouse</a>
+                <a href="{% url 'admin:sisikwaPamoja_dependant_add' %}" class="action-btn">Add dependant</a>
+                <a href="{% url 'admin:sisikwaPamoja_memberprofile_changelist' %}" class="action-btn">Export members</a>
+                <a href="{% url 'admin:index' %}" class="action-btn">Settings</a>
+            </div>
+
+            <div class="panel-footer-box mt-3">
+                <h3 class="recent-action">View registrations</h3>
+                <p class="recent-action-text mb-2">Open a member record to see spouse and dependant inlines.</p>
+                <a href="{% url 'admin:sisikwaPamoja_memberprofile_changelist' %}" class="action-btn d-inline-flex">Open member list</a>
+            </div>
+
+            <div class="panel-footer-box">
+                <h3 class="recent-action">Recent action</h3>
+                {% if admin_log %}
+                    <p class="recent-action-text">{{ admin_log.0 }}</p>
+                {% else %}
+                    <p class="recent-action-text">No recent admin activity.</p>
+                {% endif %}
+            </div>
+        </section>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,113 @@
+{% extends 'sisikwaPamoja/dashboard_member.html' %}
+{% block title %}Statements | SisiPamoja{% endblock %}
+
+{% block dashboard_content %}
+<div class="stat-grid" style="margin-bottom:24px;">
+  <div class="stat-card green">
+    <div class="stat-top">
+      <div class="stat-icon si-green">
+        <i class="fas fa-file-pdf"></i>
+      </div>
+      <div class="stat-trend trend-up">PDF</div>
+    </div>
+    <div>
+      <div class="stat-label">Latest Statement</div>
+      <div class="stat-value small">{% now "M Y" %}</div>
+      <div class="stat-sub">Current month</div>
+    </div>
+  </div>
+
+  <div class="stat-card blue">
+    <div class="stat-top">
+      <div class="stat-icon si-blue">
+        <i class="fas fa-download"></i>
+      </div>
+      <div class="stat-trend trend-up">Fast</div>
+    </div>
+    <div>
+      <div class="stat-label">Download Statement</div>
+      <div class="stat-value small">Instant</div>
+      <div class="stat-sub">As PDF</div>
+    </div>
+  </div>
+
+  <div class="stat-card orange">
+    <div class="stat-top">
+      <div class="stat-icon si-orange">
+        <i class="fas fa-calendar-alt"></i>
+      </div>
+      <div class="stat-trend trend-neu">12</div>
+    </div>
+    <div>
+      <div class="stat-label">Months Available</div>
+      <div class="stat-value small">12 Months</div>
+      <div class="stat-sub">Historical data</div>
+    </div>
+  </div>
+
+  <div class="stat-card gold">
+    <div class="stat-top">
+      <div class="stat-icon si-gold">
+        <i class="fas fa-envelope"></i>
+      </div>
+      <div class="stat-trend trend-warn">Email</div>
+    </div>
+    <div>
+      <div class="stat-label">Email Delivery</div>
+      <div class="stat-value small">Monthly</div>
+      <div class="stat-sub">Automatic</div>
+    </div>
+  </div>
+</div>
+
+<!-- Download Statements -->
+<div class="panel">
+  <div class="sec-hd">
+    <div class="sec-hd-title">
+      <i class="fas fa-download" style="color:#94A3B8; margin-right:8px;"></i>
+      Download Statements
+    </div>
+  </div>
+  
+  <div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:16px;">
+    {% for month in "JFMAMJJASOND"|slice:":3" %}
+    <div style="padding:16px; border:1.5px solid #E2E8F0; border-radius:12px; background:#F8FAFB;">
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
+        <div style="font-weight:800; color:#1E293B;">{% now "M Y" %}</div>
+        <i class="fas fa-file-pdf" style="color:#EA580C; font-size:1.2rem;"></i>
+      </div>
+      <div style="font-size:.8rem; color:#94A3B8; margin-bottom:12px;">
+        Account statement for this period
+      </div>
+      <a href="#" onclick="alert('Statement will be generated and downloaded')" style="display:inline-flex; align-items:center; gap:6px; color:#1565C0; font-weight:700; font-size:.85rem; text-decoration:none;">
+        <i class="fas fa-download"></i> Download PDF
+      </a>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- Statement Information -->
+<div class="panel" style="margin-top:20px;">
+  <div class="sec-hd">
+    <div class="sec-hd-title">
+      <i class="fas fa-info-circle" style="color:#94A3B8; margin-right:8px;"></i>
+      Statement Information
+    </div>
+  </div>
+  <div style="padding:16px; line-height:1.8; color:#475569;">
+    <p style="margin-bottom:12px;">
+      <strong>What's Included:</strong> Your account statement includes all contributions, withdrawals, interest earned, and fees.
+    </p>
+    <p style="margin-bottom:12px;">
+      <strong>Format:</strong> Statements are provided as PDF files for easy download, printing, and archiving.
+    </p>
+    <p style="margin-bottom:12px;">
+      <strong>Frequency:</strong> Statements are generated monthly and available for the last 12 months.
+    </p>
+    <p>
+      <strong>Email Delivery:</strong> You can opt to receive statements automatically via email each month.
+    </p>
+  </div>
+</div>
+{% endblock %}

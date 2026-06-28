@@ -1,171 +1,1534 @@
 {% extends 'sisikwaPamoja/base.html' %}
+{% load static %}
+{% block title %}My Dashboard | SisiPamoja{% endblock %}
 
-{% block title %}SISIPAMOJA | Member Dashboard{% endblock %}
+{% block extra_css %}
+<style>
+:root {
+  --g900: #14532D;
+  --g700: #15803D;
+  --g500: #22C55E;
+  --g100: #DCFCE7;
+  --g50:  #F0FDF4;
+  --o700: #C2410C;
+  --o500: #EA580C;
+  --o100: #FED7AA;
+  --o50:  #FFF7ED;
+  --b700: #1565C0;
+  --b100: #DBEAFE;
+  --y500: #F9A825;
+  --y100: #FEF9C3;
+  --neu50:  #F8FAFB;
+  --neu100: #F1F5F9;
+  --neu200: #E2E8F0;
+  --neu400: #94A3B8;
+  --neu600: #475569;
+  --neu800: #1E293B;
+  --neu900: #0F172A;
+  --white:  #FFFFFF;
+  --sidebar-w: 260px;
+  --site-navbar-h: 72px;
+  --topbar-h:  64px;
+  --radius:    12px;
+  --radius-lg: 18px;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,.07), 0 1px 2px rgba(0,0,0,.04);
+  --shadow:    0 4px 16px rgba(0,0,0,.07), 0 2px 6px rgba(0,0,0,.04);
+  --shadow-lg: 0 10px 40px rgba(0,0,0,.09), 0 4px 12px rgba(0,0,0,.05);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Nunito', sans-serif;
+  background: var(--neu50);
+  color: var(--neu800);
+  overflow-x: hidden;
+}
+
+/* ── LAYOUT ── */
+.dash-layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* ── SIDEBAR ── */
+.sidebar {
+  width: var(--sidebar-w);
+  background: var(--g900);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: var(--site-navbar-h); left: 0;
+  height: calc(100dvh - var(--site-navbar-h));
+  max-height: calc(100dvh - var(--site-navbar-h));
+  z-index: 100;
+  transition: transform .3s ease;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior-y: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--o500) rgba(255,255,255,.12);
+  scrollbar-gutter: stable;
+}
+
+/* Member info pill — now at the very top */
+.sidebar-member {
+  margin: 16px 14px 0;
+  background: rgba(255,255,255,.07);
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: var(--radius);
+  padding: 16px 14px;
+}
+.sidebar-avatar {
+  width: 46px; height: 46px;
+  border-radius: 50%;
+  background: var(--g100);
+  color: var(--g900);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Merriweather', serif;
+  font-weight: 900;
+  font-size: 1.05rem;
+  flex-shrink: 0;
+}
+.sidebar-member-name {
+  font-weight: 800;
+  font-size: .9rem;
+  color: white;
+  line-height: 1.3;
+}
+.sidebar-member-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: .68rem;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 20px;
+  margin-top: 5px;
+}
+.badge-sacco   { background: rgba(249,168,37,.18); color: var(--y500); }
+.badge-expense { background: rgba(234,88,12,.20);  color: #FB923C; }
+
+.serial-pill {
+  font-size: .7rem;
+  color: rgba(255,255,255,.45);
+  font-family: 'Courier New', monospace;
+  margin-top: 7px;
+  letter-spacing: .5px;
+}
+
+/* Nav sections */
+.nav-section { padding: 18px 14px 4px; }
+.nav-section-label {
+  font-size: .63rem;
+  font-weight: 800;
+  color: rgba(255,255,255,.32);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  padding: 0 8px;
+  margin-bottom: 6px;
+}
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all .2s;
+  text-decoration: none;
+  color: rgba(255,255,255,.72);
+  font-weight: 700;
+  font-size: .875rem;
+  margin-bottom: 2px;
+}
+.nav-item:hover { background: rgba(255,255,255,.08); color: white; }
+.nav-item.active {
+  background: var(--o500);
+  color: white;
+  box-shadow: 0 4px 14px rgba(234,88,12,.35);
+}
+.nav-item-icon {
+  width: 32px; height: 32px;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: .9rem;
+  flex-shrink: 0;
+  background: rgba(255,255,255,.07);
+  transition: background .2s;
+}
+.nav-item.active .nav-item-icon { background: rgba(255,255,255,.18); }
+.nav-item:hover  .nav-item-icon { background: rgba(255,255,255,.12); }
+
+.nav-badge {
+  margin-left: auto;
+  background: var(--o500);
+  color: white;
+  font-size: .65rem;
+  font-weight: 800;
+  padding: 2px 7px;
+  border-radius: 20px;
+  min-width: 20px;
+  text-align: center;
+}
+.nav-item.active .nav-badge { background: rgba(255,255,255,.25); }
+
+.sidebar-footer {
+  margin-top: auto;
+  padding: 14px;
+  border-top: 1px solid rgba(255,255,255,.08);
+}
+.btn-logout {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  color: rgba(255,255,255,.65);
+  font-weight: 700;
+  font-size: .875rem;
+  cursor: pointer;
+  transition: all .2s;
+  text-decoration: none;
+  width: 100%;
+  background: transparent;
+  border: none;
+}
+.btn-logout:hover { background: rgba(220,38,38,.15); color: #FCA5A5; }
+
+/* ── MAIN AREA ── */
+.main-area {
+  margin-left: var(--sidebar-w);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* ── TOPBAR ── */
+.topbar {
+  height: var(--topbar-h);
+  background: white;
+  border-bottom: 1px solid var(--neu200);
+  display: flex;
+  align-items: center;
+  padding: 0 28px;
+  gap: 16px;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  box-shadow: var(--shadow-sm);
+}
+.topbar-hamburger {
+  display: none;
+  width: 36px; height: 36px;
+  border: none; background: none;
+  cursor: pointer;
+  color: var(--neu600);
+  font-size: 1.1rem;
+  align-items: center; justify-content: center;
+  border-radius: 8px;
+}
+.topbar-hamburger:hover { background: var(--neu100); }
+
+.topbar-greeting { flex: 1; }
+.topbar-greeting-title {
+  font-family: 'Merriweather', serif;
+  font-weight: 900;
+  font-size: 1rem;
+  color: var(--neu900);
+  line-height: 1.2;
+}
+.topbar-greeting-sub {
+  font-size: .78rem;
+  color: var(--neu400);
+  font-weight: 600;
+}
+
+.topbar-actions { display: flex; align-items: center; gap: 10px; }
+
+.topbar-icon-btn {
+  width: 38px; height: 38px;
+  border-radius: 10px;
+  border: 1px solid var(--neu200);
+  background: white;
+  color: var(--neu600);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  transition: all .2s;
+  position: relative;
+  text-decoration: none;
+  font-size: .95rem;
+}
+.topbar-icon-btn:hover { background: var(--neu100); color: var(--neu800); }
+
+.notif-dot {
+  position: absolute;
+  top: 6px; right: 6px;
+  width: 8px; height: 8px;
+  background: var(--o500);
+  border-radius: 50%;
+  border: 2px solid white;
+}
+
+.topbar-profile {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 12px 6px 6px;
+  border: 1px solid var(--neu200);
+  border-radius: 40px;
+  cursor: pointer;
+  transition: all .2s;
+  background: white;
+  text-decoration: none;
+}
+.topbar-profile:hover { background: var(--neu50); border-color: var(--g700); }
+
+.topbar-avatar {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: var(--g100);
+  color: var(--g900);
+  display: flex; align-items:center; justify-content:center;
+  font-weight: 900;
+  font-size: .8rem;
+  font-family: 'Merriweather', serif;
+}
+.topbar-profile-name {
+  font-size: .82rem;
+  font-weight: 800;
+  color: var(--neu800);
+}
+
+/* ── PAGE CONTENT ── */
+.page-content { padding: 28px; flex: 1; }
+
+/* ── STAT CARDS ── */
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+@media(max-width:1100px){ .stat-grid{ grid-template-columns: repeat(2,1fr); } }
+@media(max-width:600px){  .stat-grid{ grid-template-columns: 1fr; } }
+
+.stat-card {
+  background: white;
+  border-radius: var(--radius-lg);
+  padding: 22px 20px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--neu200);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  transition: box-shadow .2s, transform .2s;
+  position: relative;
+  overflow: hidden;
+}
+.stat-card::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+}
+.stat-card.green::after  { background: var(--g700); }
+.stat-card.orange::after { background: var(--o500); }
+.stat-card.blue::after   { background: var(--b700); }
+.stat-card.gold::after   { background: var(--y500); }
+.stat-card:hover { box-shadow: var(--shadow); transform: translateY(-2px); }
+
+.stat-top { display: flex; align-items: flex-start; justify-content: space-between; }
+.stat-icon {
+  width: 44px; height: 44px;
+  border-radius: 12px;
+  display: flex; align-items:center; justify-content:center;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+.si-green  { background: var(--g100); color: var(--g900); }
+.si-orange { background: var(--o100); color: var(--o700); }
+.si-blue   { background: var(--b100); color: var(--b700); }
+.si-gold   { background: var(--y100); color: #92400E; }
+
+.stat-trend {
+  font-size: .72rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+.trend-up   { background: var(--g100);   color: var(--g700); }
+.trend-warn { background: var(--o100);   color: var(--o700); }
+.trend-neu  { background: var(--neu100); color: var(--neu600); }
+
+.stat-value {
+  font-family: 'Merriweather', serif;
+  font-size: 1.6rem;
+  font-weight: 900;
+  color: var(--neu900);
+  line-height: 1;
+}
+.stat-value.small { font-size: 1.1rem; }
+.stat-label { font-size: .78rem; font-weight: 700; color: var(--neu400); text-transform: uppercase; letter-spacing: .5px; }
+.stat-sub   { font-size: .78rem; color: var(--neu400); font-weight: 600; }
+
+/* ── SECTION HEADERS ── */
+.sec-hd { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+.sec-hd-title { font-family: 'Merriweather', serif; font-size: .95rem; font-weight: 900; color: var(--neu900); }
+.sec-hd-link { font-size: .8rem; font-weight: 700; color: var(--g700); text-decoration: none; display: flex; align-items: center; gap: 4px; }
+.sec-hd-link:hover { color: var(--g900); }
+
+/* ── MAIN GRID ── */
+.dash-grid {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 20px;
+  align-items: start;
+}
+@media(max-width:1024px){ .dash-grid{ grid-template-columns: 1fr; } }
+
+/* ── PANEL ── */
+.panel {
+  background: white;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--neu200);
+  box-shadow: var(--shadow-sm);
+  padding: 22px 22px 18px;
+  margin-bottom: 20px;
+}
+
+/* ── QUICK ACTIONS ── */
+.action-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+@media(max-width:700px){ .action-grid{ grid-template-columns: repeat(2,1fr); } }
+
+.action-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 18px 12px;
+  border-radius: var(--radius);
+  border: 1.5px solid var(--neu200);
+  background: white;
+  cursor: pointer;
+  transition: all .2s;
+  text-decoration: none;
+  text-align: center;
+}
+.action-btn:hover {
+  border-color: var(--g700);
+  background: var(--g50);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+}
+.action-icon { width: 48px; height: 48px; border-radius: 14px; display: flex; align-items:center; justify-content:center; font-size: 1.2rem; }
+.action-label { font-size: .78rem; font-weight: 800; color: var(--neu600); line-height: 1.3; }
+
+/* ── CONTRIBUTION TABLE ── */
+.contrib-table { width: 100%; border-collapse: collapse; }
+.contrib-table th {
+  text-align: left;
+  font-size: .72rem;
+  font-weight: 800;
+  color: var(--neu400);
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  padding: 0 12px 10px;
+  border-bottom: 1px solid var(--neu100);
+}
+.contrib-table td {
+  padding: 12px;
+  border-bottom: 1px solid var(--neu100);
+  font-size: .875rem;
+  font-weight: 600;
+  color: var(--neu700);
+  vertical-align: middle;
+}
+.contrib-table tr:last-child td { border-bottom: none; }
+.contrib-table tr:hover td { background: var(--neu50); }
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: .72rem;
+  font-weight: 800;
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+.pill-paid    { background: var(--g100);  color: var(--g900); }
+.pill-pending { background: var(--o100);  color: var(--o700); }
+.pill-overdue { background: #FEE2E2;      color: #DC2626; }
+
+/* ── LOAN CARD ── */
+.loan-apply-card {
+  border: 2px dashed var(--neu200);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+  text-align: center;
+  background: var(--neu50);
+}
+
+/* ── FAMILY COVERAGE ── */
+.family-member-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--neu100);
+}
+.family-member-row:last-child { border-bottom: none; }
+.family-avatar {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  display: flex; align-items:center; justify-content:center;
+  font-weight: 900;
+  font-size: .85rem;
+  font-family: 'Merriweather', serif;
+  flex-shrink: 0;
+}
+.fa-green  { background: var(--g100); color: var(--g900); }
+.fa-orange { background: var(--o100); color: var(--o700); }
+.fa-blue   { background: var(--b100); color: var(--b700); }
+
+.family-info { flex: 1; }
+.family-name { font-weight: 800; font-size: .88rem; color: var(--neu800); }
+.family-role { font-size: .73rem; color: var(--neu400); font-weight: 600; }
+
+.cover-badge {
+  font-size: .7rem;
+  font-weight: 800;
+  padding: 3px 10px;
+  border-radius: 20px;
+  background: var(--g100);
+  color: var(--g900);
+}
+
+/* ── ANNOUNCEMENT ── */
+.announcement-item {
+  display: flex;
+  gap: 12px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--neu100);
+}
+.announcement-item:last-child { border-bottom: none; }
+.ann-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 5px;
+}
+.ann-dot.green  { background: var(--g700); }
+.ann-dot.orange { background: var(--o500); }
+.ann-dot.blue   { background: var(--b700); }
+.ann-dot.gold   { background: var(--y500); }
+.ann-title { font-weight: 800; font-size: .875rem; color: var(--neu800); margin-bottom: 3px; }
+.ann-body  { font-size: .8rem; color: var(--neu600); line-height: 1.5; }
+.ann-date  { font-size: .72rem; color: var(--neu400); font-weight: 600; margin-top: 4px; }
+
+/* ── ALERT BANNER ── */
+.alert-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 18px;
+  border-radius: var(--radius);
+  margin-bottom: 20px;
+  font-size: .875rem;
+  flex-wrap: wrap;
+}
+.alert-banner-content {
+  flex: 1 1 320px;
+  min-width: 0;
+}
+.alert-banner-action {
+  flex: 0 0 auto;
+}
+.alert-banner.warning { background: var(--o50);  border: 1px solid var(--o100); color: var(--o700); }
+.alert-banner.info    { background: #EFF6FF;      border: 1px solid #BFDBFE;    color: var(--b700); }
+.alert-banner.success { background: var(--g50);   border: 1px solid var(--g100); color: var(--g900); }
+.alert-banner-icon  { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+.alert-banner-title { font-weight: 800; margin-bottom: 2px; }
+.alert-banner-body  { font-weight: 600; opacity: .85; }
+
+@media (max-width: 640px) {
+  .alert-banner {
+    padding: 14px;
+  }
+  .alert-banner-action {
+    width: 100%;
+    margin-left: 0 !important;
+  }
+  .alert-banner-action.btn-cta-orange {
+    justify-content: center;
+  }
+}
+
+/* ── PROFILE CARD ── */
+.profile-card {
+  background: white;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--neu200);
+  overflow: hidden;
+  margin-bottom: 20px;
+  box-shadow: var(--shadow-sm);
+}
+.profile-card-banner {
+  height: 60px;
+  background: linear-gradient(135deg, var(--g900), var(--g700));
+}
+.profile-card-body { padding: 0 20px 20px; }
+.profile-card-avatar {
+  width: 60px; height: 60px;
+  border-radius: 50%;
+  background: var(--g100);
+  color: var(--g900);
+  display: flex; align-items:center; justify-content:center;
+  font-family: 'Merriweather', serif;
+  font-weight: 900;
+  font-size: 1.3rem;
+  border: 4px solid white;
+  margin-top: -30px;
+  margin-bottom: 10px;
+}
+.profile-card-name { font-family: 'Merriweather', serif; font-weight: 900; font-size: 1rem; color: var(--neu900); }
+.profile-card-type { font-size: .75rem; font-weight: 700; color: var(--neu400); margin-bottom: 12px; }
+.profile-card-serial {
+  font-family: 'Courier New', monospace;
+  font-size: .8rem;
+  font-weight: 700;
+  background: var(--g50);
+  color: var(--g900);
+  border: 1px solid var(--g100);
+  border-radius: 8px;
+  padding: 6px 12px;
+  text-align: center;
+  letter-spacing: .5px;
+  margin-bottom: 14px;
+}
+.profile-meta { font-size: .8rem; color: var(--neu600); font-weight: 600; margin-bottom: 6px; display: flex; align-items:center; gap: 8px; }
+.profile-meta i { color: var(--neu400); width: 14px; }
+
+.btn-profile {
+  display: block;
+  width: 100%;
+  text-align: center;
+  padding: 9px;
+  border-radius: 9px;
+  border: 1.5px solid var(--g700);
+  color: var(--g700);
+  font-weight: 800;
+  font-size: .82rem;
+  text-decoration: none;
+  transition: all .2s;
+  margin-top: 14px;
+}
+.btn-profile:hover { background: var(--g700); color: white; }
+
+/* ── EMPTY STATE ── */
+.empty-state { text-align: center; padding: 36px 20px; }
+.empty-state-icon {
+  width: 56px; height: 56px;
+  border-radius: 16px;
+  background: var(--neu100);
+  color: var(--neu400);
+  display: flex; align-items:center; justify-content:center;
+  font-size: 1.4rem;
+  margin: 0 auto 14px;
+}
+.empty-state-title { font-weight: 800; font-size: .9rem; color: var(--neu700); margin-bottom: 6px; }
+.empty-state-body  { font-size: .8rem; color: var(--neu400); max-width: 240px; margin: 0 auto 16px; line-height: 1.5; }
+
+/* ── BUTTONS ── */
+.btn-cta-green {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--g900);
+  color: white;
+  padding: 10px 22px;
+  border-radius: 10px;
+  font-weight: 800;
+  font-size: .875rem;
+  text-decoration: none;
+  transition: all .2s;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(20,83,45,.3);
+}
+.btn-cta-green:hover { background: var(--g700); color: white; transform: translateY(-1px); }
+
+.btn-cta-orange {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--o500);
+  color: white;
+  padding: 10px 22px;
+  border-radius: 10px;
+  font-weight: 800;
+  font-size: .875rem;
+  text-decoration: none;
+  transition: all .2s;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(234,88,12,.3);
+}
+.btn-cta-orange:hover { background: var(--o700); color: white; transform: translateY(-1px); }
+
+.btn-outline-sm {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: white;
+  color: var(--neu700);
+  padding: 7px 16px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: .8rem;
+  text-decoration: none;
+  transition: all .2s;
+  border: 1.5px solid var(--neu200);
+  cursor: pointer;
+}
+.btn-outline-sm:hover { border-color: var(--g700); color: var(--g700); background: var(--g50); }
+
+/* ── MOBILE ── */
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.5);
+  z-index: 99;
+}
+
+@media(max-width:900px) {
+  .sidebar { transform: translateX(-100%); }
+  .sidebar.open { transform: translateX(0); }
+  .sidebar-overlay.open { display: block; }
+  .main-area { margin-left: 0; }
+  .topbar-hamburger { display: flex; }
+  .page-content { padding: 16px; }
+}
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="container py-5">
-    <div class="row">
-        <div class="col-12">
-            <h3 class="fw-bold mb-1">
-                Welcome, {{ user.official_name }}! 👋
-            </h3>
-            <p class="text-muted">
-                SISIPAMOJA Member Dashboard
-            </p>
+<div class="dash-layout">
+
+  <!-- ═══════ SIDEBAR ═══════ -->
+  <aside class="sidebar" id="sidebar" tabindex="0">
+
+    <!-- Member Card — TOP of sidebar, no logo/brand -->
+    <div class="sidebar-member">
+      <div class="d-flex align-items-center gap-3 mb-2">
+        <div class="sidebar-avatar">
+          {{ user.first_name|first|upper }}{{ user.last_name|first|upper }}
         </div>
+        <div>
+          <div class="sidebar-member-name">{{ user.get_full_name }}</div>
+          {% if user.profile.membership_type == 'sacco' %}
+          <div class="sidebar-member-badge badge-sacco">
+            <i class="fas fa-id-card" style="font-size:.6rem;"></i>
+            Sacco Member
+          </div>
+          {% else %}
+          <div class="sidebar-member-badge badge-expense">
+            <i class="fas fa-heart" style="font-size:.6rem;"></i>
+            Last Expense
+          </div>
+          {% endif %}
+        </div>
+      </div>
+      {% if user.profile.serial_number %}
+      <div class="serial-pill">
+        <i class="fas fa-hashtag" style="font-size:.6rem;"></i>
+        {{ user.profile.serial_number }}
+      </div>
+      {% endif %}
     </div>
 
-    <!-- Dashboard Cards -->
-    <div class="row g-4 mt-2">
-        <div class="col-md-12">
-            <div class="card p-4">
-                <h6 class="fw-bold mb-3">My Details</h6>
-                {% if profile %}
-                <div class="row g-3">
-                    <div class="col-md-4">
-                        <small class="text-muted d-block">Official Name</small>
-                        <strong>{{ user.official_name }}</strong>
-                    </div>
-                    <div class="col-md-4">
-                        <small class="text-muted d-block">National ID</small>
-                        <strong>{{ profile.national_id }}</strong>
-                    </div>
-                    <div class="col-md-4">
-                        <small class="text-muted d-block">Phone Number</small>
-                        <strong>{{ profile.phone_number }}</strong>
-                    </div>
-                </div>
+    <!-- MAIN MENU -->
+    <div class="nav-section">
+      <div class="nav-section-label">Main Menu</div>
+
+      <a href="{% url 'member_dashboard' %}"
+         class="nav-item {% if request.resolver_match.url_name == 'member_dashboard' %}active{% endif %}">
+        <div class="nav-item-icon"><i class="fas fa-home"></i></div>
+        Dashboard
+      </a>
+
+      <a href="{% url 'profile' %}"
+         class="nav-item {% if request.resolver_match.url_name == 'profile' %}active{% endif %}">
+        <div class="nav-item-icon"><i class="fas fa-user"></i></div>
+        My Profile
+      </a>
+
+      <a href="{% url 'contributions' %}"
+         class="nav-item {% if request.resolver_match.url_name == 'contributions' %}active{% endif %}">
+        <div class="nav-item-icon"><i class="fas fa-coins"></i></div>
+        Contributions
+      </a>
+
+      {% if user.profile.membership_type == 'sacco' %}
+      <a href="{% url 'savings' %}"
+         class="nav-item {% if request.resolver_match.url_name == 'savings' %}active{% endif %}">
+        <div class="nav-item-icon"><i class="fas fa-piggy-bank"></i></div>
+        My Savings
+      </a>
+
+      <a href="{% url 'loans' %}"
+         class="nav-item {% if request.resolver_match.url_name == 'loans' %}active{% endif %}">
+        <div class="nav-item-icon"><i class="fas fa-hand-holding-usd"></i></div>
+        Loans
+      </a>
+      {% endif %}
+
+      {% if user.profile.membership_type == 'last_expense' %}
+      <a href="{% url 'family' %}"
+         class="nav-item {% if request.resolver_match.url_name == 'family' %}active{% endif %}">
+        <div class="nav-item-icon"><i class="fas fa-users"></i></div>
+        Family Coverage
+      </a>
+      {% endif %}
+    </div>
+
+    <!-- ACCOUNT -->
+    <div class="nav-section">
+      <div class="nav-section-label">Account</div>
+
+      <a href="{% url 'statements' %}"
+         class="nav-item {% if request.resolver_match.url_name == 'statements' %}active{% endif %}">
+        <div class="nav-item-icon"><i class="fas fa-file-alt"></i></div>
+        Statements
+      </a>
+
+      <a href="{% url 'notifications' %}"
+         class="nav-item {% if request.resolver_match.url_name == 'notifications' %}active{% endif %}">
+        <div class="nav-item-icon"><i class="fas fa-bell"></i></div>
+        Notifications
+      </a>
+
+      <a href="{% url 'settings' %}"
+         class="nav-item {% if request.resolver_match.url_name == 'settings' %}active{% endif %}">
+        <div class="nav-item-icon"><i class="fas fa-cog"></i></div>
+        Settings
+      </a>
+    </div>
+
+    <!-- Sign Out -->
+    <div class="sidebar-footer">
+      <button id="sidebarLogoutBtn" class="btn-logout">
+        <div class="nav-item-icon"
+             style="background:rgba(220,38,38,.15); color:#FCA5A5;">
+          <i class="fas fa-sign-out-alt"></i>
+        </div>
+        Sign Out
+      </button>
+    </div>
+
+  </aside>
+
+  <!-- Overlay -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- ═══════ MAIN AREA ═══════ -->
+  <div class="main-area">
+
+    <!-- TOPBAR -->
+    <header class="topbar">
+      <button class="topbar-hamburger" id="hamburgerBtn">
+        <i class="fas fa-bars"></i>
+      </button>
+
+      <div class="topbar-greeting">
+        <div class="topbar-greeting-title" id="greeting-text">
+          Hello, {{ user.first_name }}! 👋
+        </div>
+        <div class="topbar-greeting-sub">
+          {% now "l, d F Y" %} &nbsp;·&nbsp; SisiPamoja Welfare Sacco
+        </div>
+      </div>
+
+      <div class="topbar-actions">
+        <a href="{% url 'notifications' %}" class="topbar-icon-btn" title="Notifications">
+          <i class="fas fa-bell"></i>
+          <div class="notif-dot"></div>
+        </a>
+        <a href="{% url 'statements' %}" class="topbar-icon-btn" title="Download Statement">
+          <i class="fas fa-download"></i>
+        </a>
+        <a href="{% url 'profile' %}" class="topbar-profile">
+          <div class="topbar-avatar">
+            {{ user.first_name|first|upper }}{{ user.last_name|first|upper }}
+          </div>
+          <span class="topbar-profile-name">{{ user.first_name }}</span>
+          <i class="fas fa-chevron-down"
+             style="font-size:.65rem; color:#94A3B8;"></i>
+        </a>
+      </div>
+    </header>
+
+    <!-- PAGE CONTENT -->
+    <main class="page-content">
+    {% block dashboard_content %}
+
+      <!-- Payment Alert -->
+      {% if not user.profile.has_paid %}
+      <div class="alert-banner warning">
+        <div class="alert-banner-icon">
+          <i class="fas fa-exclamation-triangle"></i>
+        </div>
+        <div class="alert-banner-content">
+          <div class="alert-banner-title">Payment Pending</div>
+          <div class="alert-banner-body">
+            Your registration fee is outstanding.
+            Please complete your payment to activate
+            your full membership benefits.
+          </div>
+        </div>
+        <a href="{% url 'mpesa_payment' %}"
+           class="alert-banner-action btn-cta-orange ms-auto"
+           style="white-space:nowrap; font-size:.8rem; padding:8px 16px;">
+          Pay Now <i class="fas fa-arrow-right"></i>
+        </a>
+      </div>
+      {% endif %}
+
+      <!-- ═══ STAT CARDS ═══ -->
+      {% if user.profile.membership_type == 'sacco' %}
+      <div class="stat-grid">
+        <div class="stat-card green">
+          <div class="stat-top">
+            <div class="stat-icon si-green">
+              <i class="fas fa-piggy-bank"></i>
+            </div>
+            <div class="stat-trend trend-up">
+              <i class="fas fa-arrow-up"></i> Active
+            </div>
+          </div>
+          <div>
+            <div class="stat-label">Total Savings</div>
+            <div class="stat-value">KES 0</div>
+            <div class="stat-sub">Updated today</div>
+          </div>
+        </div>
+
+        <div class="stat-card orange">
+          <div class="stat-top">
+            <div class="stat-icon si-orange">
+              <i class="fas fa-hand-holding-usd"></i>
+            </div>
+            <div class="stat-trend trend-neu">—</div>
+          </div>
+          <div>
+            <div class="stat-label">Loan Balance</div>
+            <div class="stat-value">KES 0</div>
+            <div class="stat-sub">No active loan</div>
+          </div>
+        </div>
+
+        <div class="stat-card blue">
+          <div class="stat-top">
+            <div class="stat-icon si-blue">
+              <i class="fas fa-coins"></i>
+            </div>
+            <div class="stat-trend trend-up">
+              <i class="fas fa-check"></i> Paid
+            </div>
+          </div>
+          <div>
+            <div class="stat-label">Contributions</div>
+            <div class="stat-value">0</div>
+            <div class="stat-sub">Payments made</div>
+          </div>
+        </div>
+
+        <div class="stat-card gold">
+          <div class="stat-top">
+            <div class="stat-icon si-gold">
+              <i class="fas fa-star"></i>
+            </div>
+            <div class="stat-trend trend-warn">
+              {% if user.profile.has_paid %}Active{% else %}Pending{% endif %}
+            </div>
+          </div>
+          <div>
+            <div class="stat-label">Membership</div>
+            <div class="stat-value small">
+              {% if user.profile.serial_number %}
+                {{ user.profile.serial_number }}
+              {% else %}Pending{% endif %}
+            </div>
+            <div class="stat-sub">Sacco Member</div>
+          </div>
+        </div>
+      </div>
+
+      {% else %}
+      <!-- LAST EXPENSE STATS -->
+      <div class="stat-grid">
+        <div class="stat-card green">
+          <div class="stat-top">
+            <div class="stat-icon si-green">
+              <i class="fas fa-heart"></i>
+            </div>
+            <div class="stat-trend trend-up">Active</div>
+          </div>
+          <div>
+            <div class="stat-label">Cover Status</div>
+            <div class="stat-value small">
+              {% if user.profile.has_paid %}Covered{% else %}Pending{% endif %}
+            </div>
+            <div class="stat-sub">Last Expense Cover</div>
+          </div>
+        </div>
+
+        <div class="stat-card orange">
+          <div class="stat-top">
+            <div class="stat-icon si-orange">
+              <i class="fas fa-users"></i>
+            </div>
+            <div class="stat-trend trend-neu">Family</div>
+          </div>
+          <div>
+            <div class="stat-label">Family Members</div>
+            <div class="stat-value">
+              {% if user.profile.marital_status == 'married' %}
+                {{ user.profile.dependants.count|add:1 }}
+              {% else %}
+                {{ user.profile.dependants.count }}
+              {% endif %}
+            </div>
+            <div class="stat-sub">Under cover</div>
+          </div>
+        </div>
+
+        <div class="stat-card blue">
+          <div class="stat-top">
+            <div class="stat-icon si-blue">
+              <i class="fas fa-coins"></i>
+            </div>
+            <div class="stat-trend trend-up">Paid</div>
+          </div>
+          <div>
+            <div class="stat-label">Monthly Contribution</div>
+            <div class="stat-value small">
+              {% if user.profile.contribution %}
+                KES {{ user.profile.contribution.amount }}
+              {% else %}KES 0{% endif %}
+            </div>
+            <div class="stat-sub">Per month</div>
+          </div>
+        </div>
+
+        <div class="stat-card gold">
+          <div class="stat-top">
+            <div class="stat-icon si-gold">
+              <i class="fas fa-hashtag"></i>
+            </div>
+            <div class="stat-trend trend-warn">
+              {% if user.profile.has_paid %}Active{% else %}Pending{% endif %}
+            </div>
+          </div>
+          <div>
+            <div class="stat-label">Member Number</div>
+            <div class="stat-value small">
+              {% if user.profile.serial_number %}
+                {{ user.profile.serial_number }}
+              {% else %}Pending{% endif %}
+            </div>
+            <div class="stat-sub">Last Expense Member</div>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- ═══ QUICK ACTIONS ═══ -->
+      <div class="panel">
+        <div class="sec-hd">
+          <div class="sec-hd-title">Quick Actions</div>
+        </div>
+        <div class="action-grid">
+
+          <a href="{% url 'mpesa_payment' %}" class="action-btn">
+            <div class="action-icon"
+                 style="background:#DCFCE7; color:#14532D;">
+              <i class="fas fa-mobile-alt"></i>
+            </div>
+            <div class="action-label">Pay via<br>M-Pesa</div>
+          </a>
+
+          <a href="{% url 'statements' %}" class="action-btn">
+            <div class="action-icon"
+                 style="background:#DBEAFE; color:#1565C0;">
+              <i class="fas fa-file-download"></i>
+            </div>
+            <div class="action-label">Download<br>Statement</div>
+          </a>
+
+          {% if user.profile.membership_type == 'sacco' %}
+          <a href="{% url 'loan_apply' %}" class="action-btn">
+            <div class="action-icon"
+                 style="background:#FED7AA; color:#C2410C;">
+              <i class="fas fa-hand-holding-usd"></i>
+            </div>
+            <div class="action-label">Apply for<br>Loan</div>
+          </a>
+          {% else %}
+          <a href="{% url 'add_dependant' %}" class="action-btn">
+            <div class="action-icon"
+                 style="background:#FED7AA; color:#C2410C;">
+              <i class="fas fa-user-plus"></i>
+            </div>
+            <div class="action-label">Add<br>Dependant</div>
+          </a>
+          {% endif %}
+
+          <a href="mailto:info@sisipamoja.co.ke" class="action-btn">
+            <div class="action-icon"
+                 style="background:#FEF9C3; color:#92400E;">
+              <i class="fas fa-headset"></i>
+            </div>
+            <div class="action-label">Contact<br>Support</div>
+          </a>
+
+        </div>
+      </div>
+
+      <!-- ═══ MAIN GRID ═══ -->
+      <div class="dash-grid">
+
+        <!-- LEFT COLUMN -->
+        <div>
+
+          <!-- Contribution History -->
+          <div class="panel">
+            <div class="sec-hd">
+              <div class="sec-hd-title">
+                <i class="fas fa-history"
+                   style="color:#94A3B8; margin-right:8px;"></i>
+                Contribution History
+              </div>
+              <a href="{% url 'mpesa_payment' %}" class="sec-hd-link">
+                View All <i class="fas fa-chevron-right"></i>
+              </a>
+            </div>
+
+            <table class="contrib-table">
+              <thead>
+                <tr>
+                  <th>Month</th>
+                  <th>Amount</th>
+                  <th>Method</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% if contributions %}
+                  {% for c in contributions %}
+                  <tr>
+                    <td>{{ c.calculated_at|date:"M Y" }}</td>
+                    <td>KES {{ c.amount }}</td>
+                    <td>M-Pesa</td>
+                    <td>
+                      <span class="status-pill pill-paid">
+                        <i class="fas fa-check-circle"></i> Paid
+                      </span>
+                    </td>
+                  </tr>
+                  {% endfor %}
                 {% else %}
-                <p class="text-muted mb-0">
-                    Your profile details are not available yet.
-                </p>
+                <tr>
+                  <td colspan="4">
+                    <div class="empty-state" style="padding:28px 0;">
+                      <div class="empty-state-icon">
+                        <i class="fas fa-coins"></i>
+                      </div>
+                      <div class="empty-state-title">
+                        No contributions yet
+                      </div>
+                      <div class="empty-state-body">
+                        Your contribution history will appear
+                        here once you make your first payment.
+                      </div>
+                       <a href="{% url 'mpesa_payment' %}"
+                         class="btn-cta-green"
+                         style="font-size:.8rem; padding:9px 20px;">
+                        <i class="fas fa-mobile-alt"></i>
+                        Make First Payment
+                      </a>
+                    </div>
+                  </td>
+                </tr>
                 {% endif %}
-            </div>
-        </div>
+              </tbody>
+            </table>
+          </div>
 
-        <div class="col-md-4">
-            <div class="card p-4 text-center">
-                     <i class="fas fa-user fa-2x mb-3 text-primary-theme"></i>
-                <h6 class="fw-bold">My Profile</h6>
-                <p class="text-muted small">
-                    View and update your details
-                </p>
+          <!-- SACCO: Loans -->
+          {% if user.profile.membership_type == 'sacco' %}
+          <div class="panel">
+            <div class="sec-hd">
+              <div class="sec-hd-title">
+                <i class="fas fa-hand-holding-usd"
+                   style="color:#94A3B8; margin-right:8px;"></i>
+                My Loans
+              </div>
+              <a href="{% url 'loan_apply' %}" class="btn-outline-sm">
+                <i class="fas fa-plus"></i> Apply
+              </a>
             </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card p-4 text-center">
-                     <i class="fas fa-piggy-bank fa-2x mb-3 text-primary-theme"></i>
-                <h6 class="fw-bold">My Savings</h6>
-                <p class="text-muted small">
-                    View your savings balance
-                </p>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card p-4 text-center">
-                     <i class="fas fa-hand-holding-usd fa-2x mb-3 text-primary-theme"></i>
-                <h6 class="fw-bold">My Loans</h6>
-                <p class="text-muted small">
-                    View your loan status
-                </p>
-            </div>
-        </div>
-    </div>
-</div>
-    <!-- Delete Account Button -->
-<div class="row mt-4">
-    <div class="col-12 text-center">
-        <button class="btn btn-outline-danger 
-                       rounded-pill px-4"
-                id="deleteAccountBtn">
-            <i class="fas fa-trash me-2"></i>
-            Delete My Account
-        </button>
-    </div>
-</div>
 
-<!-- Delete Account Modal -->
-<div class="modal fade" id="deleteModal"
-     tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content border-0 
-                    rounded-4 shadow">
-            <div class="modal-body text-center p-5">
+            <div class="loan-apply-card">
+              <div class="empty-state-icon"
+                   style="background:#DCFCE7; color:#14532D;">
+                <i class="fas fa-hand-holding-usd"></i>
+              </div>
+              <div class="empty-state-title"
+                   style="margin-bottom:8px;">
+                No Active Loans
+              </div>
+              <div class="empty-state-body"
+                   style="margin-bottom:18px;">
+                You are eligible to apply for a loan once your
+                membership is active and contributions are
+                up to date.
+              </div>
+              <a href="{% url 'loan_apply' %}" class="btn-cta-green">
+                <i class="fas fa-hand-holding-usd"></i>
+                Apply for Loan
+              </a>
+            </div>
+          </div>
+          {% endif %}
 
-                <div class="logout-icon-circle d-inline-flex align-items-center justify-content-center mb-3 bg-accent-orange-soft">
-                    <i class="fas fa-trash fa-2x text-accent-orange"></i>
+          <!-- LAST EXPENSE: Family Coverage -->
+          {% if user.profile.membership_type == 'last_expense' %}
+          <div class="panel">
+            <div class="sec-hd">
+              <div class="sec-hd-title">
+                <i class="fas fa-users"
+                   style="color:#94A3B8; margin-right:8px;"></i>
+                Family Coverage
+              </div>
+              <a href="{% url 'add_dependant' %}" class="btn-outline-sm">
+                <i class="fas fa-plus"></i> Add Member
+              </a>
+            </div>
+
+            {% if user.profile.marital_status == 'married' %}
+              {% if user.profile.spouse %}
+              <div class="family-member-row">
+                <div class="family-avatar fa-orange">SP</div>
+                <div class="family-info">
+                  <div class="family-name">
+                    {{ user.profile.spouse.first_name }}
+                    {{ user.profile.spouse.last_name }}
+                  </div>
+                  <div class="family-role">Spouse</div>
                 </div>
+                <div class="cover-badge">Covered</div>
+              </div>
+              {% endif %}
+            {% endif %}
 
-                <h5 class="fw-bold mb-1 text-danger">
-                    Delete Account
-                </h5>
-
-                <p class="text-muted mb-3">
-                    Are you sure you want to permanently 
-                    delete your account,
-                    <br>
-                    <strong class="text-dark">
-                        {{ user.first_name }}
-                        {{ user.last_name }}
-                    </strong>?
-                    <br>
-                    <small class="text-danger">
-                        This action cannot be undone.
-                    </small>
-                </p>
-
-                <!-- Password Confirmation -->
-                <form method="POST" 
-                      action="{% url 'delete_account' %}">
-                    {% csrf_token %}
-                    <div class="mb-4 text-start">
-                        <label class="form-label fw-semibold">
-                            Enter your password to confirm
-                        </label>
-                        <input type="password"
-                               name="password"
-                               class="form-control"
-                               placeholder="Enter password"
-                               required>
-                    </div>
-
-                    <div class="d-flex gap-3 
-                                justify-content-center">
-                        <button type="button"
-                                class="btn btn-outline-secondary
-                                       px-4 rounded-pill"
-                                data-bs-dismiss="modal">
-                            <i class="fas fa-times me-2"></i>
-                            Cancel
-                        </button>
-                        <button type="submit"
-                                class="btn btn-danger
-                                       px-4 rounded-pill">
-                            <i class="fas fa-trash me-2"></i>
-                            Yes, Delete
-                        </button>
-                    </div>
-                </form>
-
+            {% for dep in user.profile.dependants.all %}
+            <div class="family-member-row">
+              <div class="family-avatar fa-blue">
+                {{ dep.full_name|first|upper }}
+              </div>
+              <div class="family-info">
+                <div class="family-name">{{ dep.full_name }}</div>
+                <div class="family-role">
+                  {{ dep.get_relationship_display }} ·
+                  {{ dep.get_age }} yrs
+                  {% if dep.is_minor %}
+                  <span style="color:#EA580C; font-size:.7rem;">
+                    · Minor
+                  </span>
+                  {% endif %}
+                </div>
+              </div>
+              <div class="cover-badge">Covered</div>
             </div>
+            {% empty %}
+            <div class="empty-state" style="padding:20px 0;">
+              <div class="empty-state-title">
+                No dependants added yet
+              </div>
+              <div class="empty-state-body">
+                Add family members to include them in your cover.
+              </div>
+              <a href="{% url 'add_dependant' %}"
+                 class="btn-cta-orange"
+                 style="font-size:.8rem; padding:9px 20px; margin-top:8px;">
+                <i class="fas fa-plus"></i> Add Dependant
+              </a>
+            </div>
+            {% endfor %}
+          </div>
+          {% endif %}
+
         </div>
+
+        <!-- RIGHT COLUMN -->
+        <div>
+
+          <!-- Profile Card -->
+          <div class="profile-card">
+            <div class="profile-card-banner"></div>
+            <div class="profile-card-body">
+              <div class="profile-card-avatar">
+                {{ user.first_name|first|upper }}{{ user.last_name|first|upper }}
+              </div>
+              <div class="profile-card-name">
+                {{ user.get_full_name }}
+              </div>
+              <div class="profile-card-type">
+                {% if user.profile.membership_type == 'sacco' %}
+                  Sacco Member
+                {% else %}
+                  Last Expense Member
+                {% endif %}
+              </div>
+
+              {% if user.profile.serial_number %}
+              <div class="profile-card-serial">
+                {{ user.profile.serial_number }}
+              </div>
+              {% endif %}
+
+              <div class="profile-meta">
+                <i class="fas fa-envelope"></i> {{ user.email }}
+              </div>
+              <div class="profile-meta">
+                <i class="fas fa-phone"></i>
+                {% if user.profile.phone_number %}
+                  {{ user.profile.phone_number }}
+                {% else %}Not set{% endif %}
+              </div>
+              <div class="profile-meta">
+                <i class="fas fa-map-marker-alt"></i>
+                {% if user.profile.county %}
+                  {{ user.profile.county }}
+                {% else %}Not set{% endif %}
+              </div>
+              <div class="profile-meta">
+                <i class="fas fa-calendar"></i>
+                Member since
+                {{ user.profile.date_registered|date:"M Y" }}
+              </div>
+
+              <a href="{% url 'profile_edit' %}" class="btn-profile">
+                <i class="fas fa-user-edit me-1"></i> Edit Profile
+              </a>
+            </div>
+          </div>
+
+          <!-- Announcements -->
+          <div class="panel">
+            <div class="sec-hd">
+              <div class="sec-hd-title">
+                <i class="fas fa-bullhorn"
+                   style="color:#94A3B8; margin-right:8px;"></i>
+                Announcements
+              </div>
+            </div>
+
+            <div class="announcement-item">
+              <div class="ann-dot green"></div>
+              <div>
+                <div class="ann-title">Welcome to SisiPamoja!</div>
+                <div class="ann-body">
+                  Your account has been created. Complete your
+                  payment to activate full membership benefits.
+                </div>
+                <div class="ann-date">
+                  <i class="fas fa-clock"
+                     style="margin-right:4px;"></i> Today
+                </div>
+              </div>
+            </div>
+
+            <div class="announcement-item">
+              <div class="ann-dot gold"></div>
+              <div>
+                <div class="ann-title">Monthly Contributions Due</div>
+                <div class="ann-body">
+                  June 2026 contributions are now due. Kindly
+                  pay via M-Pesa to remain in good standing.
+                </div>
+                <div class="ann-date">
+                  <i class="fas fa-clock"
+                     style="margin-right:4px;"></i> 1 Jun 2026
+                </div>
+              </div>
+            </div>
+
+            <div class="announcement-item">
+              <div class="ann-dot blue"></div>
+              <div>
+                <div class="ann-title">AGM Notice</div>
+                <div class="ann-body">
+                  The Annual General Meeting is scheduled for
+                  July 15, 2026. All members are encouraged
+                  to attend.
+                </div>
+                <div class="ann-date">
+                  <i class="fas fa-clock"
+                     style="margin-right:4px;"></i> 28 May 2026
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Documents -->
+          <div class="panel">
+            <div class="sec-hd">
+              <div class="sec-hd-title">
+                <i class="fas fa-folder"
+                   style="color:#94A3B8; margin-right:8px;"></i>
+                Documents
+              </div>
+            </div>
+
+            <a href="{% url 'statements' %}"
+               class="action-btn"
+               style="flex-direction:row; padding:12px 14px;
+                      justify-content:flex-start; gap:12px;
+                      margin-bottom:8px;">
+              <div class="action-icon"
+                   style="width:38px; height:38px;
+                          background:#DCFCE7; color:#14532D;
+                          border-radius:10px;">
+                <i class="fas fa-file-pdf"></i>
+              </div>
+              <div>
+                <div style="font-size:.82rem; font-weight:800;
+                            color:#1E293B;">
+                  Membership Certificate
+                </div>
+                <div style="font-size:.72rem; color:#94A3B8;">
+                  PDF · Available after payment
+                </div>
+              </div>
+              <i class="fas fa-download ms-auto"
+                 style="color:#94A3B8;"></i>
+            </a>
+
+            <a href="{% url 'statements' %}"
+               class="action-btn"
+               style="flex-direction:row; padding:12px 14px;
+                      justify-content:flex-start; gap:12px;">
+              <div class="action-icon"
+                   style="width:38px; height:38px;
+                          background:#DBEAFE; color:#1565C0;
+                          border-radius:10px;">
+                <i class="fas fa-file-alt"></i>
+              </div>
+              <div>
+                <div style="font-size:.82rem; font-weight:800;
+                            color:#1E293B;">
+                  Account Statement
+                </div>
+                <div style="font-size:.72rem; color:#94A3B8;">
+                  PDF · Last 12 months
+                </div>
+              </div>
+              <i class="fas fa-download ms-auto"
+                 style="color:#94A3B8;"></i>
+            </a>
+          </div>
+
+        </div>
+      </div>
+
+    {% endblock %}
+    </main>
+  </div>
+</div>
+
+<!-- LOGOUT MODAL -->
+<div class="modal fade" id="logoutModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-sm">
+    <div class="modal-content border-0 rounded-4 shadow-lg">
+      <div class="modal-body text-center p-4">
+        <div style="width:52px; height:52px;
+                    background:#FEE2E2; border-radius:14px;
+                    display:flex; align-items:center;
+                    justify-content:center;
+                    margin:0 auto 14px;
+                    font-size:1.2rem; color:#DC2626;">
+          <i class="fas fa-sign-out-alt"></i>
+        </div>
+        <h6 class="fw-bold mb-1">Sign Out?</h6>
+        <p class="text-muted mb-4" style="font-size:.875rem;">
+          Are you sure you want to sign out,
+          <strong>{{ user.first_name }}</strong>?
+        </p>
+        <div class="d-flex gap-2 justify-content-center">
+          <button class="btn btn-outline-secondary
+                         rounded-pill px-4"
+                  data-bs-dismiss="modal">
+            Cancel
+          </button>
+          <a href="{% url 'logout' %}"
+             class="btn btn-danger rounded-pill px-4">
+            Sign Out
+          </a>
+        </div>
+      </div>
     </div>
+  </div>
 </div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
-document.addEventListener('DOMContentLoaded',
-function() {
-    var btn = document.getElementById('deleteAccountBtn');
-    var modalEl = document.getElementById('deleteModal');
+// ── Hamburger
+const sidebar   = document.getElementById('sidebar');
+const overlay   = document.getElementById('sidebarOverlay');
+const hamburger = document.getElementById('hamburgerBtn');
 
-    if (btn && modalEl) {
-        btn.addEventListener('click', function() {
-            var modal = new bootstrap.Modal(modalEl);
-            modal.show();
-        });
-    }
+hamburger.addEventListener('click', () => {
+  sidebar.classList.toggle('open');
+  overlay.classList.toggle('open');
 });
+overlay.addEventListener('click', () => {
+  sidebar.classList.remove('open');
+  overlay.classList.remove('open');
+});
+
+// ── Correct time-of-day greeting
+(function() {
+  const hour = new Date().getHours();
+  let greeting = 'Good Evening';
+  if (hour >= 5  && hour < 12) greeting = 'Good Morning';
+  else if (hour >= 12 && hour < 17) greeting = 'Good Afternoon';
+  const el = document.getElementById('greeting-text');
+  if (el) {
+    el.innerHTML = greeting + ', {{ user.first_name }}! 👋';
+  }
+})();
+
+// ── Logout modal
+const logoutBtn = document.getElementById('sidebarLogoutBtn');
+if (logoutBtn) {
+  logoutBtn.addEventListener('click', function(e) {
+    e.preventDefault();
+    new bootstrap.Modal(
+      document.getElementById('logoutModal')
+    ).show();
+  });
+}
 </script>
 {% endblock %}

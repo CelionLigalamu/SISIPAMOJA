@@ -359,6 +359,176 @@ h1, h2, h3, h4, h5, h6,
     box-shadow: 0 0 0 0.2rem rgba(27, 94, 32, 0.18);
 }
 
+/* =====================================================
+   REGISTER PAGE
+===================================================== */
+.register-page {
+    max-width: 1180px;
+}
+
+.register-card {
+    border: 1px solid var(--color-border);
+    border-radius: 28px;
+    box-shadow: 0 18px 45px rgba(27, 94, 32, 0.10);
+    background:
+        radial-gradient(circle at top left, rgba(27, 94, 32, 0.08), transparent 32%),
+        radial-gradient(circle at top right, rgba(230, 81, 0, 0.08), transparent 28%),
+        #fff;
+}
+
+.register-hero-badge {
+    width: 72px;
+    height: 72px;
+    margin: 0 auto;
+    border-radius: 22px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--forest-green), var(--deep-green));
+    color: #fff;
+    box-shadow: 0 12px 24px rgba(27, 94, 32, 0.22);
+}
+
+.register-hero-badge i {
+    font-size: 1.65rem;
+}
+
+.register-subtitle {
+    color: var(--text-muted);
+    font-size: 0.98rem;
+}
+
+.register-step-card {
+    background: rgba(248, 251, 248, 0.85);
+    border: 1px solid rgba(27, 94, 32, 0.10);
+    border-radius: 22px;
+    padding: 1.1rem;
+}
+
+.register-section-title {
+    color: var(--forest-green);
+    letter-spacing: 0.2px;
+}
+
+.membership-grid {
+    margin-top: 0.5rem;
+}
+
+.membership-option {
+    position: relative;
+    min-height: 100%;
+    border-color: rgba(27, 94, 32, 0.16) !important;
+    background: #fff;
+    border-radius: 20px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+    box-shadow: 0 8px 20px rgba(27, 94, 32, 0.05);
+}
+
+.membership-option:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 14px 28px rgba(27, 94, 32, 0.10);
+}
+
+.membership-icon {
+    width: 54px;
+    height: 54px;
+    border-radius: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+}
+
+.membership-icon-sacco {
+    background: rgba(27, 94, 32, 0.12);
+    color: var(--forest-green);
+}
+
+.membership-icon-last-expense {
+    background: rgba(230, 81, 0, 0.12);
+    color: var(--burnt-orange);
+}
+
+.membership-title {
+    font-size: 1.02rem;
+}
+
+.membership-title-sacco {
+    color: var(--forest-green);
+}
+
+.membership-title-last-expense {
+    color: var(--burnt-orange);
+}
+
+.membership-copy {
+    color: var(--text-muted);
+    line-height: 1.4;
+}
+
+.btn-check:checked + .membership-option {
+    border-width: 2px !important;
+}
+
+.btn-check:checked + .membership-option-sacco {
+    border-color: var(--forest-green) !important;
+    background: linear-gradient(180deg, rgba(27, 94, 32, 0.06), rgba(255, 255, 255, 0.95));
+    box-shadow: 0 16px 28px rgba(27, 94, 32, 0.14);
+}
+
+.btn-check:checked + .membership-option-last-expense {
+    border-color: var(--burnt-orange) !important;
+    background: linear-gradient(180deg, rgba(230, 81, 0, 0.06), rgba(255, 255, 255, 0.95));
+    box-shadow: 0 16px 28px rgba(230, 81, 0, 0.14);
+}
+
+.register-submit-btn {
+    background: linear-gradient(135deg, var(--forest-green), var(--deep-green));
+    border: none;
+    border-radius: 18px;
+    padding: 0.95rem 1.2rem;
+    font-weight: 800;
+    box-shadow: 0 14px 28px rgba(27, 94, 32, 0.18);
+}
+
+.register-submit-btn:hover,
+.register-submit-btn:focus {
+    background: linear-gradient(135deg, var(--deep-green), var(--forest-green));
+}
+
+.register-info-box {
+    background: rgba(21, 101, 192, 0.08);
+    border: 1px solid rgba(21, 101, 192, 0.12);
+    color: var(--text-dark);
+    border-radius: 16px;
+}
+
+.register-card .form-control,
+.register-card .form-select,
+.register-card textarea,
+.register-card input[type="file"] {
+    border-radius: 14px;
+    border-color: rgba(27, 94, 32, 0.16);
+    box-shadow: none;
+}
+
+.register-card .form-control:focus,
+.register-card .form-select:focus,
+.register-card textarea:focus {
+    border-color: var(--forest-green);
+    box-shadow: 0 0 0 0.2rem rgba(27, 94, 32, 0.15);
+}
+
+.register-card .input-group .btn-outline-secondary {
+    border-color: rgba(27, 94, 32, 0.16);
+    color: var(--forest-green);
+}
+
+.register-card hr {
+    border-color: rgba(27, 94, 32, 0.12);
+    opacity: 1;
+}
+
 .site-footer {
     background: #edf5ee;
     border-top: 1px solid var(--color-border);

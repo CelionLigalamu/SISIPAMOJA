@@ -31,8 +31,9 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'jazzmin',
     'django.contrib.admin',
-    'django.contrib.auth',
+    'preachingSacco.auth_config.SisiPamojaAuthConfig',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
@@ -64,6 +65,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'sisikwaPamoja.context_processors.admin_dashboard_context',
             ],
         },
     },
@@ -114,7 +116,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Africa/Nairobi'
 
 USE_I18N = True
 
@@ -124,7 +126,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [
     BASE_DIR / 'static',
@@ -144,3 +146,146 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'ligalamucelion@gmail.com'
 EMAIL_HOST_PASSWORD = 'lsls crlb fjoj jdea'
 DEFAULT_FROM_EMAIL = 'SISIPAMOJA <ligalamucelion@gmail.com>'
+
+JAZZMIN_SETTINGS = {
+    # ── Brand ──────────────────────────────────────────────
+    "site_title": "SisiPamoja Welfare",
+    "site_header": "SisiPamoja Welfare Admin",
+    "site_brand": "SisiPamoja Welfare",
+    "site_logo": "images/LOGO.jpeg",  # put logo in static/images/
+    "site_logo_classes": "img-circle elevation-3",
+    "site_icon": "images/LOGO.jpeg",
+    "welcome_sign": "Together in Times of Need",
+    "show_version": False,
+    # Keep this empty to avoid double-printing when we override the footer in templates
+    "copyright": "",
+
+    # ── Top Menu ───────────────────────────────────────────
+    "topmenu_links": [
+        {
+            "name": "Dashboard",
+            "url": "/admin/",
+        },
+        {
+            "name": "View Site",
+            "url": "/",
+            "new_window": True
+        },
+        {
+            "name": "Members",
+            "url": "/admin/sisikwaPamoja/memberprofile/",
+        },
+        {
+            "name": "Contributions",
+            "url": "/admin/sisikwaPamoja/contribution/",
+        },
+    ],
+
+    "usermenu_links": [],
+    "navigation_expanded": True,
+    "hide_apps": [],
+    "hide_models": [
+        "sisikwapamoja.customuser",
+    ],
+    "order_with_respect_to": [
+        "sisikwapamoja",
+        "sisikwapamoja.memberprofile",
+        "sisikwapamoja.contribution",
+        "sisikwapamoja.spouse",
+        "sisikwapamoja.dependant",
+        "sisikwapamoja.serialnumbertracker",
+        "auth",
+        "auth.User",
+        "auth.Group",
+        "sisikwapamoja.Lastexpense",
+    ],
+
+    "custom_links": {
+        "auth": [
+            {
+                "name": "Users",
+                "url": "/admin/sisikwaPamoja/customuser/",
+                "icon": "fas fa-user",
+                "permissions": ["sisikwaPamoja.view_customuser"],
+            },
+        ],
+    },
+
+    # ── Sidebar Icons ──────────────────────────────────────
+    "icons": {
+        "auth": "fas fa-lock",
+        "auth.user": "fas fa-user-tie",
+        "auth.group": "fas fa-users-cog",
+        "sisikwaPamoja": "fas fa-church",
+        "sisikwaPamoja.MemberProfile": "fas fa-id-card",
+        "sisikwaPamoja.Contribution": "fas fa-money-bill-wave",
+        "sisikwaPamoja.Spouse": "fas fa-heart",
+        "sisikwaPamoja.Dependant": "fas fa-child",
+        "sisikwaPamoja.SerialNumberTracker": "fas fa-list-ol",
+    },
+
+    "default_icon_parents": "fas fa-chevron-circle-right",
+    "default_icon_children": "fas fa-circle",
+
+    # ── UI Tweaks ──────────────────────────────────────────
+    "related_modal_active": True,
+    "custom_css": "css/admin_custom.css",
+    "custom_js": None,
+    "use_google_fonts_cdn": True,
+    "show_ui_builder": False,
+    "changeform_format": "horizontal_tabs",
+    "changeform_format_overrides": {
+        "auth.user": "collapsible",
+        "auth.group": "vertical_tabs",
+    },
+}
+
+JAZZMIN_UI_TWEAKS = {
+    "navbar_small_text": False,
+    "footer_small_text": False,
+    "body_small_text": False,
+    "brand_small_text": False,
+
+    # ── Colors matching your theme ─────────────────────────
+    "brand_colour": "navbar-success",      # green navbar brand
+    "accent": "accent-warning",            # golden yellow accents
+    "navbar": "navbar-dark",
+    "no_navbar_border": True,
+    "navbar_fixed": True,
+    "layout_boxed": False,
+    "footer_fixed": False,
+    "sidebar_fixed": True,
+    "sidebar": "sidebar-dark-success",     # dark green sidebar
+    "sidebar_nav_small_text": False,
+    "sidebar_disable_expand": False,
+    "sidebar_nav_child_indent": True,
+    "sidebar_nav_compact_style": False,
+    "sidebar_nav_legacy_style": False,
+    "sidebar_nav_flat_style": False,
+    "theme": "default",
+    "dark_mode_theme": None,
+    "button_classes": {
+        "primary": "btn-success",          # green primary buttons
+        "secondary": "btn-warning",        # golden secondary
+        "info": "btn-info",
+        "warning": "btn-warning",
+        "danger": "btn-danger",
+        "dark": "btn-dark",
+    },
+}
+
+
+# MPESA Configuration
+MPESA_ENVIRONMENT = 'sandbox'  # Use 'sandbox' for testing, 'production' for live
+MPESA_SHORTCODE = '174379'  # Your business short code
+MPESA_CONSUMER_KEY = 'QtBlH1tqPlDeqi7BuKCnCT9Qrvec31fFKaQr5PyOkSURZG5n'
+MPESA_CONSUMER_SECRET = 'uJmZ0BubQ2E8zLkpWkG6ga7ZNJLWGenUDrp9r0rQnHpW3q8netAAfz94AJhd9rAL'
+MPESA_PASSKEY = 'bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919'
+MPESA_CALLBACK_URL = 'https://mydomain.com/mpesa/callback/'
+
+# ══════════════════════════════════════
+# AFRICA'S TALKING SMS SETTINGS
+# ══════════════════════════════════════
+AT_USERNAME = 'sandbox'  # Use 'sandbox' for testing
+AT_API_KEY  = 'atsk_ca1a8ff451a1b6e7a4eb6a5e67bbee037095f8f2800ff832208321749a85a11ac676720d'
+AT_SENDER_ID = None  # Leave None for sandbox

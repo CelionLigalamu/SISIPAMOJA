@@ -1,0 +1,111 @@
+{% extends 'sisikwaPamoja/dashboard_member.html' %}
+{% block title %}My Savings | SisiPamoja{% endblock %}
+
+{% block dashboard_content %}
+<div class="stat-grid" style="margin-bottom:24px;">
+  <div class="stat-card green">
+    <div class="stat-top">
+      <div class="stat-icon si-green">
+        <i class="fas fa-piggy-bank"></i>
+      </div>
+      <div class="stat-trend trend-up">
+        <i class="fas fa-arrow-up"></i> Growing
+      </div>
+    </div>
+    <div>
+      <div class="stat-label">Total Savings</div>
+      <div class="stat-value">KES 0</div>
+      <div class="stat-sub">In your account</div>
+    </div>
+  </div>
+
+  <div class="stat-card blue">
+    <div class="stat-top">
+      <div class="stat-icon si-blue">
+        <i class="fas fa-trending-up"></i>
+      </div>
+      <div class="stat-trend trend-up">
+        <i class="fas fa-check"></i> Active
+      </div>
+    </div>
+    <div>
+      <div class="stat-label">Savings Balance</div>
+      <div class="stat-value">KES 0</div>
+      <div class="stat-sub">Available balance</div>
+    </div>
+  </div>
+
+  <div class="stat-card orange">
+    <div class="stat-top">
+      <div class="stat-icon si-orange">
+        <i class="fas fa-percent"></i>
+      </div>
+      <div class="stat-trend trend-neu">4%</div>
+    </div>
+    <div>
+      <div class="stat-label">Interest Rate</div>
+      <div class="stat-value small">4% p.a.</div>
+      <div class="stat-sub">Annual interest</div>
+    </div>
+  </div>
+
+  <div class="stat-card gold">
+    <div class="stat-top">
+      <div class="stat-icon si-gold">
+        <i class="fas fa-calendar"></i>
+      </div>
+      <div class="stat-trend trend-warn">Monthly</div>
+    </div>
+    <div>
+      <div class="stat-label">Interest Earned</div>
+      <div class="stat-value small">KES 0</div>
+      <div class="stat-sub">This month</div>
+    </div>
+  </div>
+</div>
+
+<!-- Savings Transactions -->
+<div class="panel">
+  <div class="sec-hd">
+    <div class="sec-hd-title">
+      <i class="fas fa-history" style="color:#94A3B8; margin-right:8px;"></i>
+      Savings Transactions
+    </div>
+    <a href="#" class="sec-hd-link">Export <i class="fas fa-download"></i></a>
+  </div>
+
+  <div class="empty-state" style="padding:48px 20px;">
+    <div class="empty-state-icon">
+      <i class="fas fa-inbox"></i>
+    </div>
+    <div class="empty-state-title">No Savings Yet</div>
+    <div class="empty-state-body">
+      Start building your savings today! Make regular contributions to grow your account and earn interest.
+    </div>
+  </div>
+</div>
+
+<!-- Interest Information -->
+<div class="panel" style="margin-top:20px;">
+  <div class="sec-hd">
+    <div class="sec-hd-title">
+      <i class="fas fa-info-circle" style="color:#94A3B8; margin-right:8px;"></i>
+      How Savings Work
+    </div>
+  </div>
+  <div style="padding:16px; line-height:1.8; color:#475569;">
+    <p style="margin-bottom:12px;">
+      <strong>Monthly Contributions:</strong> Your regular contributions are deposited into your savings account.
+    </p>
+    <p style="margin-bottom:12px;">
+      <strong>Interest Earning:</strong> We pay 4% annual interest on your savings balance, calculated and paid monthly.
+    </p>
+    <p style="margin-bottom:12px;">
+      <strong>Easy Withdrawal:</strong> You can withdraw your savings anytime after giving 30 days notice.
+    </p>
+    <p>
+      <strong>Safe & Secure:</strong> Your savings are protected and insured up to KES 1,000,000.
+    </p>
+  </div>
+</div>
+{% endblock %}

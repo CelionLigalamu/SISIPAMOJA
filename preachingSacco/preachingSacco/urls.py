@@ -18,8 +18,12 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from sisikwaPamoja import views
 
 urlpatterns = [
+    path('admin/dashboard-stats/',
+         views.admin_dashboard_stats,
+         name='admin_dashboard_stats'),
     path('admin/', admin.site.urls),
     path('', include('sisikwaPamoja.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

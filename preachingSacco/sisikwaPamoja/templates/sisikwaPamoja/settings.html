@@ -1,0 +1,121 @@
+{% extends 'sisikwaPamoja/dashboard_member.html' %}
+{% block title %}Settings | SisiPamoja{% endblock %}
+
+{% block dashboard_content %}
+<div style="max-width:700px;">
+
+<!-- Account Settings Tabs -->
+<div style="display:flex; gap:8px; margin-bottom:24px; border-bottom:2px solid #E2E8F0; padding-bottom:0;">
+  <button onclick="showTab('profile-info')" id="tab-profile" class="btn-settings-tab" style="padding:12px 16px; border:none; background:none; color:#94A3B8; font-weight:700; font-size:.9rem; cursor:pointer; border-bottom:3px solid transparent; position:relative; bottom:-2px;">
+    <i class="fas fa-user me-2"></i> Profile Info
+  </button>
+  <button onclick="showTab('security')" id="tab-security" class="btn-settings-tab" style="padding:12px 16px; border:none; background:none; color:#94A3B8; font-weight:700; font-size:.9rem; cursor:pointer; border-bottom:3px solid transparent; position:relative; bottom:-2px;">
+    <i class="fas fa-lock me-2"></i> Security
+  </button>
+  <button onclick="showTab('contact')" id="tab-contact" class="btn-settings-tab" style="padding:12px 16px; border:none; background:none; color:#94A3B8; font-weight:700; font-size:.9rem; cursor:pointer; border-bottom:3px solid transparent; position:relative; bottom:-2px;">
+    <i class="fas fa-phone me-2"></i> Contact
+  </button>
+</div>
+
+<!-- Profile Info Tab -->
+<div id="profile-info" class="settings-tab">
+  <div class="panel">
+    <div style="margin-bottom:16px;">
+      <label style="display:block; font-weight:800; color:#1E293B; margin-bottom:6px; font-size:.85rem; text-transform:uppercase; letter-spacing:.5px;">
+        Full Name
+      </label>
+      <input type="text" value="{{ user.get_full_name }}" style="width:100%; padding:10px 12px; border:1.5px solid #E2E8F0; border-radius:8px; font-size:.9rem;" readonly>
+    </div>
+
+    <div style="margin-bottom:16px;">
+      <label style="display:block; font-weight:800; color:#1E293B; margin-bottom:6px; font-size:.85rem; text-transform:uppercase; letter-spacing:.5px;">
+        Email Address
+      </label>
+      <input type="email" value="{{ user.email }}" style="width:100%; padding:10px 12px; border:1.5px solid #E2E8F0; border-radius:8px; font-size:.9rem;" readonly>
+    </div>
+    <div style="margin-bottom:16px;">
+      <label style="display:block; font-weight:800; color:#1E293B; margin-bottom:6px; font-size:.85rem; text-transform:uppercase; letter-spacing:.5px;">
+        Membership Type
+      </label>
+      <input type="text" value="{% if profile.membership_type == 'sacco' %}Sacco Member{% else %}Last Expense Member{% endif %}" style="width:100%; padding:10px 12px; border:1.5px solid #E2E8F0; border-radius:8px; font-size:.9rem;" readonly>
+    </div>
+    <a href="{% url 'profile_edit' %}" class="btn-cta-green">
+      <i class="fas fa-edit me-1"></i> Edit Profile
+    </a>
+  </div>
+</div>
+
+<!-- Security Tab -->
+<div id="security" class="settings-tab" style="display:none;">
+  <div class="panel">
+    <div style="margin-bottom:20px;">
+      <h4 style="font-weight:900; color:#1E293B; margin-bottom:12px; font-size:.95rem;">Change Password</h4>
+      <form method="post" action="{% url 'settings' %}">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="change_password">
+        <div style="margin-bottom:12px;">
+          <label style="display:block; font-weight:800; color:#1E293B; margin-bottom:6px; font-size:.85rem; text-transform:uppercase; letter-spacing:.5px;">
+            Current Password
+          </label>
+          <input type="password" name="old_password" required style="width:100%; padding:10px 12px; border:1.5px solid #E2E8F0; border-radius:8px; font-size:.9rem;" placeholder="Enter current password">
+        </div>
+        <div style="margin-bottom:12px;">
+          <label style="display:block; font-weight:800; color:#1E293B; margin-bottom:6px; font-size:.85rem; text-transform:uppercase; letter-spacing:.5px;">
+            New Password
+          </label>
+          <input type="password" name="new_password1" required style="width:100%; padding:10px 12px; border:1.5px solid #E2E8F0; border-radius:8px; font-size:.9rem;" placeholder="Enter new password">
+          <div style="font-size:.75rem; color:#94A3B8; margin-top:4px;">
+            Must be at least 8 characters
+          </div>
+        </div>
+        <div style="margin-bottom:16px;">
+          <label style="display:block; font-weight:800; color:#1E293B; margin-bottom:6px; font-size:.85rem; text-transform:uppercase; letter-spacing:.5px;">
+            Confirm New Password
+          </label>
+          <input type="password" name="new_password2" required style="width:100%; padding:10px 12px; border:1.5px solid #E2E8F0; border-radius:8px; font-size:.9rem;" placeholder="Confirm new password">
+        </div>
+        <button type="submit" class="btn-cta-green">
+          <i class="fas fa-lock me-1"></i> Update Password
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Contact Tab -->
+<div id="contact" class="settings-tab" style="display:none;">
+  <div class="panel">
+    <div style="margin-bottom:16px;">
+      <label style="display:block; font-weight:800; color:#1E293B; margin-bottom:6px; font-size:.85rem; text-transform:uppercase; letter-spacing:.5px;">
+        Phone Number
+      </label>
+      <input type="tel" value="{{ profile.phone_number }}" style="width:100%; padding:10px 12px; border:1.5px solid #E2E8F0; border-radius:8px; font-size:.9rem;" placeholder="+254 712 345 678">
+    </div>
+    <div style="margin-bottom:16px;">
+      <label style="display:block; font-weight:800; color:#1E293B; margin-bottom:6px; font-size:.85rem; text-transform:uppercase; letter-spacing:.5px;">
+        Physical Address
+      </label>
+      <textarea style="width:100%; padding:10px 12px; border:1.5px solid #E2E8F0; border-radius:8px; font-size:.9rem; min-height:80px; font-family:inherit;">{{ profile.physical_address }}</textarea>
+    </div>
+    <button onclick="alert('Contact details updated')" class="btn-cta-green">
+      <i class="fas fa-save me-1"></i> Save Changes
+    </button>
+  </div>
+</div>
+
+</div>
+
+<script>
+function showTab(tabName) {
+  const tabs = document.querySelectorAll('.settings-tab');
+  tabs.forEach(tab => tab.style.display = 'none');
+  document.getElementById(tabName).style.display = 'block';
+  
+  const buttons = document.querySelectorAll('.btn-settings-tab');
+  buttons.forEach(btn => btn.style.borderBottomColor = 'transparent');
+  event.target.closest('button').style.borderBottomColor = '#14532D';
+  event.target.closest('button').style.color = '#14532D';
+}
+setTimeout(() => showTab('profile-info'), 100);
+</script>
+{% endblock %}

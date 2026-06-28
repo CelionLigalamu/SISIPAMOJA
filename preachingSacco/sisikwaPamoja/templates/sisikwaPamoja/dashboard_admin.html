@@ -49,5 +49,75 @@
             </div>
         </div>
     </div>
+
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="fw-bold mb-3">Recent Actions</h5>
+
+                    <div class="row g-4">
+                        <div class="col-lg-6">
+                            <h6 class="fw-bold">Recent Member Registrations</h6>
+                            <div class="table-responsive">
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Member</th>
+                                            <th>Type</th>
+                                            <th>Registered</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for m in recent_members %}
+                                            <tr>
+                                                <td>{{ m.full_name|default:"-" }}</td>
+                                                <td>{{ m.membership_type }}</td>
+                                                <td>{{ m.registered_at }}</td>
+                                            </tr>
+                                        {% empty %}
+                                            <tr><td colspan="3" class="text-muted">No registrations yet.</td></tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-6">
+                            <h6 class="fw-bold">Recent SMS / Events</h6>
+                            <div class="table-responsive">
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Event</th>
+                                            <th>Status</th>
+                                            <th>Time</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for l in recent_sms_logs %}
+                                            <tr>
+                                                <td>
+                                                    <div class="fw-bold">{{ l.event_type }}</div>
+                                                    <div class="text-muted" style="font-size:0.75rem; max-width:220px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                                                        {{ l.message_preview }}
+                                                    </div>
+                                                </td>
+                                                <td>{{ l.status }}</td>
+                                                <td>{{ l.created_at }}</td>
+                                            </tr>
+                                        {% empty %}
+                                            <tr><td colspan="3" class="text-muted">No SMS events yet.</td></tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}

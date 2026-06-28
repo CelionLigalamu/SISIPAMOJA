@@ -1,0 +1,214 @@
+/* ── SisiPamoja Welfare Admin Custom Theme ── */
+
+/* Google Font matching your brand */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+* { font-family: 'Poppins', sans-serif !important; }
+
+/* ── Sidebar ───────────────────────────── */
+.main-sidebar,
+.main-sidebar::before,
+.sidebar {
+    background: #1B5E20 !important;   /* Forest Green */
+}
+
+.nav-sidebar .nav-header,
+.nav-sidebar .nav-item > .nav-link,
+.nav-sidebar .nav-item > .nav-link p,
+.nav-sidebar .nav-item > .nav-link span,
+.nav-sidebar .nav-item > .nav-link.active,
+.nav-sidebar .nav-item > .nav-link.active p {
+    color: #ffffff !important;
+    opacity: 1 !important;
+    text-shadow: none !important;
+    filter: none !important;
+    -webkit-font-smoothing: antialiased !important;
+    -moz-osx-font-smoothing: grayscale !important;
+    font-weight: 600 !important;
+}
+
+.nav-sidebar .nav-header {
+    font-size: 9px !important;
+    font-weight: 800 !important;
+    letter-spacing: 0.12em !important;
+    text-transform: uppercase !important;
+}
+
+.nav-sidebar .nav-item > .nav-link {
+    font-size: 13px !important;
+    padding: 9px 16px !important;
+    margin: 1px 8px !important;
+    border-radius: 6px !important;
+    transition: all 0.2s ease;
+}
+
+.nav-sidebar .nav-item > .nav-link:hover,
+.nav-sidebar .nav-item > .nav-link:hover p,
+.nav-sidebar .nav-item > .nav-link:focus,
+.nav-sidebar .nav-item > .nav-link:focus p {
+    background: rgba(255,255,255,0.1) !important;
+    color: #ffffff !important;
+}
+
+.nav-sidebar .nav-item > .nav-link.active,
+.nav-sidebar .nav-item > .nav-link.active p {
+    background: #E65100 !important;   /* Burnt Orange on hover */
+    color: #ffffff !important;
+}
+
+.nav-sidebar .nav-icon,
+.nav-sidebar .nav-item > .nav-link > i,
+.nav-sidebar .nav-item > .nav-link > i.nav-icon {
+    color: #F9A825 !important;        /* Golden Yellow icons */
+    opacity: 1 !important;
+}
+
+.nav-sidebar .nav-item > .nav-link.active > i,
+.nav-sidebar .nav-item > .nav-link.active .nav-icon,
+.nav-sidebar .nav-item > .nav-link:hover > i,
+.nav-sidebar .nav-item > .nav-link:hover .nav-icon,
+.nav-sidebar .nav-item > .nav-link:focus > i,
+.nav-sidebar .nav-item > .nav-link:focus .nav-icon {
+    color: #ffffff !important;
+}
+
+/* Hide the sidebar user panel */
+.main-sidebar .user-panel,
+.sidebar .user-panel,
+.main-sidebar .user-panel .info,
+.sidebar .user-panel .info {
+    display: none !important;
+    visibility: hidden !important;
+    height: 0 !important;
+    overflow: hidden !important;
+    opacity: 0 !important;
+}
+
+/* ── Brand / Logo area ─────────────────── */
+.brand-link {
+    background: #145214 !important;   /* Slightly darker green */
+    border-bottom: 2px solid #E65100 !important;
+}
+
+.brand-text {
+    color: #F9A825 !important;        /* Golden brand text */
+    font-weight: 600 !important;
+}
+
+/* ── Top Navbar ────────────────────────── */
+.main-header.navbar {
+    background: #1B5E20 !important;
+    border-bottom: 3px solid #E65100 !important;
+}
+
+.main-header .nav-link,
+.main-header .navbar-nav .nav-link {
+    color: #ffffff !important;
+}
+
+/* ── Buttons ───────────────────────────── */
+.btn-success,
+.btn-primary {
+    background: #1B5E20 !important;
+    border-color: #1B5E20 !important;
+    color: #fff !important;
+}
+
+.btn-success:hover,
+.btn-primary:hover {
+    background: #E65100 !important;
+    border-color: #E65100 !important;
+}
+
+.btn-warning {
+    background: #F9A825 !important;
+    border-color: #F9A825 !important;
+    color: #1B5E20 !important;
+    font-weight: 600 !important;
+}
+
+/* ── Dashboard stat boxes ──────────────── */
+.small-box.bg-success {
+    background: #1B5E20 !important;
+}
+
+.small-box.bg-warning {
+    background: #F9A825 !important;
+}
+
+.small-box.bg-info {
+    background: #1565C0 !important;
+}
+
+.small-box.bg-danger {
+    background: #E65100 !important;
+}
+
+.small-box .inner h3,
+.small-box .inner p {
+    color: #ffffff !important;
+}
+
+/* ── Cards & Panels ────────────────────── */
+.card-header {
+    background: #1B5E20 !important;
+    color: #ffffff !important;
+    border-bottom: 2px solid #E65100 !important;
+}
+
+.card {
+    border: 1px solid rgba(27,94,32,0.2) !important;
+    border-radius: 8px !important;
+}
+
+/* ── Tables ────────────────────────────── */
+.table thead th {
+    background: #1B5E20 !important;
+    color: #F9A825 !important;
+    font-weight: 600 !important;
+    border-color: #2E7D32 !important;
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+    background: rgba(27,94,32,0.05) !important;
+}
+
+.table tbody tr:hover {
+    background: rgba(230,81,0,0.08) !important;
+}
+
+/* ── Links ─────────────────────────────── */
+a { color: #1B5E20 !important; }
+a:hover { color: #E65100 !important; }
+
+/* ── Breadcrumbs ───────────────────────── */
+.breadcrumb-item a { color: #1B5E20 !important; }
+.breadcrumb-item.active { color: #E65100 !important; }
+
+/* ── Footer ────────────────────────────── */
+.main-footer {
+    background: #F8FBF8 !important;
+    border-top: 2px solid #1B5E20 !important;
+    color: #1B5E20 !important;
+    font-weight: 500 !important;
+}
+
+/* ── Pagination ────────────────────────── */
+.page-item.active .page-link {
+    background: #1B5E20 !important;
+    border-color: #1B5E20 !important;
+}
+
+.page-link {
+    color: #1B5E20 !important;
+}
+
+.page-link:hover {
+    color: #E65100 !important;
+}
+
+/* ── Save buttons row ──────────────────── */
+.submit-row input,
+.submit-row a {
+    border-radius: 6px !important;
+}

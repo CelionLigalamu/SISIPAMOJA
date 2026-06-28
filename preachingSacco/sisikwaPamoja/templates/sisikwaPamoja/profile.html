@@ -1,0 +1,223 @@
+{% extends 'sisikwaPamoja/dashboard_member.html' %}
+{% block title %}My Profile | SisiPamoja{% endblock %}
+
+{% block dashboard_content %}
+<!-- Profile Header Card -->
+<div style="background:linear-gradient(135deg, var(--g900) 0%, var(--g700) 100%); border-radius:18px; padding:32px; color:white; margin-bottom:24px;">
+  <div style="display:flex; align-items:flex-start; gap:24px;">
+    <div style="width:80px; height:80px; border-radius:50%; background:var(--g100); color:var(--g900); display:flex; align-items:center; justify-content:center; font-family:'Merriweather', serif; font-weight:900; font-size:2rem; border:4px solid white;">
+      {{ user.first_name|first|upper }}{{ user.last_name|first|upper }}
+    </div>
+    <div style="flex:1;">
+      <h1 style="font-size:1.8rem; font-weight:900; margin-bottom:4px; color:white; font-family:'Merriweather', serif;">
+        {{ user.get_full_name }}
+      </h1>
+      <p style="font-size:.95rem; opacity:0.9; margin-bottom:12px;">
+        {% if profile.membership_type == 'sacco' %}Sacco Member{% else %}Last Expense Member{% endif %}
+      </p>
+      {% if profile.serial_number %}
+      <div style="font-family:'Courier New', monospace; font-size:.85rem; opacity:0.85;">
+        <strong>Member ID:</strong> {{ profile.serial_number }}
+      </div>
+      {% endif %}
+    </div>
+    <a href="{% url 'profile_edit' %}" class="btn-cta-green" style="white-space:nowrap;">
+      <i class="fas fa-edit me-1"></i> Edit Profile
+    </a>
+  </div>
+</div>
+
+<!-- Quick Stats -->
+<div class="stat-grid" style="margin-bottom:24px;">
+  <div class="stat-card green">
+    <div class="stat-top">
+      <div class="stat-icon si-green">
+        <i class="fas fa-calendar-check"></i>
+      </div>
+    </div>
+    <div>
+      <div class="stat-label">Member Since</div>
+      <div class="stat-value small">
+        {% if profile.date_registered %}{{ profile.date_registered|date:"M Y" }}{% else %}—{% endif %}
+      </div>
+      <div class="stat-sub">Account created</div>
+    </div>
+  </div>
+
+  <div class="stat-card blue">
+    <div class="stat-top">
+      <div class="stat-icon si-blue">
+        <i class="fas fa-check-circle"></i>
+      </div>
+    </div>
+    <div>
+      <div class="stat-label">Account Status</div>
+      <div class="stat-value small">{% if profile.has_paid %}Active{% else %}Pending{% endif %}</div>
+      <div class="stat-sub">Payment status</div>
+    </div>
+  </div>
+
+  <div class="stat-card orange">
+    <div class="stat-top">
+      <div class="stat-icon si-orange">
+        <i class="fas fa-map-marker-alt"></i>
+      </div>
+    </div>
+    <div>
+      <div class="stat-label">County</div>
+      <div class="stat-value small">{{ profile.county|default:"—" }}</div>
+      <div class="stat-sub">Location</div>
+    </div>
+  </div>
+
+  <div class="stat-card gold">
+    <div class="stat-top">
+      <div class="stat-icon si-gold">
+        <i class="fas fa-birthday-cake"></i>
+      </div>
+    </div>
+    <div>
+      <div class="stat-label">Age</div>
+      <div class="stat-value small"><span id="age-exact">{% if profile.age_display %}{{ profile.age_display }}{% else %}—{% endif %}</span></div>
+      <div class="stat-sub">Years old</div>
+    </div>
+  </div>
+</div>
+
+<!-- Personal Information -->
+<div class="panel">
+  <div class="sec-hd">
+    <div class="sec-hd-title">
+      <i class="fas fa-user" style="color:#94A3B8; margin-right:8px;"></i>
+      Personal Information
+    </div>
+  </div>
+  
+  <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(250px, 1fr)); gap:20px;">
+    <div>
+      <div style="font-size:.75rem; font-weight:800; color:#94A3B8; text-transform:uppercase; letter-spacing:.5px; margin-bottom:6px;">First Name</div>
+      <div style="font-size:.95rem; font-weight:700; color:#1E293B;">{{ user.first_name }}</div>
+    </div>
+    <div>
+      <div style="font-size:.75rem; font-weight:800; color:#94A3B8; text-transform:uppercase; letter-spacing:.5px; margin-bottom:6px;">Middle Name</div>
+      <div style="font-size:.95rem; font-weight:700; color:#1E293B;">{{ profile.middle_name|default:"—" }}</div>
+    </div>
+    <div>
+      <div style="font-size:.75rem; font-weight:800; color:#94A3B8; text-transform:uppercase; letter-spacing:.5px; margin-bottom:6px;">Last Name</div>
+      <div style="font-size:.95rem; font-weight:700; color:#1E293B;">{{ user.last_name }}</div>
+    </div>
+    <div>
+      <div style="font-size:.75rem; font-weight:800; color:#94A3B8; text-transform:uppercase; letter-spacing:.5px; margin-bottom:6px;">Gender</div>
+      <div style="font-size:.95rem; font-weight:700; color:#1E293B;">{{ profile.gender|default:"—"|capfirst }}</div>
+    </div>
+    <div>
+      <div style="font-size:.75rem; font-weight:800; color:#94A3B8; text-transform:uppercase; letter-spacing:.5px; margin-bottom:6px;">Date of Birth</div>
+      <div style="font-size:.95rem; font-weight:700; color:#1E293B;">
+        {% if profile.date_of_birth %}{{ profile.date_of_birth|date:"d M Y" }}{% else %}—{% endif %}
+      </div>
+    </div>
+    <div>
+      <div style="font-size:.75rem; font-weight:800; color:#94A3B8; text-transform:uppercase; letter-spacing:.5px; margin-bottom:6px;">Marital Status</div>
+      <div style="font-size:.95rem; font-weight:700; color:#1E293B;">{{ profile.marital_status|default:"—"|capfirst }}</div>
+    </div>
+  </div>
+</div>
+
+<!-- Contact Information -->
+<div class="panel" style="margin-top:20px;">
+  <div class="sec-hd">
+    <div class="sec-hd-title">
+      <i class="fas fa-phone" style="color:#94A3B8; margin-right:8px;"></i>
+      Contact Information
+    </div>
+  </div>
+  
+  <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(250px, 1fr)); gap:20px;">
+    <div>
+      <div style="font-size:.75rem; font-weight:800; color:#94A3B8; text-transform:uppercase; letter-spacing:.5px; margin-bottom:6px;">Email Address</div>
+      <div style="font-size:.95rem; font-weight:700; color:#1E293B;">
+        <a href="mailto:{{ user.email }}" style="color:#1565C0; text-decoration:none;">{{ user.email }}</a>
+      </div>
+    </div>
+    <div>
+      <div style="font-size:.75rem; font-weight:800; color:#94A3B8; text-transform:uppercase; letter-spacing:.5px; margin-bottom:6px;">Phone Number</div>
+      <div style="font-size:.95rem; font-weight:700; color:#1E293B;">
+        {% if profile.phone_number %}
+          <a href="tel:{{ profile.phone_number }}" style="color:#1565C0; text-decoration:none;">{{ profile.phone_number }}</a>
+        {% else %}—{% endif %}
+      </div>
+    </div>
+    <div>
+      <div style="font-size:.75rem; font-weight:800; color:#94A3B8; text-transform:uppercase; letter-spacing:.5px; margin-bottom:6px;">Physical Address</div>
+      <div style="font-size:.95rem; font-weight:700; color:#1E293B;">{{ profile.physical_address|default:"—" }}</div>
+    </div>
+  </div>
+</div>
+
+<!-- Identification -->
+<div class="panel" style="margin-top:20px;">
+  <div class="sec-hd">
+    <div class="sec-hd-title">
+      <i class="fas fa-id-card" style="color:#94A3B8; margin-right:8px;"></i>
+      Identification
+    </div>
+  </div>
+  
+  <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(250px, 1fr)); gap:20px;">
+    <div>
+      <div style="font-size:.75rem; font-weight:800; color:#94A3B8; text-transform:uppercase; letter-spacing:.5px; margin-bottom:6px;">National ID</div>
+      <div style="font-size:.95rem; font-weight:700; color:#1E293B; font-family:'Courier New', monospace;">{{ profile.national_id }}</div>
+    </div>
+    <div>
+      <div style="font-size:.75rem; font-weight:800; color:#94A3B8; text-transform:uppercase; letter-spacing:.5px; margin-bottom:6px;">Member Serial</div>
+      <div style="font-size:.95rem; font-weight:700; color:#1E293B; font-family:'Courier New', monospace;">{{ profile.serial_number|default:"Pending" }}</div>
+    </div>
+  </div>
+</div>
+
+<!-- Location Information -->
+<div class="panel" style="margin-top:20px;">
+  <div class="sec-hd">
+    <div class="sec-hd-title">
+      <i class="fas fa-map" style="color:#94A3B8; margin-right:8px;"></i>
+      Location Information
+    </div>
+  </div>
+  
+  <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(250px, 1fr)); gap:20px;">
+    <div>
+      <div style="font-size:.75rem; font-weight:800; color:#94A3B8; text-transform:uppercase; letter-spacing:.5px; margin-bottom:6px;">County of Birth</div>
+      <div style="font-size:.95rem; font-weight:700; color:#1E293B;">{{ profile.county|default:"—" }}</div>
+    </div>
+    <div>
+      <div style="font-size:.75rem; font-weight:800; color:#94A3B8; text-transform:uppercase; letter-spacing:.5px; margin-bottom:6px;">Sub-County</div>
+      <div style="font-size:.95rem; font-weight:700; color:#1E293B;">{{ profile.sub_county|default:"—" }}</div>
+    </div>
+  </div>
+</div>
+  <script>
+  // Compute exact age from date-of-birth and display it in the Age stat
+  (function(){
+    try{
+      const dobElem = document.querySelector('#age-exact');
+      if(!dobElem) return;
+      // embed the dob in a data attribute for JS (rendered below)
+      const dobRaw = '{{ profile.date_of_birth|date:"Y-m-d" }}';
+      if(!dobRaw) return;
+      const parts = dobRaw.split('-');
+      if(parts.length !== 3) return;
+      const dob = new Date(parts[0], parts[1]-1, parts[2]);
+      const today = new Date();
+      let age = today.getFullYear() - dob.getFullYear();
+      const m = today.getMonth() - dob.getMonth();
+      if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
+        age--;
+      }
+      dobElem.textContent = age;
+    }catch(e){
+      // fail silently
+    }
+  })();
+  </script>
+
+  {% endblock %}

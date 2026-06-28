@@ -1,0 +1,320 @@
+{% extends 'sisikwaPamoja/dashboard_member.html' %}
+{% block title %}Pay via M-Pesa | SisiPamoja{% endblock %}
+
+{% block dashboard_content %}
+
+<style>
+  .mpesa-page {
+    width: 100%;
+    max-width: 1220px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .mpesa-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(320px, .95fr);
+    gap: 20px;
+    align-items: start;
+  }
+
+  @media (max-width: 1100px) {
+    .mpesa-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .mpesa-column {
+    min-width: 0;
+  }
+
+  .mpesa-column .pay-card {
+    height: 100%;
+  }
+
+  .pay-card {
+    background: white; border-radius: 18px;
+    border: 1px solid #E2E8F0;
+    box-shadow: 0 1px 3px rgba(0,0,0,.07);
+    padding: 28px;
+  }
+  .mpesa-logo-box {
+    background: linear-gradient(135deg, #00A651, #007A3D);
+    border-radius: 16px;
+    padding: 20px;
+    text-align: center;
+    margin-bottom: 24px;
+    color: white;
+  }
+  .mpesa-logo-box h3 {
+    font-family: 'Merriweather', serif;
+    font-size: 1.3rem; font-weight: 900;
+    margin-bottom: 4px;
+  }
+  .mpesa-logo-box p {
+    font-size: .85rem; opacity: .85;
+  }
+  .form-label { font-size:.82rem; font-weight:700; color:#475569; margin-bottom:6px; }
+  .form-control,.form-select {
+    border:1.5px solid #E2E8F0; border-radius:9px;
+    padding:11px 14px; font-size:.9rem; color:#1E293B;
+    transition:border-color .2s;
+  }
+  .form-control:focus,.form-select:focus {
+    border-color:#00A651; box-shadow:0 0 0 3px rgba(0,166,81,.1); outline:none;
+  }
+  .btn-pay {
+    width: 100%;
+    background: #00A651; color: white;
+    border: none; border-radius: 10px;
+    padding: 13px; font-weight: 800;
+    font-size: 1rem; cursor: pointer;
+    transition: all .2s;
+    display: flex; align-items:center;
+    justify-content:center; gap: 10px;
+    box-shadow: 0 4px 14px rgba(0,166,81,.35);
+  }
+  .btn-pay:hover { background: #007A3D; transform: translateY(-1px); }
+
+  .paybill-box {
+    background: #F0FDF4; border: 1.5px solid #DCFCE7;
+    border-radius: 12px; padding: 18px;
+    margin-bottom: 18px;
+  }
+  .paybill-row {
+    display: flex; justify-content: space-between;
+    align-items: center; padding: 8px 0;
+    border-bottom: 1px solid #DCFCE7;
+    font-size: .875rem;
+  }
+  .paybill-row:last-child { border-bottom: none; }
+  .paybill-label { color: #475569; font-weight: 600; }
+  .paybill-value { font-weight: 800; color: #14532D; font-family: 'Courier New', monospace; }
+
+  .payment-hist-row {
+    display: flex; align-items:center;
+    gap: 12px; padding: 12px 0;
+    border-bottom: 1px solid #F1F5F9;
+    font-size: .875rem;
+  }
+  .payment-hist-row:last-child { border-bottom: none; }
+  .pill-success { background:#DCFCE7; color:#14532D; font-size:.72rem; font-weight:800; padding:3px 10px; border-radius:20px; }
+  .pill-pending { background:#FED7AA; color:#C2410C; font-size:.72rem; font-weight:800; padding:3px 10px; border-radius:20px; }
+  .pill-failed  { background:#FEE2E2; color:#DC2626; font-size:.72rem; font-weight:800; padding:3px 10px; border-radius:20px; }
+
+  .page-hd { display:flex; align-items:center; gap:14px; margin-bottom:26px; }
+  .page-hd-back {
+    width:38px; height:38px; border-radius:10px;
+    border:1.5px solid #E2E8F0; background:white; color:#475569;
+    display:flex; align-items:center; justify-content:center;
+    text-decoration:none; transition:all .2s; font-size:.9rem;
+  }
+  .page-hd-back:hover { border-color:#00A651; color:#00A651; }
+  .message-box { border-radius:10px; padding:12px 16px; font-size:.875rem; font-weight:600; margin-bottom:18px; display:flex; gap:10px; align-items:center; }
+  .msg-success { background:#F0FDF4; border:1px solid #DCFCE7; color:#14532D; }
+  .msg-error { background:#FEF2F2; border:1px solid #FEE2E2; color:#DC2626; }
+</style>
+
+<div class="mpesa-page">
+
+  <!-- Header -->
+  <div class="page-hd">
+    <a href="{% url 'member_dashboard' %}" class="page-hd-back">
+      <i class="fas fa-arrow-left"></i>
+    </a>
+    <div>
+      <div style="font-family:'Merriweather',serif; font-size:1.1rem; font-weight:900; color:#0F172A;">
+        M-Pesa Payment
+      </div>
+      <div style="font-size:.78rem; color:#94A3B8; font-weight:600;">
+        Pay via STK Push or Paybill
+      </div>
+    </div>
+  </div>
+
+  <!-- Messages -->
+  {% if messages %}
+    {% for message in messages %}
+    <div class="message-box {% if message.tags == 'success' %}msg-success{% else %}msg-error{% endif %}">
+      <i class="fas {% if message.tags == 'success' %}fa-check-circle{% else %}fa-exclamation-circle{% endif %}"></i>
+      {{ message }}
+    </div>
+    {% endfor %}
+  {% endif %}
+
+  <div class="mpesa-grid">
+    <!-- LEFT: STK Push Form -->
+    <div class="mpesa-column">
+
+      <div class="pay-card">
+        <div class="mpesa-logo-box">
+          <i class="fas fa-mobile-alt" style="font-size:2rem; margin-bottom:10px;"></i>
+          <h3>STK Push Payment</h3>
+          <p>We will send a payment request directly to your phone</p>
+        </div>
+
+        <form method="POST" id="mpesa-payment-form" novalidate>
+          {% csrf_token %}
+
+          <div class="mb-3">
+            <label class="form-label">Payment For</label>
+            <input type="text" class="form-control"
+                   value="{{ payment_type }}" disabled>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">M-Pesa Phone Number *</label>
+            <input type="tel" name="phone"
+              class="form-control"
+              value="{{ phone|default:'' }}"
+              placeholder="0712345678"
+              maxlength="10"
+              inputmode="numeric"
+              autocomplete="tel"
+              pattern="^(07|01)[0-9]{8}$"
+              required>
+            <div style="font-size:.73rem; color:#94A3B8; margin-top:5px; font-weight:600;">
+              <i class="fas fa-info-circle"></i>
+              Enter your Safaricom number e.g. 0712345678
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label">Amount (KES) *</label>
+            <input type="number" name="amount"
+                   class="form-control"
+                   value="{{ default_amount }}"
+                   min="1" required>
+            <input type="hidden" name="description"
+                   value="{{ payment_type }} - {{ profile.national_id }}">
+          </div>
+
+          <button type="submit" class="btn-pay">
+            <i class="fas fa-mobile-alt"></i>
+            Send to My Phone
+          </button>
+
+          <div style="text-align:center; margin-top:14px;
+                      font-size:.78rem; color:#94A3B8; font-weight:600;">
+            <i class="fas fa-shield-alt"></i>
+            Secured by Safaricom M-Pesa
+          </div>
+        </form>
+      </div>
+
+    </div>
+
+    <!-- RIGHT: Paybill + History -->
+    <div class="mpesa-column">
+
+      <!-- Paybill Instructions -->
+      <div class="pay-card">
+        <div style="font-family:'Merriweather',serif; font-size:.95rem; font-weight:900; color:#0F172A; margin-bottom:4px; display:flex; align-items:center; gap:8px;">
+          <div style="width:32px;height:32px;background:#DCFCE7;color:#14532D;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.85rem;">
+            <i class="fas fa-university"></i>
+          </div>
+          Pay via Paybill
+        </div>
+        <div style="font-size:.78rem; color:#94A3B8; font-weight:600; margin-bottom:18px; padding-left:40px;">
+          Use this if STK Push doesn't work
+        </div>
+
+        <div class="paybill-box">
+          <div class="paybill-row">
+            <span class="paybill-label">Paybill Number</span>
+            <span class="paybill-value">400200</span>
+          </div>
+          <div class="paybill-row">
+            <span class="paybill-label">Account Number</span>
+            <span class="paybill-value">{{ profile.national_id }}</span>
+          </div>
+          <div class="paybill-row">
+            <span class="paybill-label">Amount</span>
+            <span class="paybill-value">KES {{ default_amount }}</span>
+          </div>
+        </div>
+
+        <div style="font-size:.8rem; color:#475569; font-weight:600; line-height:1.9;">
+          <div style="font-weight:800; color:#0F172A; margin-bottom:8px;">
+            How to pay via Paybill:
+          </div>
+          <div>1. Open <strong>M-Pesa</strong> on your phone</div>
+          <div>2. Select <strong>Lipa na M-Pesa</strong></div>
+          <div>3. Select <strong>Pay Bill</strong></div>
+          <div>4. Enter Business No: <strong>400200</strong></div>
+          <div>5. Enter Account No: <strong>{{ profile.national_id }}</strong></div>
+          <div>6. Enter Amount: <strong>KES {{ default_amount }}</strong></div>
+          <div>7. Enter your <strong>M-Pesa PIN</strong></div>
+          <div>8. Confirm and send</div>
+        </div>
+      </div>
+
+      <!-- Payment History -->
+      {% if payments %}
+      <div class="pay-card">
+        <div style="font-family:'Merriweather',serif; font-size:.95rem; font-weight:900; color:#0F172A; margin-bottom:16px;">
+          Recent Payments
+        </div>
+
+        {% for p in payments %}
+        <div class="payment-hist-row">
+          <div style="flex:1;">
+            <div style="font-weight:800; font-size:.875rem; color:#1E293B;">
+              KES {{ p.amount }}
+            </div>
+            <div style="font-size:.75rem; color:#94A3B8; font-weight:600;">
+              {{ p.created_at|date:"d M Y · H:i" }}
+              {% if p.mpesa_receipt %}
+              · {{ p.mpesa_receipt }}
+              {% endif %}
+            </div>
+          </div>
+          <span class="pill-{{ p.status }}">
+            {% if p.status == 'success' %}
+              <i class="fas fa-check-circle me-1"></i>Paid
+            {% elif p.status == 'pending' %}
+              <i class="fas fa-clock me-1"></i>Pending
+            {% else %}
+              <i class="fas fa-times-circle me-1"></i>Failed
+            {% endif %}
+          </span>
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+    </div>
+  </div>
+
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const form = document.getElementById('mpesa-payment-form');
+    const phoneInput = form ? form.querySelector('input[name="phone"]') : null;
+
+    if (!form || !phoneInput) {
+      return;
+    }
+
+    form.addEventListener('submit', function (event) {
+      const phoneValue = (phoneInput.value || '').trim();
+      const isValid = /^(07|01)\d{8}$/.test(phoneValue);
+
+      if (!isValid) {
+        event.preventDefault();
+        phoneInput.setCustomValidity('Enter a valid Safaricom number starting with 07 or 01.');
+        phoneInput.reportValidity();
+        return;
+      }
+
+      phoneInput.setCustomValidity('');
+    });
+
+    phoneInput.addEventListener('input', function () {
+      phoneInput.setCustomValidity('');
+    });
+  });
+</script>
+{% endblock %}

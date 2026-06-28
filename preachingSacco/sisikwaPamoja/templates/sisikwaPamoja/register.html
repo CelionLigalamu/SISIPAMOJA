@@ -1,574 +1,1627 @@
 {% extends 'sisikwaPamoja/base.html' %}
+{% block title %}SISIPAMOJA | Create Account{% endblock %}
 
-{% block title %}SISIPAMOJA | Register{% endblock %}
+{% block extra_css %}
+<style>
+/* ═══════════════════════════════════════
+   BRAND TOKENS
+═══════════════════════════════════════ */
+:root {
+  --green:        #14532D;
+  --green-mid:    #166534;
+  --green-light:  #DCFCE7;
+  --green-soft:   #F0FDF4;
+  --orange:       #EA580C;
+  --orange-light: #FFF7ED;
+  --orange-soft:  #FED7AA;
+  --gray-50:      #F9FAFB;
+  --gray-100:     #F3F4F6;
+  --gray-200:     #E5E7EB;
+  --gray-400:     #9CA3AF;
+  --gray-600:     #4B5563;
+  --gray-900:     #111827;
+  --radius:       12px;
+  --radius-lg:    18px;
+  --shadow-sm:    0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.05);
+  --shadow:       0 4px 16px rgba(0,0,0,.08), 0 2px 6px rgba(0,0,0,.04);
+  --shadow-lg:    0 10px 40px rgba(0,0,0,.10), 0 4px 12px rgba(0,0,0,.05);
+}
+
+/* ═══════════════════════════════════════
+   PAGE SHELL
+═══════════════════════════════════════ */
+.reg-page {
+  background: var(--gray-50);
+  min-height: 100vh;
+  padding: 40px 0 80px;
+}
+
+.reg-shell {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+/* ═══════════════════════════════════════
+   PAGE HEADER
+═══════════════════════════════════════ */
+.reg-header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+.reg-header h1 {
+  font-family: 'Merriweather', serif;
+  font-size: clamp(1.6rem, 3vw, 2rem);
+  font-weight: 900;
+  color: var(--gray-900);
+  margin-bottom: 8px;
+}
+.reg-header h1 span { color: var(--green); }
+.reg-header p {
+  color: var(--gray-600);
+  font-size: .95rem;
+}
+
+/* ═══════════════════════════════════════
+   STEP PROGRESS BAR
+═══════════════════════════════════════ */
+.step-bar {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 0;
+  margin-bottom: 36px;
+  position: relative;
+}
+.step-bar::before {
+  content: '';
+  position: absolute;
+  top: 18px;
+  left: 10%;
+  right: 10%;
+  height: 2px;
+  background: var(--gray-200);
+  z-index: 0;
+}
+.step-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  position: relative;
+  z-index: 1;
+}
+.step-item.hidden-step { display: none; }
+
+.step-circle {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: white;
+  border: 2px solid var(--gray-200);
+  color: var(--gray-400);
+  font-weight: 800;
+  font-size: .85rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all .3s;
+  margin-bottom: 6px;
+}
+.step-item.active .step-circle {
+  background: var(--green);
+  border-color: var(--green);
+  color: white;
+  box-shadow: 0 0 0 4px rgba(20,83,45,.15);
+}
+.step-item.done .step-circle {
+  background: var(--green);
+  border-color: var(--green);
+  color: white;
+}
+.step-item.done .step-circle::after {
+  content: '✓';
+}
+.step-item.done .step-num { display: none; }
+
+.step-label {
+  font-size: .72rem;
+  font-weight: 700;
+  color: var(--gray-400);
+  text-align: center;
+  line-height: 1.3;
+}
+.step-item.active .step-label { color: var(--green); }
+.step-item.done .step-label { color: var(--green-mid); }
+
+/* ═══════════════════════════════════════
+   CARD WRAPPER
+═══════════════════════════════════════ */
+.reg-card {
+  background: white;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+}
+
+/* ═══════════════════════════════════════
+   STEP PANELS
+═══════════════════════════════════════ */
+.step-panel { display: none; padding: 40px 40px 32px; }
+.step-panel.active { display: block; }
+
+.panel-title {
+  font-family: 'Merriweather', serif;
+  font-size: 1.15rem;
+  font-weight: 900;
+  color: var(--gray-900);
+  margin-bottom: 4px;
+}
+.panel-sub {
+  font-size: .875rem;
+  color: var(--gray-600);
+  margin-bottom: 28px;
+}
+
+/* ═══════════════════════════════════════
+   MEMBERSHIP CARDS
+═══════════════════════════════════════ */
+.mem-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 8px;
+}
+@media(max-width:580px){ .mem-grid{ grid-template-columns:1fr; } }
+
+.mem-card {
+  border: 2px solid var(--gray-200);
+  border-radius: var(--radius);
+  padding: 22px 20px;
+  cursor: pointer;
+  transition: all .25s;
+  background: white;
+  position: relative;
+  overflow: hidden;
+}
+.mem-card:hover {
+  box-shadow: var(--shadow);
+  transform: translateY(-2px);
+}
+.mem-card.selected-green {
+  border-color: var(--green);
+  background: var(--green-soft);
+  box-shadow: 0 0 0 3px rgba(20,83,45,.1), var(--shadow);
+}
+.mem-card.selected-orange {
+  border-color: var(--orange);
+  background: var(--orange-light);
+  box-shadow: 0 0 0 3px rgba(234,88,12,.1), var(--shadow);
+}
+
+.mem-check {
+  position: absolute;
+  top: 14px; right: 14px;
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  border: 2px solid var(--gray-200);
+  display: flex; align-items: center; justify-content: center;
+  font-size: .7rem; color: white;
+  transition: all .25s;
+}
+.selected-green .mem-check {
+  background: var(--green); border-color: var(--green);
+}
+.selected-orange .mem-check {
+  background: var(--orange); border-color: var(--orange);
+}
+.mem-check::after { content: '✓'; font-weight:900; }
+
+.mem-icon {
+  width: 50px; height: 50px;
+  border-radius: 12px;
+  display: flex; align-items:center; justify-content:center;
+  font-size: 1.3rem;
+  margin-bottom: 14px;
+}
+.mem-icon.green { background: var(--green-light); color: var(--green); }
+.mem-icon.orange { background: var(--orange-soft); color: var(--orange); }
+
+.mem-name {
+  font-weight: 800;
+  font-size: 1rem;
+  color: var(--gray-900);
+  margin-bottom: 4px;
+}
+.mem-desc {
+  font-size: .8rem;
+  color: var(--gray-600);
+  margin-bottom: 12px;
+  line-height: 1.5;
+}
+.mem-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+.mem-tag {
+  font-size: .7rem;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 20px;
+  letter-spacing: .3px;
+}
+.mem-tag.green { background: var(--green-light); color: var(--green); }
+.mem-tag.orange { background: var(--orange-soft); color: var(--orange); }
+
+/* ═══════════════════════════════════════
+   FORM INPUTS
+═══════════════════════════════════════ */
+.form-label {
+  font-size: .82rem;
+  font-weight: 700;
+  color: var(--gray-600);
+  margin-bottom: 6px;
+  letter-spacing: .2px;
+}
+.form-control, .form-select {
+  border: 1.5px solid var(--gray-200);
+  border-radius: 9px;
+  padding: 10px 14px;
+  font-size: .9rem;
+  color: var(--gray-900);
+  background: white;
+  transition: border-color .2s, box-shadow .2s;
+  height: auto;
+}
+.form-control:focus, .form-select:focus {
+  border-color: var(--green);
+  box-shadow: 0 0 0 3px rgba(20,83,45,.1);
+  outline: none;
+}
+.form-control::placeholder { color: var(--gray-400); }
+
+.input-group .form-control { border-radius: 9px 0 0 9px; }
+.input-group .btn { border-radius: 0 9px 9px 0; border-left: none; }
+
+/* Age badge */
+.age-badge {
+  display: inline-flex;
+  align-items: center;
+  background: var(--green-light);
+  color: var(--green);
+  font-weight: 800;
+  font-size: .8rem;
+  padding: 6px 14px;
+  border-radius: 20px;
+  margin-top: 6px;
+  min-width: 80px;
+  justify-content: center;
+}
+
+/* Section header inside form */
+.section-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  background: var(--green-soft);
+  border-radius: var(--radius);
+  margin-bottom: 24px;
+  border-left: 4px solid var(--green);
+}
+.section-head.orange-head {
+  background: var(--orange-light);
+  border-left-color: var(--orange);
+}
+.section-head-icon {
+  width: 38px; height: 38px;
+  border-radius: 10px;
+  display: flex; align-items:center; justify-content:center;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+.section-head-icon.green { background: var(--green-light); color: var(--green); }
+.section-head-icon.orange { background: var(--orange-soft); color: var(--orange); }
+.section-head-title { font-weight: 800; font-size: .95rem; color: var(--gray-900); }
+.section-head-sub { font-size: .78rem; color: var(--gray-600); }
+
+/* ═══════════════════════════════════════
+   UPLOAD AREAS
+═══════════════════════════════════════ */
+.upload-zone {
+  border: 2px dashed var(--gray-200);
+  border-radius: var(--radius);
+  padding: 24px 16px;
+  text-align: center;
+  cursor: pointer;
+  transition: all .25s;
+  background: var(--gray-50);
+  position: relative;
+}
+.upload-zone:hover {
+  border-color: var(--green);
+  background: var(--green-soft);
+}
+.upload-zone input[type="file"] {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+  width: 100%;
+  height: 100%;
+}
+.upload-icon {
+  width: 44px; height: 44px;
+  background: var(--green-light);
+  border-radius: 12px;
+  display: flex; align-items:center; justify-content:center;
+  margin: 0 auto 10px;
+  font-size: 1.1rem;
+  color: var(--green);
+}
+.upload-title { font-weight: 700; font-size: .875rem; color: var(--gray-900); margin-bottom: 2px; }
+.upload-sub { font-size: .75rem; color: var(--gray-400); }
+.upload-zone.has-file { border-color: var(--green); background: var(--green-soft); }
+.upload-zone.has-file .upload-icon { background: var(--green); color: white; }
+
+/* ═══════════════════════════════════════
+   PASSWORD RULES
+═══════════════════════════════════════ */
+.pwd-rules {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px 12px;
+  margin-top: 10px;
+}
+.pwd-rule {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: .78rem;
+  color: var(--gray-400);
+  font-weight: 600;
+}
+.pwd-rule .dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--gray-200);
+  flex-shrink: 0;
+  transition: background .2s;
+}
+.pwd-rule.ok { color: var(--green); }
+.pwd-rule.ok .dot { background: var(--green); }
+
+/* ═══════════════════════════════════════
+   DEPENDANT CARD
+═══════════════════════════════════════ */
+.dep-card {
+  border: 1.5px solid var(--gray-200);
+  border-radius: var(--radius);
+  padding: 22px 20px;
+  margin-bottom: 16px;
+  background: var(--gray-50);
+}
+.dep-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+.dep-card-title {
+  font-weight: 800;
+  font-size: .9rem;
+  color: var(--green);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ═══════════════════════════════════════
+   CONTRIBUTION PREVIEW
+═══════════════════════════════════════ */
+.contrib-box {
+  background: var(--green-soft);
+  border: 1.5px solid var(--green-light);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.contrib-icon {
+  width: 44px; height: 44px;
+  background: var(--green-light);
+  border-radius: 12px;
+  display: flex; align-items:center; justify-content:center;
+  color: var(--green);
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+.contrib-label { font-size: .78rem; color: var(--gray-600); font-weight: 600; margin-bottom: 2px; }
+.contrib-amount { font-size: 1.3rem; font-weight: 900; color: var(--green); font-family: 'Merriweather', serif; }
+.contrib-reason { font-size: .75rem; color: var(--gray-600); margin-top: 2px; }
+
+/* ═══════════════════════════════════════
+   REVIEW STEP
+═══════════════════════════════════════ */
+.review-section {
+  border: 1.5px solid var(--gray-200);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+.review-section-head {
+  background: var(--gray-100);
+  padding: 10px 16px;
+  font-weight: 800;
+  font-size: .82rem;
+  color: var(--gray-600);
+  text-transform: uppercase;
+  letter-spacing: .5px;
+}
+.review-row {
+  display: flex;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--gray-100);
+  font-size: .875rem;
+}
+.review-row:last-child { border-bottom: none; }
+.review-key { color: var(--gray-400); font-weight: 600; width: 160px; flex-shrink: 0; }
+.review-val { color: var(--gray-900); font-weight: 700; }
+
+/* ═══════════════════════════════════════
+   NAV FOOTER
+═══════════════════════════════════════ */
+.step-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 40px 32px;
+  background: white;
+  border-top: 1px solid var(--gray-100);
+}
+
+.btn-prev {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: white;
+  border: 1.5px solid var(--gray-200);
+  color: var(--gray-600);
+  padding: 11px 24px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: .9rem;
+  cursor: pointer;
+  transition: all .2s;
+}
+.btn-prev:hover { border-color: var(--green); color: var(--green); }
+
+.btn-next, .btn-submit {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--green);
+  color: white;
+  border: none;
+  padding: 12px 28px;
+  border-radius: 10px;
+  font-weight: 800;
+  font-size: .9rem;
+  cursor: pointer;
+  transition: all .2s;
+  box-shadow: 0 4px 14px rgba(20,83,45,.3);
+}
+.btn-submit {
+  position: relative;
+  z-index: 2;
+}
+.btn-next:hover, .btn-submit:hover {
+  background: var(--green-mid);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(20,83,45,.35);
+}
+
+.btn-add-dep {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: white;
+  border: 1.5px solid var(--green);
+  color: var(--green);
+  padding: 8px 18px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: .82rem;
+  cursor: pointer;
+  transition: all .2s;
+}
+.btn-add-dep:hover { background: var(--green-soft); }
+
+.btn-remove-dep {
+  background: white;
+  border: 1.5px solid #FCA5A5;
+  color: #DC2626;
+  padding: 5px 12px;
+  border-radius: 7px;
+  font-size: .78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all .2s;
+}
+.btn-remove-dep:hover { background: #FEF2F2; }
+
+/* ═══════════════════════════════════════
+   MESSAGES & INFO
+═══════════════════════════════════════ */
+.info-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: #EFF6FF;
+  border: 1px solid #BFDBFE;
+  border-radius: 9px;
+  padding: 12px 16px;
+  font-size: .82rem;
+  color: #1D4ED8;
+  margin-top: 16px;
+}
+.info-note i { margin-top: 1px; flex-shrink: 0; }
+
+/* ═══════════════════════════════════════
+   FOOTER SIGN-IN LINK
+═══════════════════════════════════════ */
+.signin-row {
+  text-align: center;
+  margin-top: 24px;
+  font-size: .875rem;
+  color: var(--gray-600);
+}
+.signin-row a {
+  color: var(--green);
+  font-weight: 800;
+  text-decoration: none;
+}
+.signin-row a:hover { text-decoration: underline; }
+
+/* ═══════════════════════════════════════
+   RESPONSIVE TWEAKS
+═══════════════════════════════════════ */
+@media(max-width:640px){
+  .step-panel { padding: 28px 20px 20px; }
+  .step-footer { padding: 16px 20px 24px; }
+  .review-key { width: 120px; }
+}
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-md-8 col-lg-7">
-            <div class="card p-4 p-md-5">
+<div class="reg-page">
+<div class="reg-shell">
 
-                <!-- Header -->
-                <div class="text-center mb-4">
-                          <i class="fas fa-user-plus fa-3x mb-3 text-primary-theme"></i>
-                    <h3 class="fw-bold">Create Account</h3>
-                    <p class="text-muted">
-                        Join SISIPAMOJA today
-                    </p>
-                </div>
+  <!-- Page Header -->
+  <div class="reg-header">
+    <h1>Create <span>Your Account</span></h1>
+    <p>Join SisiPamoja Welfare Sacco and enjoy the benefits of being a member.</p>
+  </div>
 
-                <!-- Messages -->
-                {% if messages %}
-                {% for message in messages %}
-                <div class="alert alert-{{ message.tags }} 
-                            alert-dismissible fade show">
-                    {{ message }}
-                    <button type="button" 
-                            class="btn-close" 
-                            data-bs-dismiss="alert">
-                    </button>
-                </div>
-                {% endfor %}
-                {% endif %}
+  <!-- Step Progress Bar -->
+  <div class="step-bar" id="stepBar">
+    <div class="step-item active" id="bar-1">
+      <div class="step-circle"><span class="step-num">1</span></div>
+      <div class="step-label">Membership<br>Type</div>
+    </div>
+    <div class="step-item" id="bar-2">
+      <div class="step-circle"><span class="step-num">2</span></div>
+      <div class="step-label">Personal<br>Details</div>
+    </div>
+    <div class="step-item" id="bar-3">
+      <div class="step-circle"><span class="step-num">3</span></div>
+      <div class="step-label">Spouse<br>Details</div>
+    </div>
+    <div class="step-item" id="bar-4">
+      <div class="step-circle"><span class="step-num">4</span></div>
+      <div class="step-label">Dependants</div>
+    </div>
+    <div class="step-item" id="bar-5">
+      <div class="step-circle"><span class="step-num">5</span></div>
+      <div class="step-label">Review &amp;<br>Submit</div>
+    </div>
+  </div>
 
-                <!-- Form -->
-                <form method="POST" enctype="multipart/form-data">
-                    {% csrf_token %}
+  <!-- Django Messages -->
+  {% if messages %}
+  <div class="mb-3">
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }} alert-dismissible fade show rounded-3">
+      {{ message }}
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
 
-                    <!-- Name Row -->
-                    <div class="row g-3 mb-3">
-                        <div class="col-md-4">
-                            <label class="form-label fw-semibold">
-                                First Name *
-                            </label>
-                            <input type="text" 
-                                   name="first_name"
-                                   class="form-control"
-                                   placeholder="First name"
-                                   required>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label fw-semibold">
-                                Middle Name
-                            </label>
-                            <input type="text" 
-                                   name="middle_name"
-                                   class="form-control"
-                                   placeholder="Middle name">
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label fw-semibold">
-                                Last Name *
-                            </label>
-                            <input type="text" 
-                                   name="last_name"
-                                   class="form-control"
-                                   placeholder="Last name"
-                                   required>
-                        </div>
-                    </div>
+  {% if request.GET.registered == '1' %}
+  <script>
+    window.addEventListener('load', function() {
+      setTimeout(function() {
+        window.location.href = "{% url 'login' %}";
+      }, 2500);
+    });
+  </script>
+  {% endif %}
 
-                   <!-- Gender & DOB -->
-<div class="row g-3 mb-3">
-    <div class="col-md-6">
-        <label class="form-label fw-semibold">
-            Gender *
+  <!-- Main Card -->
+  <div class="reg-card">
+  <form method="POST" enctype="multipart/form-data" id="regForm">
+    {% csrf_token %}
+
+    <!-- Hidden counties data -->
+    <script id="counties-data" type="application/json">{{ counties|safe }}</script>
+
+    <!-- ═══════════════════════════════
+         STEP 1 — MEMBERSHIP TYPE
+    ═══════════════════════════════ -->
+    <div class="step-panel active" id="step-1">
+      <div class="panel-title">Choose Membership Type</div>
+      <div class="panel-sub">Select the membership that best fits your needs.</div>
+
+      <div class="mem-grid">
+
+        <!-- Sacco -->
+        <label class="mem-card" id="card-sacco" for="sacco">
+          <input type="radio" class="d-none" name="membership_type" id="sacco" value="sacco" required>
+          <div class="mem-check"></div>
+          <div class="mem-icon green"><i class="fas fa-id-card"></i></div>
+          <div class="mem-name">Sacco Member</div>
+          <div class="mem-desc">Individual membership with access to savings and loan facilities.</div>
+          <div class="mem-tags">
+            <span class="mem-tag green">Savings</span>
+            <span class="mem-tag green">Loans</span>
+            <span class="mem-tag green">Individual</span>
+          </div>
         </label>
-        <select name="gender" 
-                class="form-select" 
-                required>
+
+        <!-- Last Expense -->
+        <label class="mem-card" id="card-expense" for="last_expense">
+          <input type="radio" class="d-none" name="membership_type" id="last_expense" value="last_expense" required>
+          <div class="mem-check"></div>
+          <div class="mem-icon orange"><i class="fas fa-heart"></i></div>
+          <div class="mem-name">Last Expense Member</div>
+          <div class="mem-desc">Family-based cover for funeral and welfare support for your loved ones.</div>
+          <div class="mem-tags">
+            <span class="mem-tag orange">Funeral Cover</span>
+            <span class="mem-tag orange">Family Support</span>
+          </div>
+        </label>
+
+      </div>
+
+      <div class="info-note">
+        <i class="fas fa-info-circle"></i>
+        <span><strong>Sacco Member</strong> collects individual details only.
+        <strong>Last Expense Member</strong> includes family members (spouse &amp; dependants).</span>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════
+         STEP 2 — PERSONAL DETAILS
+    ═══════════════════════════════ -->
+    <div class="step-panel" id="step-2">
+      <div class="panel-title">Personal Details</div>
+      <div class="panel-sub">Please fill in your accurate personal information.</div>
+
+      <!-- Name -->
+      <div class="row g-3 mb-3">
+        <div class="col-md-4">
+          <label class="form-label">First Name *</label>
+          <input type="text" name="first_name" class="form-control" placeholder="First name" required>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">Middle Name</label>
+          <input type="text" name="middle_name" class="form-control" placeholder="Middle name">
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">Last Name *</label>
+          <input type="text" name="last_name" class="form-control" placeholder="Last name" required>
+        </div>
+      </div>
+
+      <!-- Gender & DOB -->
+      <div class="row g-3 mb-3">
+        <div class="col-md-4">
+          <label class="form-label">Gender *</label>
+          <select name="gender" class="form-select" required>
             <option value="">Select gender</option>
             <option value="male">Male</option>
             <option value="female">Female</option>
-        </select>
-    </div>
-
-    <div class="col-md-6">
-        <label class="form-label fw-semibold">
-            Date of Birth *
-        </label>
-
-        <div class="row g-2">
-            
-            <!-- Day -->
-            <div class="col-md-4">
-                <select id="day" class="form-select
-    form-select-lg"
-                required>
-                    <option value="">Day</option>
-                    {% for i in "123456789"|make_list %}
-                    {% endfor %}
-                </select>
-            </div>
-
-            <!-- Month -->
-            <div class="col-md-4">
-                <select id="month" class="form-select
-    form-select"
-                 required>
-                    <option value="">Month</option>
-                    <option value="1">January</option>
-                    <option value="2">February</option>
-                    <option value="3">March</option>
-                    <option value="4">April</option>
-                    <option value="5">May</option>
-                    <option value="6">June</option>
-                    <option value="7">July</option>
-                    <option value="8">August</option>
-                    <option value="9">September</option>
-                    <option value="10">October</option>
-                    <option value="11">November</option>
-                    <option value="12">December</option>
-                </select>
-            </div>
-
-            <!-- Year -->
-            <div class="col-md-4">
-                <select id="year" class="form-select
-    form-select-lg"    
-             required> 
-                    <option value="">Year</option>
-                </select>
-            </div>
+          </select>
         </div>
+        <div class="col-md-5">
+          <label class="form-label">Date of Birth *</label>
+          <div class="row g-2">
+            <div class="col-4">
+              <select id="day" class="form-select" required>
+                <option value="">Day</option>
+              </select>
+            </div>
+            <div class="col-4">
+              <select id="month" class="form-select" required>
+                <option value="">Month</option>
+                <option value="1">Jan</option><option value="2">Feb</option>
+                <option value="3">Mar</option><option value="4">Apr</option>
+                <option value="5">May</option><option value="6">Jun</option>
+                <option value="7">Jul</option><option value="8">Aug</option>
+                <option value="9">Sep</option><option value="10">Oct</option>
+                <option value="11">Nov</option><option value="12">Dec</option>
+              </select>
+            </div>
+            <div class="col-4">
+              <select id="year" class="form-select" required>
+                <option value="">Year</option>
+              </select>
+            </div>
+          </div>
+          <input type="hidden" name="date_of_birth" id="dob">
+        </div>
+        <div class="col-md-3 d-flex flex-column justify-content-end">
+          <label class="form-label">Age</label>
+          <div class="age-badge" id="age-display">-- years</div>
+        </div>
+      </div>
 
-        <!-- Hidden input sent to Django -->
-        <input type="hidden" 
-               name="date_of_birth" 
-               id="dob">
+      <!-- ID & Phone -->
+      <div class="row g-3 mb-3">
+        <div class="col-md-6">
+          <label class="form-label">National ID Number *</label>
+          <input type="text" name="national_id" class="form-control" placeholder="e.g. 12345678" required>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Phone Number *</label>
+          <div class="input-group">
+            <span class="input-group-text" style="border-radius:9px 0 0 9px; border:1.5px solid #E5E7EB; border-right:none; background:#F9FAFB; font-weight:700; font-size:.85rem;">+254</span>
+            <input type="tel" name="phone_number" class="form-control" placeholder="712 345 678" required style="border-radius:0 9px 9px 0;">
+          </div>
+        </div>
+      </div>
 
-        <small class="text-muted">
-            Age: <span id="age-display">--</span> years
-        </small>
+      <!-- Email -->
+      <div class="mb-3">
+        <label class="form-label">Email Address *</label>
+        <input type="email" name="email" class="form-control" placeholder="example@email.com" required>
+      </div>
+
+      <!-- County & Sub County -->
+      <div class="row g-3 mb-3">
+        <div class="col-md-4">
+          <label class="form-label">County of Birth *</label>
+          <select name="county" id="county-select" class="form-select" required>
+            <option value="">Select county</option>
+          </select>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">Sub County of Birth *</label>
+          <select name="sub_county" id="sub-county-select" class="form-select" required>
+            <option value="">Select sub county</option>
+          </select>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">Marital Status *</label>
+          <select name="marital_status" id="marital-status" class="form-select" required>
+            <option value="">Select status</option>
+            <option value="single">Single</option>
+            <option value="married">Married</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Physical Address -->
+      <div class="mb-3">
+        <label class="form-label">Physical Address *</label>
+        <textarea name="physical_address" class="form-control" rows="2" placeholder="e.g. House number, street, area" required></textarea>
+      </div>
+
+      <!-- Password -->
+      <div class="row g-3 mb-3">
+        <div class="col-md-6">
+          <label class="form-label">Password *</label>
+          <div class="input-group">
+            <input type="password" name="password1" id="pw1" class="form-control" placeholder="Enter password" required>
+            <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+              <i class="fas fa-eye"></i>
+            </button>
+          </div>
+          <div class="pwd-rules" id="pwdRules">
+            <div class="pwd-rule" id="r-len"><div class="dot"></div>Minimum 8 characters</div>
+            <div class="pwd-rule" id="r-low"><div class="dot"></div>One lowercase letter</div>
+            <div class="pwd-rule" id="r-up"><div class="dot"></div>At least one uppercase letter</div>
+            <div class="pwd-rule" id="r-num"><div class="dot"></div>At least one number</div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Confirm Password *</label>
+          <div class="input-group">
+            <input type="password" name="password2" id="pw2" class="form-control" placeholder="Confirm password" required>
+            <button class="btn btn-outline-secondary" type="button" id="toggleConfirmPassword">
+              <i class="fas fa-eye"></i>
+            </button>
+          </div>
+          <div class="pwd-rules" style="grid-template-columns:1fr;">
+            <div class="pwd-rule" id="r-match"><div class="dot"></div>Passwords match</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Uploads -->
+      <div class="row g-3 mb-2">
+        <div class="col-md-6">
+          <label class="form-label">Passport Photo *</label>
+          <div class="upload-zone" id="zone-passport">
+            <input type="file" name="passport_photo" accept=".jpg,.jpeg,.png" required
+                   onchange="markUpload('zone-passport', this)">
+            <div class="upload-icon"><i class="fas fa-camera"></i></div>
+            <div class="upload-title">Upload passport photo</div>
+            <div class="upload-sub">JPG, PNG only</div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">National ID Copy *</label>
+          <div class="upload-zone" id="zone-id">
+            <input type="file" name="id_copy" accept=".pdf,.jpg,.jpeg,.png" required
+                   onchange="markUpload('zone-id', this)">
+            <div class="upload-icon"><i class="fas fa-id-card"></i></div>
+            <div class="upload-title">Upload ID copy</div>
+            <div class="upload-sub">PDF, JPG or PNG</div>
+          </div>
+        </div>
+      </div>
     </div>
+
+    <!-- ═══════════════════════════════
+         STEP 3 — SPOUSE DETAILS
+         (Last Expense + Married only)
+    ═══════════════════════════════ -->
+    <div class="step-panel" id="step-3">
+      <div class="section-head">
+        <div class="section-head-icon green"><i class="fas fa-ring"></i></div>
+        <div>
+          <div class="section-head-title">Spouse Details</div>
+          <div class="section-head-sub">Enter your spouse's information below.</div>
+        </div>
+      </div>
+
+      <div class="row g-3 mb-3">
+        <div class="col-md-12">
+          <label class="form-label">Full Name *</label>
+          <input type="text" name="spouse_full_name" class="form-control" placeholder="Full name">
+        </div>
+      </div>
+
+      <div class="row g-3 mb-3">
+        <div class="col-md-4">
+          <label class="form-label">Gender *</label>
+          <select name="spouse_gender" class="form-select">
+            <option value="">Select gender</option>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+          </select>
+        </div>
+        <div class="col-md-5">
+          <label class="form-label">Date of Birth *</label>
+          <div class="row g-2">
+            <div class="col-4">
+              <select id="spouse_day" class="form-select">
+                <option value="">Day</option>
+              </select>
+            </div>
+            <div class="col-4">
+              <select id="spouse_month" name="spouse_month" class="form-select">
+                <option value="">Month</option>
+                <option value="1">Jan</option><option value="2">Feb</option>
+                <option value="3">Mar</option><option value="4">Apr</option>
+                <option value="5">May</option><option value="6">Jun</option>
+                <option value="7">Jul</option><option value="8">Aug</option>
+                <option value="9">Sep</option><option value="10">Oct</option>
+                <option value="11">Nov</option><option value="12">Dec</option>
+              </select>
+            </div>
+            <div class="col-4">
+              <select id="spouse_year" class="form-select">
+                <option value="">Year</option>
+              </select>
+            </div>
+          </div>
+          <input type="hidden" name="spouse_date_of_birth" id="spouse_dob">
+        </div>
+        <div class="col-md-3 d-flex flex-column justify-content-end">
+          <label class="form-label">Age</label>
+          <div class="age-badge" id="spouse-age">-- years</div>
+        </div>
+      </div>
+
+      <div class="row g-3 mb-3">
+        <div class="col-md-6">
+          <label class="form-label">National ID Number *</label>
+          <input type="text" name="spouse_national_id" class="form-control" placeholder="e.g. 12345678">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Phone Number *</label>
+          <input type="tel" name="spouse_phone_number" class="form-control" placeholder="e.g. 0712345678">
+        </div>
+      </div>
+
+      <div class="row g-3 mb-3">
+        <div class="col-md-6">
+          <label class="form-label">County of Birth *</label>
+          <select name="spouse_county" id="spouse-county-select" class="form-select">
+            <option value="">Select County</option>
+          </select>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Sub County of Birth *</label>
+          <select name="spouse_sub_county" id="spouse-sub-county-select" class="form-select">
+            <option value="">Select Sub County</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="mb-2">
+        <label class="form-label">Upload Spouse ID Copy *</label>
+        <div class="upload-zone" id="zone-spouse-id">
+          <input type="file" name="spouse_id_copy" accept=".pdf,.jpg,.jpeg,.png"
+                 onchange="markUpload('zone-spouse-id', this)">
+          <div class="upload-icon"><i class="fas fa-id-card"></i></div>
+          <div class="upload-title">Upload spouse ID copy</div>
+          <div class="upload-sub">PDF, JPG or PNG</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════
+         STEP 4 — DEPENDANTS
+         (Last Expense only)
+    ═══════════════════════════════ -->
+    <div class="step-panel" id="step-4">
+      <div class="section-head orange-head">
+        <div class="section-head-icon orange"><i class="fas fa-child"></i></div>
+        <div>
+          <div class="section-head-title">Dependants</div>
+          <div class="section-head-sub">Add family members to be covered under this membership.</div>
+        </div>
+      </div>
+
+      <div class="d-flex justify-content-end mb-3">
+        <button type="button" class="btn-add-dep" id="add-dependant-btn">
+          <i class="fas fa-plus"></i> Add Dependant
+        </button>
+      </div>
+
+      <div id="dependants-container"></div>
+
+      <!-- Contribution Preview -->
+      <div id="contribution-preview" style="display:none;">
+        <div class="contrib-box">
+          <div class="contrib-icon"><i class="fas fa-calculator"></i></div>
+          <div>
+            <div class="contrib-label">Estimated Monthly Contribution</div>
+            <div class="contrib-amount" id="contribution-amount">KES 0</div>
+            <div class="contrib-reason" id="contribution-reason"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="info-note mt-3">
+        <i class="fas fa-info-circle"></i>
+        <span>Contribution is calculated based on your dependants' ages. You can add or remove dependants at any time.</span>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════
+         STEP 5 — REVIEW & SUBMIT
+    ═══════════════════════════════ -->
+    <div class="step-panel" id="step-5">
+      <div class="panel-title">Review &amp; Submit</div>
+      <div class="panel-sub">Please review your information before submitting.</div>
+
+      <div class="review-section">
+        <div class="review-section-head">Membership</div>
+        <div class="review-row">
+          <div class="review-key">Type</div>
+          <div class="review-val" id="rv-type">—</div>
+        </div>
+      </div>
+
+      <div class="review-section">
+        <div class="review-section-head">Personal Details</div>
+        <div class="review-row"><div class="review-key">Full Name</div><div class="review-val" id="rv-name">—</div></div>
+        <div class="review-row"><div class="review-key">Gender</div><div class="review-val" id="rv-gender">—</div></div>
+        <div class="review-row"><div class="review-key">Date of Birth</div><div class="review-val" id="rv-dob">—</div></div>
+        <div class="review-row"><div class="review-key">National ID</div><div class="review-val" id="rv-id">—</div></div>
+        <div class="review-row"><div class="review-key">Phone</div><div class="review-val" id="rv-phone">—</div></div>
+        <div class="review-row"><div class="review-key">Email</div><div class="review-val" id="rv-email">—</div></div>
+        <div class="review-row"><div class="review-key">County of Birth</div><div class="review-val" id="rv-county">—</div></div>
+        <div class="review-row"><div class="review-key">Sub County of Birth</div><div class="review-val" id="rv-sub-county">—</div></div>
+        <div class="review-row"><div class="review-key">Physical Address</div><div class="review-val" id="rv-address">—</div></div>
+        <div class="review-row"><div class="review-key">Marital Status</div><div class="review-val" id="rv-marital">—</div></div>
+      </div>
+
+      <div class="review-section" id="rv-spouse-section" style="display:none;">
+        <div class="review-section-head">Spouse</div>
+        <div class="review-row"><div class="review-key">Full Name</div><div class="review-val" id="rv-spouse-name">—</div></div>
+        <div class="review-row"><div class="review-key">National ID</div><div class="review-val" id="rv-spouse-id">—</div></div>
+        <div class="review-row"><div class="review-key">Phone</div><div class="review-val" id="rv-spouse-phone">—</div></div>
+      </div>
+
+      <div class="review-section" id="rv-contrib-section" style="display:none;">
+        <div class="review-section-head">Contribution</div>
+        <div class="review-row"><div class="review-key">Monthly Amount</div><div class="review-val" id="rv-contrib">—</div></div>
+        <div class="review-row"><div class="review-key">Reason</div><div class="review-val" id="rv-contrib-reason">—</div></div>
+      </div>
+
+      <div class="info-note">
+        <i class="fas fa-shield-alt"></i>
+        <span>Your <strong>National ID Number</strong> will be your login username.
+        By submitting, you agree to SisiPamoja's membership terms.</span>
+      </div>
+    </div>
+
+    <!-- Step Footer (Nav Buttons) -->
+    <div class="step-footer">
+      <button type="button" class="btn-prev" id="btnPrev" style="visibility:hidden;">
+        <i class="fas fa-arrow-left"></i> Previous
+      </button>
+      <button type="button" class="btn-next" id="btnNext">
+        Next: Personal Details <i class="fas fa-arrow-right"></i>
+      </button>
+      <button type="submit" class="btn-submit" id="btnSubmit" style="display:none;">
+        <i class="fas fa-check-circle"></i> Create My Account
+      </button>
+    </div>
+
+  </form>
+  </div>
+
+  <!-- Sign-in row -->
+  <div class="signin-row">
+    Already have an account? <a href="{% url 'login' %}">Sign in here</a>
+  </div>
+
 </div>
-
-                    <!-- ID & Phone -->
-                    <div class="row g-3 mb-3">
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">
-                                National ID Number *
-                            </label>
-                            <input type="text" 
-                                   name="national_id"
-                                   class="form-control"
-                                   placeholder="e.g. 12345678"
-                                   required>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">
-                                Phone Number *
-                            </label>
-                            <input type="tel" 
-                                   name="phone_number"
-                                   class="form-control"
-                                   placeholder="e.g. 0712345678"
-                                   required>
-                        </div>
-                    </div>
-
-                    <!-- Email -->
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">
-                            Email Address *
-                        </label>
-                        <input type="email" 
-                               name="email"
-                               class="form-control"
-                               placeholder="example@email.com"
-                               required>
-                    </div>
-
-                    <!-- County & Sub County of Birth -->
-                <div class="row g-3 mb-3">
-                     <div class="col-md-6">
-                    <label class="form-label fw-semibold">
-                        County of Birth*
-                    </label>
-                    <select name="county"
-                            id="county-select"
-                            class="form-select"
-                            required>
-                        <option value="">Select County</option>
-                    </select>
-                <script id="counties-data" type="application/json">
-                    {{ counties|safe }}
-                </script>
-                </div>
-                <div class="col-md-6">
-                    <label class="form-label fw-semibold">
-                       Sub County of Birth*
-                    </label>
-                   <select name="sub_county"
-                           id="sub-county-select"
-                           class="form-select"
-                           required>
-                        <option value="">Select Sub County</option>
-                     </select>
-                </div>
-                </div>
-                    <!-- Physical Address -->
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">
-                            Physical Address *
-                        </label>
-                        <textarea name="physical_address"
-                                  class="form-control"
-                                  rows="2"
-                                  placeholder="Your physical address"
-                                  required></textarea>
-                    </div>
-
-                    <!-- Marital Status -->
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">
-                            Marital Status *
-                        </label>
-                        <select name="marital_status"
-                                id="marital-status"
-                                class="form-select"
-                                required>
-                            <option value="">Select status</option>
-                            <option value="single">Single</option>
-                            <option value="married">Married</option>
-                         </select>
-                    </div>
-
-                <!-- Password -->
-                <div class="row g-3 mb-3">
-                    <!-- Password -->
-                    <div class="col-md-6">
-                            <label class="form-label fw-semibold">
-                                Password *
-                            </label>
-                            <div class="input-group">
-                                <input type="password"
-                                   name="password1"
-                                   class="form-control"
-                                   placeholder="Create password"
-                                   required>
-                                <button class="btn btn-outline-secondary"
-                                        type="button"
-                                        id="togglePassword">
-                                    <i class="fas fa-eye"></i>
-                                </button>
-                        </div>
-                        <small class="text-muted">
-                            Password must contain:
-                            <br>
-                            - At least 8 characters
-                            <br>
-                            - One uppercase letter
-                            <br>
-                            - One lowercase letter
-                            <br>
-                            - One number
-                        </small>
-                    </div>
-                    <!-- Confirm Password -->   
-                    <div class="col-md-6">
-                        <label class="form-label fw-semibold">
-                            Confirm Password *
-                        </label>
-                        <div class="input-group">
-                        <input type="password"
-                               name="password2"
-                                   class="form-control"
-                                   placeholder="Repeat password"
-                                   required>
-                        <button class="btn btn-outline-secondary"
-                                type="button"
-                                id="toggleConfirmPassword">
-                            <i class="fas fa-eye"></i>
-                        </button>
-                        </div>
-                    </div>
-                </div>
-
-                    <!-- Passport Photo -->
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">
-                            Passport Photo
-                        </label>
-                        <input type="file"
-                               name="passport_photo"
-                               class="form-control"
-                               accept="jpg,.jpeg,.png"
-                               required>
-                        <small class="text-muted">
-                            Accepted formats strictly: JPG, JPEG, PNG
-                        </small>
-                    </div>
-
-                    <!-- ID Upload -->
-                    <div class="mb-4">
-                        <label class="form-label fw-semibold">
-                            National ID Copy *
-                        </label>
-                        <input type="file"
-                               name="id_copy"
-                               class="form-control"
-                               accept=".pdf,.jpg,.jpeg,.png"
-                               required>
-                        <small class="text-muted">
-                            Accepted formats strictly: PDF, JPG, JPEG, PNG
-                        </small>
-                    </div>
-
-                    <!-- Submit -->
-                    <div class="d-grid mb-3">
-                        <button type="submit" 
-                                class="btn btn-primary btn-lg">
-                            <i class="fas fa-user-plus me-2"></i>
-                            Create Account
-                        </button>
-                    </div>
-
-                    <!-- Login Link -->
-                <div class="alert alert-info small">
-                    <i class="fas fa-info-circle me-1"></i>
-                    Your <strong>National ID Number</strong> will be used as your username to log in, so please ensure it is correct.
-                </div>
-                    <p class="text-center text-muted mb-0">
-                        Already have an account? 
-                                <a href="{% url 'login' %}" 
-                                    class="text-decoration-none fw-semibold text-primary-theme">
-                            Sign In
-                        </a>
-                    </p>
-
-                </form>
-            </div>
-        </div>
-    </div>
 </div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
-// Populate years
-const yearSelect = document.getElementById('year');
+'use strict';
+
+// ══════════════════════════════════════
+// STATE
+// ══════════════════════════════════════
+let currentStep = 1;
+let membershipType = '';   // 'sacco' | 'last_expense'
+let maritalStatus  = '';   // 'single' | 'married'
+let dependantCount = 0;
+
+// Steps available per membership type
+// sacco:        1,2,5
+// last_expense single:  1,2,4,5
+// last_expense married: 1,2,3,4,5
+function getSteps() {
+  if (membershipType === 'sacco') return [1,2,5];
+  if (membershipType === 'last_expense') {
+    if (maritalStatus === 'married') return [1,2,3,4,5];
+    return [1,2,4,5];
+  }
+  return [1,2,5];
+}
+
+// ══════════════════════════════════════
+// POPULATE YEARS / DAYS
+// ══════════════════════════════════════
 const currentYear = new Date().getFullYear();
 
-for (let year = currentYear; year >= 1900; year--) {
-    const option = document.createElement('option');
-    option.value = year;
-    option.textContent = year;
-    yearSelect.appendChild(option);
+function populateDays(selId) {
+  const sel = document.getElementById(selId);
+  for (let d = 1; d <= 31; d++) {
+    const o = document.createElement('option');
+    o.value = d; o.textContent = d;
+    sel.appendChild(o);
+  }
+}
+function populateYears(selId) {
+  const sel = document.getElementById(selId);
+  for (let y = currentYear; y >= 1900; y--) {
+    const o = document.createElement('option');
+    o.value = y; o.textContent = y;
+    sel.appendChild(o);
+  }
 }
 
-// Populate days
-const daySelect = document.getElementById('day');
+populateDays('day');   populateYears('year');
+populateDays('spouse_day'); populateYears('spouse_year');
 
-for (let day = 1; day <= 31; day++) {
-    const option = document.createElement('option');
-    option.value = day;
-    option.textContent = day;
-    daySelect.appendChild(option);
+// ══════════════════════════════════════
+// AGE CALC
+// ══════════════════════════════════════
+function calcAge(dob) {
+  if (!dob) return null;
+  const today = new Date();
+  let age = today.getFullYear() - dob.getFullYear();
+  const m = today.getMonth() - dob.getMonth();
+  if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) age--;
+  return age;
 }
 
-// Auto calculate age + create hidden DOB value
-function updateDOB() {
-    const day = document.getElementById('day').value;
-    const month = document.getElementById('month').value;
-    const year = document.getElementById('year').value;
-
-    if (day && month && year) {
-
-        // Format YYYY-MM-DD for Django
-        const dobValue = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-
-        document.getElementById('dob').value = dobValue;
-
-        // Calculate age
-        const dob = new Date(dobValue);
-        const today = new Date();
-
-        let age = today.getFullYear() - dob.getFullYear();
-
-        const m = today.getMonth() - dob.getMonth();
-
-        if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
-            age--;
-        }
-
-        document.getElementById('age-display').textContent = age;
-    }
+function buildDOB(day, month, year) {
+  if (!day || !month || !year) return null;
+  return new Date(parseInt(year), parseInt(month)-1, parseInt(day));
 }
 
-// Listen for changes
-document.getElementById('day').addEventListener('change', updateDOB);
-document.getElementById('month').addEventListener('change', updateDOB);
-document.getElementById('year').addEventListener('change', updateDOB);
+// Member DOB
+['day','month','year'].forEach(id => {
+  document.getElementById(id).addEventListener('change', updateMemberAge);
+});
+function updateMemberAge() {
+  const dob = buildDOB(
+    document.getElementById('day').value,
+    document.getElementById('month').value,
+    document.getElementById('year').value
+  );
+  const age = calcAge(dob);
+  const badge = document.getElementById('age-display');
+  if (age !== null) {
+    const dobStr = `${document.getElementById('year').value}-${String(document.getElementById('month').value).padStart(2,'0')}-${String(document.getElementById('day').value).padStart(2,'0')}`;
+    document.getElementById('dob').value = dobStr;
+    badge.textContent = age + ' years';
+  } else {
+    badge.textContent = '-- years';
+  }
+}
 
-// Toggle Password
-document.getElementById('togglePassword')
-    .addEventListener('click', function() {
-        const pwd = document.querySelector('input[name="password1"]');
-        const icon = this.querySelector('i');
-        if (pwd.type === 'password') {
-            pwd.type = 'text';
-            icon.classList.replace('fa-eye', 'fa-eye-slash');
-        } else {
-            pwd.type = 'password';
-            icon.classList.replace('fa-eye-slash', 'fa-eye');
-        }
+// Spouse DOB
+['spouse_day','spouse_month','spouse_year'].forEach(id => {
+  document.getElementById(id).addEventListener('change', updateSpouseAge);
+});
+function updateSpouseAge() {
+  const dob = buildDOB(
+    document.getElementById('spouse_day').value,
+    document.getElementById('spouse_month').value,
+    document.getElementById('spouse_year').value
+  );
+  const age = calcAge(dob);
+  const badge = document.getElementById('spouse-age');
+  if (age !== null) {
+    const dobStr = `${document.getElementById('spouse_year').value}-${String(document.getElementById('spouse_month').value).padStart(2,'0')}-${String(document.getElementById('spouse_day').value).padStart(2,'0')}`;
+    document.getElementById('spouse_dob').value = dobStr;
+    badge.textContent = age + ' years';
+  } else {
+    badge.textContent = '-- years';
+  }
+}
+
+// ══════════════════════════════════════
+// COUNTIES
+// ══════════════════════════════════════
+const countiesData = JSON.parse(document.getElementById('counties-data').textContent);
+
+function populateCounties(selId) {
+  const sel = document.getElementById(selId);
+  Object.keys(countiesData).sort().forEach(c => {
+    const o = document.createElement('option');
+    o.value = c; o.textContent = c;
+    sel.appendChild(o);
+  });
+}
+function bindCountySubcounty(countyId, subId) {
+  document.getElementById(countyId).addEventListener('change', function() {
+    const sub = document.getElementById(subId);
+    sub.innerHTML = '<option value="">Select sub county</option>';
+    (countiesData[this.value] || []).forEach(s => {
+      const o = document.createElement('option');
+      o.value = s; o.textContent = s;
+      sub.appendChild(o);
     });
+  });
+}
 
-// Toggle Confirm Password
-document.getElementById('toggleConfirmPassword')
-    .addEventListener('click', function() {
-        const pwd = document.querySelector('input[name="password2"]');
-        const icon = this.querySelector('i');
-        if (pwd.type === 'password') {
-            pwd.type = 'text';
-            icon.classList.replace('fa-eye', 'fa-eye-slash');
-        } else {
-            pwd.type = 'password';
-            icon.classList.replace('fa-eye-slash', 'fa-eye');
-        }
-    });
+populateCounties('county-select');
+populateCounties('spouse-county-select');
+bindCountySubcounty('county-select','sub-county-select');
+bindCountySubcounty('spouse-county-select','spouse-sub-county-select');
 
-// Password Validation
-const password1 = document.querySelector('input[name="password1"]');
-const password2 = document.querySelector('input[name="password2"]');
-const submitBtn = document.querySelector('button[type="submit"]');
+// ══════════════════════════════════════
+// MEMBERSHIP CARD SELECTION
+// ══════════════════════════════════════
+document.getElementById('sacco').addEventListener('change', function() {
+  if (this.checked) {
+    membershipType = 'sacco';
+    document.getElementById('card-sacco').className = 'mem-card selected-green';
+    document.getElementById('card-expense').className = 'mem-card';
+    updateStepBar();
+  }
+});
+document.getElementById('last_expense').addEventListener('change', function() {
+  if (this.checked) {
+    membershipType = 'last_expense';
+    document.getElementById('card-expense').className = 'mem-card selected-orange';
+    document.getElementById('card-sacco').className = 'mem-card';
+    updateStepBar();
+  }
+});
 
-// Rules
-const rules = {
-    length: str => str.length >= 8,
-    uppercase: str => /[A-Z]/.test(str),
-    lowercase: str => /[a-z]/.test(str),
-    number: str => /[0-9]/.test(str),
-};
+// ══════════════════════════════════════
+// MARITAL STATUS
+// ══════════════════════════════════════
+document.getElementById('marital-status').addEventListener('change', function() {
+  maritalStatus = this.value;
+  updateStepBar();
+});
 
-// Add indicator below password field
-const indicator = document.createElement('div');
-indicator.className = 'mt-2 small';
-indicator.innerHTML = `
-    <div id="rule-length" class="text-danger">
-        <i class="fas fa-times-circle me-1"></i>
-        At least 8 characters
-    </div>
-    <div id="rule-upper" class="text-danger">
-        <i class="fas fa-times-circle me-1"></i>
-        One uppercase letter
-    </div>
-    <div id="rule-lower" class="text-danger">
-        <i class="fas fa-times-circle me-1"></i>
-        One lowercase letter
-    </div>
-    <div id="rule-number" class="text-danger">
-        <i class="fas fa-times-circle me-1"></i>
-        One number
-    </div>
-`;
-password1.closest('.col-md-6').appendChild(indicator);
-
-// Match indicator
-const matchMsg = document.createElement('div');
-matchMsg.className = 'mt-2 small text-danger';
-matchMsg.id = 'match-msg';
-matchMsg.innerHTML = `
-    <i class="fas fa-times-circle me-1"></i>
-    Passwords do not match
-`;
-password2.closest('.col-md-6').appendChild(matchMsg);
-
-function updateRule(id, passed) {
-    const el = document.getElementById(id);
-    if (passed) {
-        el.className = 'text-success';
-        el.innerHTML = `
-            <i class="fas fa-check-circle me-1"></i>
-            ${el.textContent.trim()}
-        `;
+// ══════════════════════════════════════
+// STEP BAR UPDATE
+// ══════════════════════════════════════
+function updateStepBar() {
+  const steps = getSteps();
+  [1,2,3,4,5].forEach(n => {
+    const item = document.getElementById('bar-'+n);
+    if (steps.includes(n)) {
+      item.classList.remove('hidden-step');
     } else {
-        el.className = 'text-danger';
-        el.innerHTML = `
-            <i class="fas fa-times-circle me-1"></i>
-            ${el.textContent.trim()}
-        `;
+      item.classList.add('hidden-step');
     }
+  });
 }
 
+// ══════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════
+document.getElementById('btnNext').addEventListener('click', function() {
+  if (!validateStep(currentStep)) return;
+  const steps = getSteps();
+  const idx = steps.indexOf(currentStep);
+  if (idx < steps.length - 1) {
+    goToStep(steps[idx + 1]);
+  }
+});
+
+document.getElementById('btnPrev').addEventListener('click', function() {
+  const steps = getSteps();
+  const idx = steps.indexOf(currentStep);
+  if (idx > 0) goToStep(steps[idx - 1]);
+});
+
+function goToStep(n) {
+  document.getElementById('step-'+currentStep).classList.remove('active');
+  document.getElementById('bar-'+currentStep).classList.remove('active');
+  document.getElementById('bar-'+currentStep).classList.add('done');
+
+  currentStep = n;
+
+  document.getElementById('step-'+currentStep).classList.add('active');
+
+  // Update bar
+  const steps = getSteps();
+  steps.forEach(s => {
+    const bar = document.getElementById('bar-'+s);
+    bar.classList.remove('active','done');
+    if (s < currentStep) bar.classList.add('done');
+    if (s === currentStep) bar.classList.add('active');
+  });
+
+  // Buttons
+  const btnPrev = document.getElementById('btnPrev');
+  const btnNext = document.getElementById('btnNext');
+  const btnSubmit = document.getElementById('btnSubmit');
+
+  const isFirst = steps.indexOf(currentStep) === 0;
+  const isLast  = steps.indexOf(currentStep) === steps.length - 1;
+
+  btnPrev.style.visibility = isFirst ? 'hidden' : 'visible';
+  btnNext.style.display     = isLast  ? 'none'  : 'flex';
+  btnSubmit.style.display   = isLast  ? 'flex'  : 'none';
+  btnSubmit.disabled        = !isLast;
+  btnSubmit.style.pointerEvents = isLast ? 'auto' : 'none';
+  btnSubmit.style.opacity = isLast ? '1' : '0';
+
+  // Next button label
+  if (!isLast) {
+    const nextStep = steps[steps.indexOf(currentStep) + 1];
+    const labels = {1:'Personal Details',2:'Spouse Details',3:'Dependants',4:'Review & Submit',5:''};
+    btnNext.innerHTML = `Next: ${labels[nextStep] || 'Continue'} <i class="fas fa-arrow-right"></i>`;
+  }
+
+  // Fill review on step 5
+  if (n === 5) fillReview();
+
+  // Recalc contribution on step 4
+  if (n === 4) calculateContribution();
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ══════════════════════════════════════
+// VALIDATION
+// ══════════════════════════════════════
+function validateStep(n) {
+  if (n === 1) {
+    if (!membershipType) { alert('Please choose a membership type.'); return false; }
+  }
+  if (n === 2) {
+    const required = ['first_name','last_name','gender','date_of_birth',
+                      'national_id','phone_number','email','county',
+                      'sub_county','marital_status','physical_address',
+                      'password1','password2'];
+    for (const name of required) {
+      const el = document.querySelector(`[name="${name}"]`);
+      if (el && !el.value.trim()) {
+        el.focus();
+        el.style.borderColor = '#DC2626';
+        setTimeout(() => el.style.borderColor = '', 2000);
+        alert(`Please fill in: ${name.replace(/_/g,' ')}`);
+        return false;
+      }
+    }
+    if (!checkPassword()) { alert('Please meet all password requirements.'); return false; }
+    if (!checkMatch())    { alert('Passwords do not match.');                return false; }
+  }
+  return true;
+}
+
+// ══════════════════════════════════════
+// PASSWORD VALIDATION
+// ══════════════════════════════════════
+const pw1 = document.getElementById('pw1');
+const pw2 = document.getElementById('pw2');
+
+function setRule(id, ok) {
+  const el = document.getElementById(id);
+  el.classList.toggle('ok', ok);
+}
 function checkPassword() {
-    const val = password1.value;
-    updateRule('rule-length', rules.length(val));
-    updateRule('rule-upper', rules.uppercase(val));
-    updateRule('rule-lower', rules.lowercase(val));
-    updateRule('rule-number', rules.number(val));
-
-    return rules.length(val) && 
-           rules.uppercase(val) && 
-           rules.lowercase(val) && 
-           rules.number(val);
+  const v = pw1.value;
+  setRule('r-len', v.length >= 8);
+  setRule('r-up',  /[A-Z]/.test(v));
+  setRule('r-low', /[a-z]/.test(v));
+  setRule('r-num', /[0-9]/.test(v));
+  return v.length >= 8 && /[A-Z]/.test(v) && /[a-z]/.test(v) && /[0-9]/.test(v);
 }
-
 function checkMatch() {
-    const match = password1.value === password2.value 
-                  && password2.value !== '';
-    const el = document.getElementById('match-msg');
-    if (match) {
-        el.className = 'mt-2 small text-success';
-        el.innerHTML = `
-            <i class="fas fa-check-circle me-1"></i>
-            Passwords match
-        `;
-    } else {
-        el.className = 'mt-2 small text-danger';
-        el.innerHTML = `
-            <i class="fas fa-times-circle me-1"></i>
-            Passwords do not match
-        `;
-    }
-    return match;
+  const ok = pw1.value === pw2.value && pw2.value !== '';
+  setRule('r-match', ok);
+  return ok;
+}
+pw1.addEventListener('input', checkPassword);
+pw2.addEventListener('input', checkMatch);
+
+// toggle eye
+document.getElementById('togglePassword').addEventListener('click', function() {
+  pw1.type = pw1.type === 'password' ? 'text' : 'password';
+  this.querySelector('i').classList.toggle('fa-eye');
+  this.querySelector('i').classList.toggle('fa-eye-slash');
+});
+document.getElementById('toggleConfirmPassword').addEventListener('click', function() {
+  pw2.type = pw2.type === 'password' ? 'text' : 'password';
+  this.querySelector('i').classList.toggle('fa-eye');
+  this.querySelector('i').classList.toggle('fa-eye-slash');
+});
+
+// ══════════════════════════════════════
+// UPLOAD ZONES
+// ══════════════════════════════════════
+function markUpload(zoneId, input) {
+  const zone = document.getElementById(zoneId);
+  if (input.files && input.files[0]) {
+    zone.classList.add('has-file');
+    zone.querySelector('.upload-title').textContent = input.files[0].name;
+    zone.querySelector('.upload-sub').textContent = 'File selected ✓';
+  }
 }
 
-password1.addEventListener('input', checkPassword);
-password2.addEventListener('input', checkMatch);
+// ══════════════════════════════════════
+// DEPENDANTS
+// ══════════════════════════════════════
+document.getElementById('add-dependant-btn').addEventListener('click', function() {
+  dependantCount++;
+  const container = document.getElementById('dependants-container');
+  const div = document.createElement('div');
+  div.className = 'dep-card';
+  div.id = `dep-${dependantCount}`;
+  div.innerHTML = `
+    <div class="dep-card-head">
+      <div class="dep-card-title">
+        <i class="fas fa-child"></i> Dependant ${dependantCount}
+      </div>
+      <button type="button" class="btn-remove-dep" onclick="removeDep(${dependantCount})">
+        <i class="fas fa-trash me-1"></i>Remove
+      </button>
+    </div>
+    <div class="row g-3 mb-3">
+      <div class="col-md-6">
+        <label class="form-label">Full Name *</label>
+        <input type="text" name="dep_full_name_${dependantCount}" class="form-control" placeholder="Full name" required>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Relationship *</label>
+        <select name="dep_relationship_${dependantCount}" class="form-select" required>
+          <option value="">Select</option>
+          <option value="child">Child</option>
+          <option value="parent">Parent</option>
+          <option value="relative">Relative</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+    </div>
+    <div class="row g-3 mb-3">
+      <div class="col-md-4">
+        <label class="form-label">Gender *</label>
+        <select name="dep_gender_${dependantCount}" class="form-select" required>
+          <option value="">Select</option>
+          <option value="male">Male</option>
+          <option value="female">Female</option>
+        </select>
+      </div>
+      <div class="col-md-5">
+        <label class="form-label">Date of Birth *</label>
+        <input type="date" name="dep_dob_${dependantCount}" id="dep_dob_${dependantCount}"
+               class="form-control dep-dob" data-index="${dependantCount}" required>
+      </div>
+      <div class="col-md-3 d-flex flex-column justify-content-end">
+        <label class="form-label">Age</label>
+        <div class="age-badge" id="dep-age-${dependantCount}">-- yrs</div>
+      </div>
+    </div>
+    <div class="row g-3 mb-3">
+      <div class="col-md-6" id="dep-phone-wrap-${dependantCount}">
+        <label class="form-label">Phone Number</label>
+        <input type="tel" name="dep_phone_${dependantCount}" class="form-control" placeholder="0712 345 678">
+      </div>
+      <div class="col-md-6" id="dep-email-wrap-${dependantCount}">
+        <label class="form-label">Email <span class="text-muted fw-normal">(Optional)</span></label>
+        <input type="email" name="dep_email_${dependantCount}" class="form-control" placeholder="email@example.com">
+      </div>
+    </div>
+    <div class="row g-3 mb-2">
+      <div class="col-md-6">
+        <label class="form-label" id="dep-id-label-${dependantCount}">National ID Number</label>
+        <input type="text" name="dep_id_${dependantCount}" class="form-control" placeholder="ID or Birth Cert No.">
+      </div>
+      <div class="col-md-6">
+        <label class="form-label" id="dep-upload-label-${dependantCount}">Upload Document</label>
+        <div class="upload-zone" id="dep-zone-${dependantCount}">
+          <input type="file" name="dep_doc_${dependantCount}" accept=".pdf,.jpg,.jpeg,.png"
+                 onchange="markUpload('dep-zone-${dependantCount}', this)">
+          <div class="upload-icon"><i class="fas fa-file-upload"></i></div>
+          <div class="upload-title" id="dep-doc-title-${dependantCount}">Upload document</div>
+          <div class="upload-sub" id="dep-doc-hint-${dependantCount}">PDF, JPG or PNG</div>
+        </div>
+      </div>
+    </div>
+  `;
+  container.appendChild(div);
+  calculateContribution();
 
-// Block form submission if rules not met
-document.querySelector('form').addEventListener('submit', function(e) {
-    if (!checkPassword()) {
-        e.preventDefault();
-        password1.focus();
-        alert('Please meet all password requirements.');
-    } else if (!checkMatch()) {
-        e.preventDefault();
-        password2.focus();
-        alert('Passwords do not match.');
+  // DOB listener
+  document.getElementById(`dep_dob_${dependantCount}`).addEventListener('change', function() {
+    const dob = new Date(this.value);
+    const today = new Date();
+    let age = today.getFullYear() - dob.getFullYear();
+    const m = today.getMonth() - dob.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) age--;
+
+    const idx = this.getAttribute('data-index');
+    document.getElementById(`dep-age-${idx}`).textContent = age + ' yrs';
+
+    const idLabel  = document.getElementById(`dep-id-label-${idx}`);
+    const upLabel  = document.getElementById(`dep-upload-label-${idx}`);
+    const hint     = document.getElementById(`dep-doc-hint-${idx}`);
+    const title    = document.getElementById(`dep-doc-title-${idx}`);
+
+    if (age < 18) {
+      toggleDepContactFields(idx, true);
+      idLabel.textContent = 'Birth Certificate Number *';
+      upLabel.textContent = 'Upload Birth Certificate *';
+      title.textContent   = 'Upload birth certificate';
+      hint.textContent    = 'PDF, JPG or PNG';
+    } else {
+      toggleDepContactFields(idx, false);
+      idLabel.textContent = 'National ID Number *';
+      upLabel.textContent = 'Upload ID Copy *';
+      title.textContent   = 'Upload ID copy';
+      hint.textContent    = 'PDF, JPG or PNG';
     }
+    calculateContribution();
+  });
 });
 
-// Load counties and sub counties
-const countiesData = JSON.parse(
-    document.getElementById('counties-data').textContent
-)
+function removeDep(idx) {
+  const el = document.getElementById(`dep-${idx}`);
+  if (el) el.remove();
+  calculateContribution();
+}
 
-const countySelect = document.getElementById('county-select');
-const subCountySelect = document.getElementById('sub-county-select');
+function toggleDepContactFields(idx, hide) {
+  const phoneWrap = document.getElementById(`dep-phone-wrap-${idx}`);
+  const emailWrap = document.getElementById(`dep-email-wrap-${idx}`);
+  if (!phoneWrap || !emailWrap) return;
 
-// Populate counties
-Object.keys(countiesData).sort().forEach(county => {
-    const option = document.createElement('option');
-    option.value = county;
-    option.textContent = county;
-    countySelect.appendChild(option);
-});
+  phoneWrap.style.display = hide ? 'none' : '';
+  emailWrap.style.display = hide ? 'none' : '';
+}
 
-// Populate sub counties based on selected county
-countySelect.addEventListener('change', function() {
-    subCountySelect.innerHTML = 
-        '<option value="">Select Sub County</option>';
-    
-    const subCounties = countiesData[this.value] || [];
-    subCounties.forEach(sub => {
-        const option = document.createElement('option');
-        option.value = sub;
-        option.textContent = sub;
-        subCountySelect.appendChild(option);
-    });
+// ══════════════════════════════════════
+// CONTRIBUTION ENGINE
+// ══════════════════════════════════════
+function calculateContribution() {
+  const preview = document.getElementById('contribution-preview');
+  if (membershipType !== 'last_expense') { preview.style.display='none'; return; }
+
+  const depDobs = document.querySelectorAll('.dep-dob');
+  let hasOver70 = false;
+  let hasDeps   = depDobs.length > 0;
+
+  depDobs.forEach(input => {
+    if (input.value) {
+      const dob = new Date(input.value);
+      const today = new Date();
+      let age = today.getFullYear() - dob.getFullYear();
+      const m = today.getMonth() - dob.getMonth();
+      if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) age--;
+      if (age >= 70) hasOver70 = true;
+    }
+  });
+
+  let amount = 2500, reason = 'Immediate family only';
+  if (hasDeps && hasOver70)  { amount = 3500; reason = 'Has dependant aged 70 years or above'; }
+  else if (hasDeps)          { amount = 3000; reason = 'Has dependant(s) below 70 years'; }
+
+  document.getElementById('contribution-amount').textContent = `KES ${amount.toLocaleString()}`;
+  document.getElementById('contribution-reason').textContent  = reason;
+  preview.style.display = 'block';
+}
+
+// ══════════════════════════════════════
+// FILL REVIEW STEP
+// ══════════════════════════════════════
+function fillReview() {
+  const g = name => (document.querySelector(`[name="${name}"]`) || {}).value || '—';
+  const capFirst = str => str ? str.charAt(0).toUpperCase() + str.slice(1) : '—';
+
+  document.getElementById('rv-type').textContent    = membershipType === 'sacco' ? 'Sacco Member' : 'Last Expense Member';
+  document.getElementById('rv-name').textContent    = `${g('first_name')} ${g('middle_name')} ${g('last_name')}`.trim();
+  document.getElementById('rv-gender').textContent  = capFirst(g('gender'));
+  document.getElementById('rv-dob').textContent     = g('date_of_birth');
+  document.getElementById('rv-id').textContent      = g('national_id');
+  document.getElementById('rv-phone').textContent   = g('phone_number');
+  document.getElementById('rv-email').textContent   = g('email');
+  document.getElementById('rv-county').textContent      = g('county');
+  document.getElementById('rv-sub-county').textContent  = g('sub_county');
+  document.getElementById('rv-address').textContent     = g('physical_address');
+  document.getElementById('rv-marital').textContent     = capFirst(g('marital_status'));
+
+  // Spouse
+  if (membershipType === 'last_expense' && maritalStatus === 'married') {
+    document.getElementById('rv-spouse-section').style.display = 'block';
+    document.getElementById('rv-spouse-name').textContent  = g('spouse_full_name');
+    document.getElementById('rv-spouse-id').textContent    = g('spouse_national_id');
+    document.getElementById('rv-spouse-phone').textContent = g('spouse_phone_number');
+  } else {
+    document.getElementById('rv-spouse-section').style.display = 'none';
+  }
+
+  // Contribution
+  if (membershipType === 'last_expense') {
+    document.getElementById('rv-contrib-section').style.display = 'block';
+    document.getElementById('rv-contrib').textContent        = document.getElementById('contribution-amount').textContent;
+    document.getElementById('rv-contrib-reason').textContent = document.getElementById('contribution-reason').textContent;
+  } else {
+    document.getElementById('rv-contrib-section').style.display = 'none';
+  }
+}
+
+// ══════════════════════════════════════
+// FORM SUBMIT GUARD
+// ══════════════════════════════════════
+document.getElementById('regForm').addEventListener('submit', function(e) {
+  if (!checkPassword()) { e.preventDefault(); alert('Please meet all password requirements.'); return; }
+  if (!checkMatch())    { e.preventDefault(); alert('Passwords do not match.'); return; }
 });
 </script>
 {% endblock %}

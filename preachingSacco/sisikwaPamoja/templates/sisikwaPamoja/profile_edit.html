@@ -1,0 +1,436 @@
+{% extends 'sisikwaPamoja/base.html' %}
+{% block title %}SisiPamoja | Edit Profile{% endblock %}
+
+{% block content %}
+<div style="background:#F8FBF8;min-height:100vh;padding:32px 0 60px;">
+<div class="container">
+<div class="row justify-content-center">
+<div class="col-lg-9">
+
+  <!-- ── Page Header ── -->
+  <div style="background:#1B5E20;border-radius:14px 14px 0 0;
+              padding:24px 32px;border-bottom:3px solid #E65100;
+              display:flex;align-items:center;gap:16px;">
+    <div style="width:52px;height:52px;background:rgba(255,255,255,0.12);
+                border-radius:12px;display:flex;align-items:center;
+                justify-content:center;">
+      <i class="fas fa-user-edit fa-lg" style="color:#F9A825;"></i>
+    </div>
+    <div>
+      <h4 style="color:#fff;margin:0 0 3px;font-weight:700;">
+        Edit Profile
+      </h4>
+      <p style="color:rgba(255,255,255,0.7);margin:0;font-size:13px;">
+        Update your personal information, spouse and dependant details
+      </p>
+    </div>
+  </div>
+
+  <!-- ── Messages ── -->
+  {% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }} alert-dismissible
+                fade show mt-3" role="alert">
+      <i class="fas fa-info-circle me-2"></i>{{ message }}
+      <button type="button" class="btn-close"
+              data-bs-dismiss="alert"></button>
+    </div>
+    {% endfor %}
+  {% endif %}
+
+  <!-- ── Main Card ── -->
+  <div style="background:#fff;border-radius:0 0 14px 14px;
+              border:1px solid rgba(27,94,32,0.12);
+              border-top:none;padding:32px;">
+
+    <form method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
+
+      <!-- ══ SECTION 1: Personal Details ══ -->
+      <div style="display:flex;align-items:center;gap:10px;
+                  margin-bottom:20px;">
+        <div style="width:36px;height:36px;background:#E8F5E9;
+                    border-radius:9px;display:flex;align-items:center;
+                    justify-content:center;">
+          <i class="fas fa-user" style="color:#1B5E20;"></i>
+        </div>
+        <h6 style="color:#1B5E20;font-weight:700;margin:0;">
+          Personal Details
+        </h6>
+      </div>
+
+      <!-- Name row -->
+      <div class="row g-3 mb-3">
+        <div class="col-md-4">
+          <label class="form-label fw-semibold" style="font-size:13px;">
+            First Name <span style="color:#E65100;">*</span>
+          </label>
+          {{ profile_form.first_name }}
+          {% if profile_form.first_name.errors %}
+            <div class="text-danger" style="font-size:12px;">
+              {{ profile_form.first_name.errors.0 }}
+            </div>
+          {% endif %}
+        </div>
+        <div class="col-md-4">
+          <label class="form-label fw-semibold" style="font-size:13px;">
+            Middle Name
+          </label>
+          {{ profile_form.middle_name }}
+        </div>
+        <div class="col-md-4">
+          <label class="form-label fw-semibold" style="font-size:13px;">
+            Last Name <span style="color:#E65100;">*</span>
+          </label>
+          {{ profile_form.last_name }}
+          {% if profile_form.last_name.errors %}
+            <div class="text-danger" style="font-size:12px;">
+              {{ profile_form.last_name.errors.0 }}
+            </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Gender & DOB -->
+      <div class="row g-3 mb-3">
+        <div class="col-md-6">
+          <label class="form-label fw-semibold" style="font-size:13px;">
+            Gender <span style="color:#E65100;">*</span>
+          </label>
+          {{ profile_form.gender }}
+        </div>
+        <div class="col-md-6">
+          <label class="form-label fw-semibold" style="font-size:13px;">
+            Date of Birth <span style="color:#E65100;">*</span>
+          </label>
+          {{ profile_form.date_of_birth }}
+          <div style="margin-top:5px;">
+            <span style="background:#E8F5E9;color:#1B5E20;
+                         font-size:11px;font-weight:600;
+                         padding:3px 10px;border-radius:20px;">
+              🎂 Age: <span id="age-display">
+                {{ profile.get_age }}
+              </span> years
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Phone & Address -->
+      <div class="row g-3 mb-3">
+        <div class="col-md-6">
+          <label class="form-label fw-semibold" style="font-size:13px;">
+            Phone Number <span style="color:#E65100;">*</span>
+          </label>
+          {{ profile_form.phone_number }}
+        </div>
+        <div class="col-md-6">
+          <label class="form-label fw-semibold" style="font-size:13px;">
+            Marital Status <span style="color:#E65100;">*</span>
+          </label>
+          {{ profile_form.marital_status }}
+        </div>
+      </div>
+
+      <!-- County -->
+      <div class="row g-3 mb-3">
+        <div class="col-md-6">
+          <label class="form-label fw-semibold" style="font-size:13px;">
+            County of Birth <span style="color:#E65100;">*</span>
+          </label>
+          {{ profile_form.county }}
+        </div>
+        <div class="col-md-6">
+          <label class="form-label fw-semibold" style="font-size:13px;">
+            Sub County of Birth <span style="color:#E65100;">*</span>
+          </label>
+          {{ profile_form.sub_county }}
+        </div>
+      </div>
+
+      <!-- Physical address -->
+      <div class="mb-3">
+        <label class="form-label fw-semibold" style="font-size:13px;">
+          Physical Address <span style="color:#E65100;">*</span>
+        </label>
+        {{ profile_form.physical_address }}
+      </div>
+
+      <!-- Documents -->
+      <div class="row g-3 mb-3">
+        <div class="col-md-6">
+          <label class="form-label fw-semibold" style="font-size:13px;">
+            Passport Photo
+          </label>
+          {% if profile.passport_photo %}
+            <div class="mb-2">
+              <img src="{{ profile.passport_photo.url }}"
+                   style="width:60px;height:60px;border-radius:50%;
+                          object-fit:cover;border:2px solid #1B5E20;">
+              <span style="font-size:11px;color:#888;margin-left:8px;">
+                Current photo
+              </span>
+            </div>
+          {% endif %}
+          {{ profile_form.passport_photo }}
+          <div style="font-size:11px;color:#888;margin-top:4px;">
+            Leave empty to keep current photo
+          </div>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label fw-semibold" style="font-size:13px;">
+            National ID Copy
+          </label>
+          {% if profile.id_copy %}
+            <div class="mb-2">
+              <a href="{{ profile.id_copy.url }}" target="_blank"
+                 style="font-size:12px;color:#1B5E20;">
+                <i class="fas fa-file me-1"></i> View current ID
+              </a>
+            </div>
+          {% endif %}
+          {{ profile_form.id_copy }}
+          <div style="font-size:11px;color:#888;margin-top:4px;">
+            Leave empty to keep current file
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ SECTION 2: Spouse (only if married) ══ -->
+      {% if is_married and spouse_form %}
+      <hr style="border-color:#E8F5E9;margin:28px 0;">
+
+      <div style="display:flex;align-items:center;gap:10px;
+                  margin-bottom:20px;">
+        <div style="width:36px;height:36px;background:#E3F2FD;
+                    border-radius:9px;display:flex;align-items:center;
+                    justify-content:center;">
+          <i class="fas fa-heart" style="color:#1565C0;"></i>
+        </div>
+        <h6 style="color:#1565C0;font-weight:700;margin:0;">
+          Spouse Details
+        </h6>
+      </div>
+
+      <div class="row g-3 mb-3">
+        <div class="col-md-4">
+          <label class="form-label fw-semibold" style="font-size:13px;">
+            First Name
+          </label>
+          {{ spouse_form.first_name }}
+        </div>
+        <div class="col-md-4">
+          <label class="form-label fw-semibold" style="font-size:13px;">
+            Middle Name
+          </label>
+          {{ spouse_form.middle_name }}
+        </div>
+        <div class="col-md-4">
+          <label class="form-label fw-semibold" style="font-size:13px;">
+            Last Name
+          </label>
+          {{ spouse_form.last_name }}
+        </div>
+      </div>
+
+      <div class="row g-3 mb-3">
+        <div class="col-md-6">
+          <label class="form-label fw-semibold" style="font-size:13px;">
+            Gender
+          </label>
+          {{ spouse_form.gender }}
+        </div>
+        <div class="col-md-6">
+          <label class="form-label fw-semibold" style="font-size:13px;">
+            Date of Birth
+          </label>
+          {{ spouse_form.date_of_birth }}
+        </div>
+      </div>
+
+      <div class="row g-3 mb-3">
+        <div class="col-md-6">
+          <label class="form-label fw-semibold" style="font-size:13px;">
+            National ID
+          </label>
+          {{ spouse_form.national_id }}
+        </div>
+        <div class="col-md-6">
+          <label class="form-label fw-semibold" style="font-size:13px;">
+            Phone Number
+          </label>
+          {{ spouse_form.phone_number }}
+        </div>
+      </div>
+
+      <div class="row g-3 mb-3">
+        <div class="col-md-6">
+          <label class="form-label fw-semibold" style="font-size:13px;">
+            County of Birth
+          </label>
+          {{ spouse_form.county }}
+        </div>
+        <div class="col-md-6">
+          <label class="form-label fw-semibold" style="font-size:13px;">
+            Sub County
+          </label>
+          {{ spouse_form.sub_county }}
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label fw-semibold" style="font-size:13px;">
+          Spouse ID Copy
+        </label>
+        {% if profile.spouse.id_copy %}
+          <div class="mb-2">
+            <a href="{{ profile.spouse.id_copy.url }}"
+               target="_blank"
+               style="font-size:12px;color:#1565C0;">
+              <i class="fas fa-file me-1"></i> View current ID
+            </a>
+          </div>
+        {% endif %}
+        {{ spouse_form.id_copy }}
+      </div>
+      {% endif %}
+
+      <!-- ══ SECTION 3: Dependants ══ -->
+      <hr style="border-color:#E8F5E9;margin:28px 0;">
+
+      <div style="display:flex;align-items:center;
+                  justify-content:space-between;margin-bottom:20px;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div style="width:36px;height:36px;background:#FBE9E7;
+                      border-radius:9px;display:flex;align-items:center;
+                      justify-content:center;">
+            <i class="fas fa-child" style="color:#E65100;"></i>
+          </div>
+          <h6 style="color:#E65100;font-weight:700;margin:0;">
+            Dependants
+          </h6>
+        </div>
+      </div>
+
+      {{ dependant_formset.management_form }}
+
+      {% for dep_form in dependant_formset %}
+      <div style="background:#F8FBF8;border:1px solid rgba(27,94,32,0.12);
+                  border-left:4px solid #E65100;border-radius:8px;
+                  padding:20px;margin-bottom:14px;">
+
+        {{ dep_form.id }}
+
+        <div style="display:flex;align-items:center;
+                    justify-content:space-between;margin-bottom:14px;">
+          <span style="font-size:13px;font-weight:700;color:#1B5E20;">
+            <i class="fas fa-user-circle me-2"
+               style="color:#E65100;"></i>
+            Dependant {{ forloop.counter }}
+          </span>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <label style="font-size:12px;color:#c62828;
+                          font-weight:600;cursor:pointer;">
+              {{ dep_form.DELETE }}
+              <span style="margin-left:4px;">Remove</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="row g-3 mb-3">
+          <div class="col-md-6">
+            <label class="form-label fw-semibold"
+                   style="font-size:13px;">Full Name</label>
+            {{ dep_form.full_name }}
+          </div>
+          <div class="col-md-6">
+            <label class="form-label fw-semibold"
+                   style="font-size:13px;">Relationship</label>
+            {{ dep_form.relationship }}
+          </div>
+        </div>
+
+        <div class="row g-3 mb-3">
+          <div class="col-md-6">
+            <label class="form-label fw-semibold"
+                   style="font-size:13px;">Gender</label>
+            {{ dep_form.gender }}
+          </div>
+          <div class="col-md-6">
+            <label class="form-label fw-semibold"
+                   style="font-size:13px;">Date of Birth</label>
+            {{ dep_form.date_of_birth }}
+          </div>
+        </div>
+
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label fw-semibold"
+                   style="font-size:13px;">Phone Number</label>
+            {{ dep_form.phone_number }}
+          </div>
+          <div class="col-md-6">
+            <label class="form-label fw-semibold"
+                   style="font-size:13px;">ID / Birth Cert No.</label>
+            {{ dep_form.id_or_birth_cert_number }}
+          </div>
+        </div>
+
+      </div>
+      {% empty %}
+      <div style="text-align:center;padding:20px;
+                  color:#888;font-size:13px;
+                  background:#F8FBF8;border-radius:8px;
+                  border:1px dashed rgba(27,94,32,0.2);">
+        <i class="fas fa-users fa-2x mb-2"
+           style="color:rgba(27,94,32,0.3);display:block;"></i>
+        No dependants added yet.
+      </div>
+      {% endfor %}
+
+      <!-- ══ Submit Button ══ -->
+      <hr style="border-color:#E8F5E9;margin:28px 0;">
+
+      <div class="d-grid">
+        <button type="submit"
+                style="background:#1B5E20;color:#fff;border:none;
+                       border-radius:9px;font-size:15px;font-weight:700;
+                       padding:14px;cursor:pointer;
+                       display:flex;align-items:center;
+                       justify-content:center;gap:10px;">
+          <i class="fas fa-save"></i> Save Changes
+        </button>
+      </div>
+
+      <p style="text-align:center;margin-top:14px;font-size:13px;
+                color:#888;">
+        <a href="{% url 'member_dashboard' %}"
+           style="color:#1B5E20;font-weight:600;
+                  text-decoration:none;">
+          ← Back to Dashboard
+        </a>
+      </p>
+
+    </form>
+  </div>
+
+</div>
+</div>
+</div>
+</div>
+
+<script>
+// Auto calculate age when DOB changes
+document.querySelector('input[name="date_of_birth"]')
+  .addEventListener('change', function() {
+    const dob   = new Date(this.value);
+    const today = new Date();
+    let age = today.getFullYear() - dob.getFullYear();
+    const m = today.getMonth() - dob.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
+      age--;
+    }
+    document.getElementById('age-display').textContent = age;
+});
+</script>
+{% endblock %}
