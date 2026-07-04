@@ -716,7 +716,69 @@ body {
   .sidebar-overlay.open { display: block; }
   .main-area { margin-left: 0; }
   .topbar-hamburger { display: flex; }
-  .page-content { padding: 16px; }
+  .topbar {
+    height: auto;
+    padding: 12px 14px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+  .topbar-greeting {
+    flex: 1 1 100%;
+    min-width: 0;
+  }
+  .topbar-greeting-title {
+    font-size: .92rem;
+  }
+  .topbar-greeting-sub {
+    font-size: .7rem;
+    line-height: 1.35;
+  }
+  .topbar-actions {
+    width: 100%;
+    justify-content: space-between;
+    flex-wrap: wrap;
+  }
+  .topbar-icon-btn {
+    flex: 1 1 calc(50% - 5px);
+  }
+  .topbar-profile {
+    flex: 1 1 100%;
+    justify-content: center;
+  }
+  .page-content { padding: 14px; }
+  .panel { padding: 18px 16px 16px; }
+  .stat-card { padding: 18px 16px; }
+  .sec-hd {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .sec-hd-link {
+    width: 100%;
+    justify-content: flex-start;
+  }
+  .action-grid { grid-template-columns: 1fr; }
+  .action-btn {
+    flex-direction: row;
+    justify-content: flex-start;
+    text-align: left;
+    padding: 14px 16px;
+  }
+  .action-label {
+    text-align: left;
+  }
+  .loan-apply-card { padding: 20px 16px; }
+  .contrib-table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 600px) {
+  .stat-grid { grid-template-columns: 1fr; }
+  .stat-top { align-items: flex-start; gap: 10px; }
+  .stat-trend { align-self: flex-start; }
+  .empty-state { padding: 28px 16px; }
 }
 </style>
 {% endblock %}
@@ -1093,13 +1155,32 @@ body {
           </a>
           {% endif %}
 
-          <a href="mailto:info@sisipamoja.co.ke" class="action-btn">
+          <div class="action-btn" style="cursor:default;">
             <div class="action-icon"
                  style="background:#FEF9C3; color:#92400E;">
               <i class="fas fa-headset"></i>
             </div>
-            <div class="action-label">Contact<br>Support</div>
-          </a>
+            <div class="action-label" style="margin-bottom:8px;">Contact<br>Support</div>
+            <div style="display:flex; flex-direction:column; gap:8px; width:100%;">
+              <a href="tel:+254780388433"
+                 class="btn-outline-sm"
+                 style="justify-content:center; width:100%;">
+                <i class="fas fa-phone"></i> Call
+              </a>
+              <a href="mailto:sisipamojarecruitment@gmail.com"
+                 class="btn-outline-sm"
+                 style="justify-content:center; width:100%;">
+                <i class="fas fa-envelope"></i> Email
+              </a>
+              <a href="https://wa.me/254780388433"
+                 target="_blank"
+                 rel="noopener noreferrer"
+                 class="btn-outline-sm"
+                 style="justify-content:center; width:100%;">
+                <i class="fab fa-whatsapp"></i> WhatsApp
+              </a>
+            </div>
+          </div>
 
         </div>
       </div>

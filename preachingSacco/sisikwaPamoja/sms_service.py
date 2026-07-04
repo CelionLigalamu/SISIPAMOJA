@@ -194,6 +194,16 @@ def sms_loan_rejected(member, reason=''):
         'loan_rejected', member
     )
 
+def sms_loan_approved(member, amount):
+    message = (
+        f"Good news! KES {amount} has been disbursed to you. "
+        f"Check your account/M-Pesa. Thank you - SisiPamoja Welfare."
+    )
+    return send_sms(
+        member.phone_number, message,
+        'loan_approved', member  # see note below
+    )
+
 
 def sms_password_reset_otp(phone_number, otp_code, member=None):
     message = (

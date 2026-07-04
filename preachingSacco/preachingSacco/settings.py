@@ -143,9 +143,9 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'ligalamucelion@gmail.com'
-EMAIL_HOST_PASSWORD = 'lsls crlb fjoj jdea'
-DEFAULT_FROM_EMAIL = 'SISIPAMOJA <ligalamucelion@gmail.com>'
+EMAIL_HOST_USER = 'sisipamojarecruitment@gmail.com'
+EMAIL_HOST_PASSWORD = 'lvjnvtvpvbswpjns'
+DEFAULT_FROM_EMAIL = 'SISIPAMOJA <sisipamojarecruitment@gmail.com >'
 
 JAZZMIN_SETTINGS = {
     # ── Brand ──────────────────────────────────────────────

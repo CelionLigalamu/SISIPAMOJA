@@ -1,2 +1,170 @@
 {% extends 'sisikwaPamoja/dashboard_member.html' %}
 {% block title %}Add Dependant | SisiPamoja{% endblock %}
+
+{% block dashboard_content %}
+<div class="sec-hd">
+	<div class="sec-hd-title">
+		<i class="fas fa-user-plus" style="color:#D97706; margin-right:8px;"></i>
+		Add Dependant
+	</div>
+	<a href="{% url 'family' %}" class="sec-hd-link">
+		<i class="fas fa-arrow-left"></i> Back to Family Coverage
+	</a>
+</div>
+
+<div class="panel" style="max-width: 980px;">
+	<form method="post" enctype="multipart/form-data" novalidate>
+		{% csrf_token %}
+
+		{% if form.non_field_errors %}
+			<div class="form-errors-banner">
+				{% for error in form.non_field_errors %}
+					<div>{{ error }}</div>
+				{% endfor %}
+			</div>
+		{% endif %}
+
+		<div class="declaration-box" style="margin-bottom:18px;">
+			Add the dependant details for your Last Expense membership.
+			The form will switch between adult and minor fields based on the date of birth.
+		</div>
+
+		<div class="form-row">
+			<div class="form-group">
+				<label>Full Name <span class="req">*</span></label>
+				{{ form.full_name }}
+				{% for error in form.full_name.errors %}<div class="field-error">{{ error }}</div>{% endfor %}
+			</div>
+			<div class="form-group">
+				<label>Relationship <span class="req">*</span></label>
+				{{ form.relationship }}
+				{% for error in form.relationship.errors %}<div class="field-error">{{ error }}</div>{% endfor %}
+			</div>
+		</div>
+
+		<div class="form-row">
+			<div class="form-group">
+				<label>Gender <span class="req">*</span></label>
+				{{ form.gender }}
+				{% for error in form.gender.errors %}<div class="field-error">{{ error }}</div>{% endfor %}
+			</div>
+			<div class="form-group">
+				<label>Date of Birth <span class="req">*</span></label>
+				{{ form.date_of_birth }}
+				{% for error in form.date_of_birth.errors %}<div class="field-error">{{ error }}</div>{% endfor %}
+				<div class="field-hint" style="margin-top:6px;">Select the dependant's date of birth to switch the ID/document labels automatically.</div>
+			</div>
+		</div>
+
+		<div class="form-row single" style="margin-bottom:10px;">
+			<div class="form-group">
+				<label>Age</label>
+				<input type="text" id="dep-age-display" class="readonly-field" value="-- years" readonly>
+			</div>
+		</div>
+
+		<div class="form-row">
+			<div class="form-group" id="dep-phone-group">
+				<label>Phone Number</label>
+				{{ form.phone_number }}
+				{% for error in form.phone_number.errors %}<div class="field-error">{{ error }}</div>{% endfor %}
+			</div>
+			<div class="form-group" id="dep-email-group">
+				<label>Email <span class="text-muted fw-normal">(Optional)</span></label>
+				{{ form.email }}
+				{% for error in form.email.errors %}<div class="field-error">{{ error }}</div>{% endfor %}
+			</div>
+		</div>
+
+		<div class="form-row">
+			<div class="form-group">
+				<label id="dep-id-label">National ID Number</label>
+				{{ form.id_or_birth_cert_number }}
+				{% for error in form.id_or_birth_cert_number.errors %}<div class="field-error">{{ error }}</div>{% endfor %}
+				<div class="field-hint" id="dep-id-hint">Use the National ID for adults or the Birth Certificate number for minors.</div>
+			</div>
+			<div class="form-group">
+				<label id="dep-doc-label">Upload ID Copy</label>
+				<div class="upload-zone" id="dep-upload-zone">
+					{{ form.supporting_document }}
+					<div class="upload-icon"><i class="fas fa-file-upload"></i></div>
+					<div class="upload-title" id="dep-upload-title">Upload ID copy</div>
+					<div class="upload-sub" id="dep-upload-sub">PDF, JPG or PNG</div>
+				</div>
+				{% for error in form.supporting_document.errors %}<div class="field-error">{{ error }}</div>{% endfor %}
+			</div>
+		</div>
+
+		<div class="declaration-box" id="dep-declaration-box">
+			Add only the dependant details you want covered under your Last Expense membership.
+			For minors, use a birth certificate number and upload the birth certificate.
+			For adults, use the National ID number and upload the ID copy.
+		</div>
+
+		<div class="d-flex gap-2 flex-wrap">
+			<button type="submit" class="btn-cta-orange">
+				<i class="fas fa-save"></i> Save Dependant
+			</button>
+			<a href="{% url 'family' %}" class="btn-outline-sm">
+				Cancel
+			</a>
+		</div>
+	</form>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+	const dobInput = document.querySelector('[name="date_of_birth"]');
+	const ageDisplay = document.getElementById('dep-age-display');
+	const phoneGroup = document.getElementById('dep-phone-group');
+	const emailGroup = document.getElementById('dep-email-group');
+	const idLabel = document.getElementById('dep-id-label');
+	const docLabel = document.getElementById('dep-doc-label');
+	const uploadTitle = document.getElementById('dep-upload-title');
+	const uploadSub = document.getElementById('dep-upload-sub');
+	const declarationBox = document.getElementById('dep-declaration-box');
+	const idHint = document.getElementById('dep-id-hint');
+
+	function updateDependantView() {
+		if (!dobInput || !dobInput.value) return;
+
+		const dob = new Date(dobInput.value);
+		if (Number.isNaN(dob.getTime())) return;
+
+		const today = new Date();
+		let age = today.getFullYear() - dob.getFullYear();
+		const monthDiff = today.getMonth() - dob.getMonth();
+		if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
+			age--;
+		}
+
+		ageDisplay.value = age + ' years';
+
+		if (age < 18) {
+			phoneGroup.style.display = 'none';
+			emailGroup.style.display = 'none';
+			idLabel.textContent = 'Birth Certificate Number';
+			docLabel.textContent = 'Upload Birth Certificate';
+			uploadTitle.textContent = 'Upload birth certificate';
+			uploadSub.textContent = 'PDF, JPG or PNG';
+			idHint.textContent = 'For minors, enter the Birth Certificate number and upload the birth certificate.';
+			declarationBox.innerHTML = 'Add only the dependant details you want covered under your Last Expense membership. For minors, use a birth certificate number and upload the birth certificate.';
+		} else {
+			phoneGroup.style.display = '';
+			emailGroup.style.display = '';
+			idLabel.textContent = 'National ID Number';
+			docLabel.textContent = 'Upload ID Copy';
+			uploadTitle.textContent = 'Upload ID copy';
+			uploadSub.textContent = 'PDF, JPG or PNG';
+			idHint.textContent = 'For adults, enter the National ID number and upload the ID copy.';
+			declarationBox.innerHTML = 'Add only the dependant details you want covered under your Last Expense membership. For adults, use the National ID number and upload the ID copy.';
+		}
+	}
+
+	if (dobInput) {
+		dobInput.addEventListener('change', updateDependantView);
+		updateDependantView();
+	}
+});
+</script>
+{% endblock %}

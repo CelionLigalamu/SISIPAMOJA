@@ -47,6 +47,12 @@ urlpatterns = [
     path('loans/apply/',
          views.loan_apply_view,
          name='loan_apply'),
+     path('loans/<int:pk>/status/',
+         views.loan_status_view,
+         name='loan_status'),
+    path('loans/my-loans/',
+         views.my_loans_view,
+         name='my_loans'),
 
     # Family Coverage
     path('family/',

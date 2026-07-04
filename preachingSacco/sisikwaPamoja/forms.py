@@ -1,5 +1,8 @@
 from django import forms
 from .models import MemberProfile, Spouse, Dependant
+from django.forms import inlineformset_factory
+from .models import LoanApplication, LoanGuarantor
+
 
 
 # ══════════════════════════════════════
@@ -228,3 +231,43 @@ class DependantForm(forms.ModelForm):
         self.fields['email'].required                 = False
         self.fields['id_or_birth_cert_number'].required = False
         self.fields['supporting_document'].required   = False
+
+
+class LoanApplicationForm(forms.ModelForm):
+    class Meta:
+        model = LoanApplication
+        fields = [
+            'employer_business_name', 'occupation', 'monthly_income',
+            'loan_product', 'loan_product_other', 'amount_applied',
+            'repayment_period_months', 'proposed_monthly_installment',
+            'purpose_of_loan',
+            'security_offered', 'security_other', 'current_sacco_savings',
+            'disbursement_method', 'bank_name', 'bank_branch',
+            'bank_account_number', 'mpesa_registered_name', 'mpesa_number',
+            'id_copy', 'payslip_or_statement', 'business_permit',
+            'supporting_document', 'digital_signature',
+        ]
+        widgets = {
+            'purpose_of_loan': forms.Textarea(attrs={'rows': 4}),
+        }
+
+    def clean(self):
+        cleaned = super().clean()
+        method = cleaned.get('disbursement_method')
+        if method == 'bank' and not cleaned.get('bank_account_number'):
+            self.add_error('bank_account_number', 'Required for bank transfer.')
+        if method == 'mpesa' and not cleaned.get('mpesa_number'):
+            self.add_error('mpesa_number', 'Required for M-Pesa disbursement.')
+        if cleaned.get('loan_product') == 'other' and not cleaned.get('loan_product_other'):
+            self.add_error('loan_product_other', 'Please specify the loan product.')
+        if cleaned.get('security_offered') == 'other' and not cleaned.get('security_other'):
+            self.add_error('security_other', 'Please specify the security offered.')
+        return cleaned
+
+
+LoanGuarantorFormSet = inlineformset_factory(
+    LoanApplication, LoanGuarantor,
+    fields=['full_name', 'membership_number', 'national_id',
+            'mobile_number', 'amount_guaranteed', 'id_copy'],
+    extra=3, max_num=3, can_delete=True,
+)

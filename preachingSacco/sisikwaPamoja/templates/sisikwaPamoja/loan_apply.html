@@ -1,0 +1,526 @@
+{% extends 'sisikwaPamoja/dashboard_member.html' %}
+{% load static %}
+{% block title %}Apply for Loan | SisiPamoja{% endblock %}
+
+{% block extra_css %}
+{{ block.super }}
+<style>
+.loan-form-wrap { max-width: 880px; }
+
+.form-section-title {
+  font-family: 'Merriweather', serif;
+  font-weight: 900;
+  font-size: .95rem;
+  color: var(--neu900);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 18px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid var(--g100);
+}
+.form-section-title .sec-num {
+  width: 28px; height: 28px;
+  border-radius: 8px;
+  background: var(--g900);
+  color: white;
+  display: flex; align-items: center; justify-content: center;
+  font-size: .78rem;
+}
+
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+.form-row.single { grid-template-columns: 1fr; }
+@media(max-width:700px){ .form-row{ grid-template-columns: 1fr; } }
+
+.form-group label {
+  display: block;
+  font-size: .8rem;
+  font-weight: 800;
+  color: var(--neu600);
+  margin-bottom: 6px;
+}
+.form-group .req { color: #DC2626; }
+
+.loan-form-wrap input[type="text"],
+.loan-form-wrap input[type="number"],
+.loan-form-wrap input[type="email"],
+.loan-form-wrap input[type="tel"],
+.loan-form-wrap input[type="file"],
+.loan-form-wrap select,
+.loan-form-wrap textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1.5px solid var(--neu200);
+  border-radius: 9px;
+  font-family: 'Nunito', sans-serif;
+  font-size: .875rem;
+  color: var(--neu800);
+  background: white;
+  transition: border-color .2s;
+}
+.loan-form-wrap input:focus,
+.loan-form-wrap select:focus,
+.loan-form-wrap textarea:focus {
+  outline: none;
+  border-color: var(--g700);
+}
+.loan-form-wrap .field-error {
+  color: #DC2626;
+  font-size: .75rem;
+  font-weight: 700;
+  margin-top: 4px;
+}
+.loan-form-wrap .field-hint {
+  color: var(--neu400);
+  font-size: .72rem;
+  margin-top: 4px;
+}
+
+.readonly-field {
+  background: var(--neu50) !important;
+  color: var(--neu600) !important;
+}
+
+.guarantor-card {
+  border: 1.5px solid var(--neu200);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 14px;
+  background: var(--neu50);
+}
+.guarantor-card-title {
+  font-weight: 800;
+  font-size: .82rem;
+  color: var(--g900);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.conditional-block { display: none; }
+.conditional-block.active { display: block; }
+
+.declaration-box {
+  background: var(--g50);
+  border: 1px solid var(--g100);
+  border-radius: var(--radius);
+  padding: 16px;
+  font-size: .82rem;
+  color: var(--neu700);
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+
+.checkbox-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.checkbox-row input[type="checkbox"] {
+  margin-top: 3px;
+  width: 16px; height: 16px;
+  accent-color: var(--g700);
+}
+.checkbox-row label { font-size: .82rem; font-weight: 700; color: var(--neu700); }
+
+.form-errors-banner {
+  background: #FEE2E2;
+  border: 1px solid #FECACA;
+  color: #DC2626;
+  border-radius: var(--radius);
+  padding: 14px 18px;
+  margin-bottom: 20px;
+  font-size: .85rem;
+  font-weight: 700;
+}
+</style>
+{% endblock %}
+
+{% block dashboard_content %}
+
+<div class="loan-form-wrap">
+
+  <div class="sec-hd">
+    <div class="sec-hd-title">
+      <i class="fas fa-hand-holding-usd" style="color:#94A3B8; margin-right:8px;"></i>
+      Loan Application
+    </div>
+    <a href="{% url 'loans' %}" class="sec-hd-link">
+      <i class="fas fa-arrow-left"></i> Back to Loans
+    </a>
+  </div>
+
+  {% if form.non_field_errors or formset.non_form_errors %}
+  <div class="form-errors-banner">
+    {% for error in form.non_field_errors %}<div>{{ error }}</div>{% endfor %}
+    {% for error in formset.non_form_errors %}<div>{{ error }}</div>{% endfor %}
+  </div>
+  {% endif %}
+
+  <form method="post" enctype="multipart/form-data" novalidate>
+    {% csrf_token %}
+
+    <!-- ═══ SECTION A: MEMBER DETAILS ═══ -->
+    <div class="panel">
+      <div class="form-section-title">
+        <span class="sec-num">A</span> Member Details
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Full Name</label>
+          <input type="text" class="readonly-field" value="{{ user.get_full_name }}" readonly>
+        </div>
+        <div class="form-group">
+          <label>Membership Number</label>
+          <input type="text" class="readonly-field" value="{{ profile.serial_number|default:'Pending' }}" readonly>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>National ID</label>
+          <input type="text" class="readonly-field" value="{{ profile.national_id }}" readonly>
+        </div>
+        <div class="form-group">
+          <label>Mobile Number</label>
+          <input type="text" class="readonly-field" value="{{ profile.phone_number }}" readonly>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>{{ form.employer_business_name.label }}</label>
+          {{ form.employer_business_name }}
+          {% for error in form.employer_business_name.errors %}<div class="field-error">{{ error }}</div>{% endfor %}
+        </div>
+        <div class="form-group">
+          <label>{{ form.occupation.label }}</label>
+          {{ form.occupation }}
+          {% for error in form.occupation.errors %}<div class="field-error">{{ error }}</div>{% endfor %}
+        </div>
+      </div>
+
+      <div class="form-row single">
+        <div class="form-group">
+          <label>Monthly Income (KES) <span class="req">*</span></label>
+          {{ form.monthly_income }}
+          {% for error in form.monthly_income.errors %}<div class="field-error">{{ error }}</div>{% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SECTION B: LOAN DETAILS ═══ -->
+    <div class="panel">
+      <div class="form-section-title">
+        <span class="sec-num">B</span> Loan Details
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Loan Product <span class="req">*</span></label>
+          {{ form.loan_product }}
+          {% for error in form.loan_product.errors %}<div class="field-error">{{ error }}</div>{% endfor %}
+        </div>
+        <div class="form-group" id="loan-product-other-wrap">
+          <label>If "Other", specify</label>
+          {{ form.loan_product_other }}
+          {% for error in form.loan_product_other.errors %}<div class="field-error">{{ error }}</div>{% endfor %}
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Amount Applied (KES) <span class="req">*</span></label>
+          {{ form.amount_applied }}
+          {% for error in form.amount_applied.errors %}<div class="field-error">{{ error }}</div>{% endfor %}
+        </div>
+        <div class="form-group">
+          <label>Repayment Period (Months) <span class="req">*</span></label>
+          {{ form.repayment_period_months }}
+          {% for error in form.repayment_period_months.errors %}<div class="field-error">{{ error }}</div>{% endfor %}
+        </div>
+      </div>
+
+      <div class="form-row single">
+        <div class="form-group">
+          <label>Proposed Monthly Installment (KES) <span class="req">*</span></label>
+          {{ form.proposed_monthly_installment }}
+          {% for error in form.proposed_monthly_installment.errors %}<div class="field-error">{{ error }}</div>{% endfor %}
+        </div>
+      </div>
+
+      <div class="form-row single">
+        <div class="form-group">
+          <label>Purpose of Loan <span class="req">*</span></label>
+          {{ form.purpose_of_loan }}
+          {% for error in form.purpose_of_loan.errors %}<div class="field-error">{{ error }}</div>{% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SECTION C: SECURITY DETAILS ═══ -->
+    <div class="panel">
+      <div class="form-section-title">
+        <span class="sec-num">C</span> Security Details
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Security Offered <span class="req">*</span></label>
+          {{ form.security_offered }}
+          {% for error in form.security_offered.errors %}<div class="field-error">{{ error }}</div>{% endfor %}
+        </div>
+        <div class="form-group" id="security-other-wrap">
+          <label>If "Other", specify</label>
+          {{ form.security_other }}
+          {% for error in form.security_other.errors %}<div class="field-error">{{ error }}</div>{% endfor %}
+        </div>
+      </div>
+
+      <div class="form-row single">
+        <div class="form-group">
+          <label>Current SACCO Savings (KES)</label>
+          {{ form.current_sacco_savings }}
+          {% for error in form.current_sacco_savings.errors %}<div class="field-error">{{ error }}</div>{% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SECTION D: GUARANTOR DETAILS ═══ -->
+    <div class="panel">
+      <div class="form-section-title">
+        <span class="sec-num">D</span> Guarantor Details
+      </div>
+
+      {{ formset.management_form }}
+
+      {% for gform in formset %}
+      <div class="guarantor-card">
+        <div class="guarantor-card-title">
+          <i class="fas fa-user-shield"></i> Guarantor {{ forloop.counter }}
+        </div>
+        {% for hidden in gform.hidden_fields %}{{ hidden }}{% endfor %}
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Full Name</label>
+            {{ gform.full_name }}
+            {% for error in gform.full_name.errors %}<div class="field-error">{{ error }}</div>{% endfor %}
+          </div>
+          <div class="form-group">
+            <label>Membership Number</label>
+            {{ gform.membership_number }}
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>ID Number</label>
+            {{ gform.national_id }}
+            {% for error in gform.national_id.errors %}<div class="field-error">{{ error }}</div>{% endfor %}
+          </div>
+          <div class="form-group">
+            <label>Mobile Number</label>
+            {{ gform.mobile_number }}
+            {% for error in gform.mobile_number.errors %}<div class="field-error">{{ error }}</div>{% endfor %}
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Amount Guaranteed (KES)</label>
+            {{ gform.amount_guaranteed }}
+            {% for error in gform.amount_guaranteed.errors %}<div class="field-error">{{ error }}</div>{% endfor %}
+          </div>
+          <div class="form-group">
+            <label>ID Copy</label>
+            {{ gform.id_copy }}
+          </div>
+        </div>
+
+        {% if gform.DELETE %}
+        <div class="checkbox-row" style="margin-top:8px;">
+          {{ gform.DELETE }}
+          <label>Remove this guarantor</label>
+        </div>
+        {% endif %}
+      </div>
+      {% endfor %}
+
+      <div class="field-hint">
+        Fill in only the guarantors you need (up to 3). Leave a card blank to skip it.
+      </div>
+    </div>
+
+    <!-- ═══ SECTION E: DISBURSEMENT DETAILS ═══ -->
+    <div class="panel">
+      <div class="form-section-title">
+        <span class="sec-num">E</span> Disbursement Details
+      </div>
+
+      <div class="form-row single">
+        <div class="form-group">
+          <label>Preferred Disbursement Method <span class="req">*</span></label>
+          {{ form.disbursement_method }}
+          {% for error in form.disbursement_method.errors %}<div class="field-error">{{ error }}</div>{% endfor %}
+        </div>
+      </div>
+
+      <div id="bank-fields" class="conditional-block">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Bank Name</label>
+            {{ form.bank_name }}
+          </div>
+          <div class="form-group">
+            <label>Branch</label>
+            {{ form.bank_branch }}
+          </div>
+        </div>
+        <div class="form-row single">
+          <div class="form-group">
+            <label>Account Number</label>
+            {{ form.bank_account_number }}
+            {% for error in form.bank_account_number.errors %}<div class="field-error">{{ error }}</div>{% endfor %}
+          </div>
+        </div>
+      </div>
+
+      <div id="mpesa-fields" class="conditional-block">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Registered Name</label>
+            {{ form.mpesa_registered_name }}
+          </div>
+          <div class="form-group">
+            <label>M-Pesa Number</label>
+            {{ form.mpesa_number }}
+            {% for error in form.mpesa_number.errors %}<div class="field-error">{{ error }}</div>{% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ REQUIRED ATTACHMENTS ═══ -->
+    <div class="panel">
+      <div class="form-section-title">
+        <span class="sec-num"><i class="fas fa-paperclip" style="font-size:.7rem;"></i></span>
+        Required Attachments
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Copy of National ID</label>
+          {{ form.id_copy }}
+        </div>
+        <div class="form-group">
+          <label>Latest Payslip / Bank Statement</label>
+          {{ form.payslip_or_statement }}
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Business Permit (if self-employed)</label>
+          {{ form.business_permit }}
+        </div>
+        <div class="form-group">
+          <label>Supporting Document for Loan Purpose</label>
+          {{ form.supporting_document }}
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SECTION F: DECLARATION ═══ -->
+    <div class="panel">
+      <div class="form-section-title">
+        <span class="sec-num">F</span> Declaration
+      </div>
+
+      <div class="declaration-box">
+        I certify that the information provided above is true and correct.
+        I agree to abide by the SACCO loan terms and conditions and
+        authorize Sisi Pamoja SACCO to verify any information provided.
+      </div>
+
+      <div class="checkbox-row">
+        <input type="checkbox" id="declaration_agree" required>
+        <label for="declaration_agree">I confirm the declaration above is true.</label>
+      </div>
+
+      <div class="form-row single">
+        <div class="form-group">
+          <label>Digital Signature (Type your full name) <span class="req">*</span></label>
+          {{ form.digital_signature }}
+          {% for error in form.digital_signature.errors %}<div class="field-error">{{ error }}</div>{% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex; gap:12px; justify-content:flex-end; margin-bottom:30px;">
+      <a href="{% url 'loans' %}" class="btn-outline-sm" style="padding:11px 22px;">Cancel</a>
+      <button type="submit" class="btn-cta-green">
+        <i class="fas fa-paper-plane"></i> Submit Application
+      </button>
+    </div>
+
+  </form>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+{{ block.super }}
+<script>
+(function() {
+  const loanProduct = document.getElementById('id_loan_product');
+  const loanOtherWrap = document.getElementById('loan-product-other-wrap');
+  function toggleLoanOther() {
+    if (loanProduct && loanProduct.value === 'other') {
+      loanOtherWrap.style.display = 'block';
+    } else if (loanOtherWrap) {
+      loanOtherWrap.style.display = 'none';
+    }
+  }
+  if (loanProduct) {
+    loanProduct.addEventListener('change', toggleLoanOther);
+    toggleLoanOther();
+  }
+
+  const security = document.getElementById('id_security_offered');
+  const securityOtherWrap = document.getElementById('security-other-wrap');
+  function toggleSecurityOther() {
+    if (security && security.value === 'other') {
+      securityOtherWrap.style.display = 'block';
+    } else if (securityOtherWrap) {
+      securityOtherWrap.style.display = 'none';
+    }
+  }
+  if (security) {
+    security.addEventListener('change', toggleSecurityOther);
+    toggleSecurityOther();
+  }
+
+  const disbursement = document.getElementById('id_disbursement_method');
+  const bankFields = document.getElementById('bank-fields');
+  const mpesaFields = document.getElementById('mpesa-fields');
+  function toggleDisbursement() {
+    if (!disbursement) return;
+    bankFields.classList.remove('active');
+    mpesaFields.classList.remove('active');
+    if (disbursement.value === 'bank') {
+      bankFields.classList.add('active');
+    } else if (disbursement.value === 'mpesa') {
+      mpesaFields.classList.add('active');
+    }
+  }
+  if (disbursement) {
+    disbursement.addEventListener('change', toggleDisbursement);
+    toggleDisbursement();
+  }
+})();
+</script>
+{% endblock %}

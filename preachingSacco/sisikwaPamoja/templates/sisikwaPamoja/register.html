@@ -653,6 +653,9 @@
   <div class="reg-card">
   <form method="POST" enctype="multipart/form-data" id="regForm">
     {% csrf_token %}
+    
+
+
 
     <!-- Hidden counties data -->
     <script id="counties-data" type="application/json">{{ counties|safe }}</script>

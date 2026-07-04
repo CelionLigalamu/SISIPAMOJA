@@ -7,7 +7,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.db import transaction
 from django.db.models import Sum
 from django.http import JsonResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
@@ -16,13 +16,43 @@ from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
 from django.conf import settings
 from django.urls import reverse
+from django.forms import modelformset_factory
 from django.utils import timezone
+from .forms import (
+    LoanApplicationForm, LoanGuarantorFormSet,
+    MemberProfileEditForm, SpouseEditForm, DependantForm,
+)
 from .models import (
     CustomUser, MemberProfile, Contribution,
-    Spouse, Dependant, SerialNumberTracker
+    Spouse, Dependant, SerialNumberTracker,
+    LoanApplication,MpesaPayment,MemberPayment
 )
-from .sms_service import sms_account_created, sms_dependant_added
+from .sms_service import sms_account_created, sms_dependant_added, sms_loan_applied
 
+
+def assign_serial_number(member_profile):
+    """
+    Assigns a serial number to a member
+    after their payment is confirmed.
+    Only assigns once — never overwrites.
+    """
+    # Already has a serial number — do nothing
+    if member_profile.serial_number:
+        return member_profile.serial_number
+
+    # Get or create the tracker for this membership type
+    tracker, created = SerialNumberTracker.objects.get_or_create(
+        membership_type=member_profile.membership_type
+    )
+
+    # Generate the next serial number
+    serial = tracker.get_next_serial()
+
+    # Save it to the member profile
+    member_profile.serial_number = serial
+    member_profile.save()
+
+    return serial
 
 # ══════════════════════════════════════════════
 # HELPER: Build Admin Dashboard Data
@@ -175,8 +205,11 @@ def register_view(request):
                 marital_status=marital_status,
                 passport_photo=passport_photo,
                 id_copy=id_copy,
-                registration_fee=5000 if membership_type == 'sacco' else 0,
+                registration_fee=200 if membership_type == 'sacco' else 0,
             )
+            #Auto-calculate annual fee right after creation
+            member_profile.annual_fee = member_profile.calculate_annual_fee()
+            member_profile.save()
 
             # Send SMS after account creation
             sms_account_created(member_profile)
@@ -187,9 +220,6 @@ def register_view(request):
                     request.POST.get('spouse_full_name') or ''
                 ).strip()
                 spouse_dob = request.POST.get('spouse_date_of_birth')
-
-                # NOTE: spouse, dependants, and dependant-SMS are handled inside this block
-
 
                 if spouse_full_name and spouse_dob:
                     Spouse.objects.create(
@@ -245,9 +275,6 @@ def register_view(request):
 
                     # Send SMS per dependant created
                     sms_dependant_added(member_profile, new_dependant)
-
-
-
 
             # Send welcome email
         try:
@@ -345,7 +372,6 @@ def member_dashboard(request):
         user=request.user
     ).select_related('user').first()
 
-    # Get recent contributions
     contributions = []
     if profile:
         contributions = Contribution.objects.filter(
@@ -369,25 +395,26 @@ def admin_dashboard(request):
         return _dashboard_redirect(request.user)
 
     dashboard_data = _build_admin_dashboard_data()
-    # B: recent registrations + SMSLog events
-    from .models import SMSLog
-    recent_sms_logs = SMSLog.objects.select_related('member', 'member__user').all()[:10]
 
-    # keep it simple for the template
+    from .models import SMSLog
+    recent_sms_logs = SMSLog.objects.select_related(
+        'member', 'member__user').all()[:10]
+
     dashboard_data['recent_sms_logs'] = [
         {
             'id': l.id,
-            'member_name': getattr(l.member.user, 'get_full_name', lambda: '')() or (l.member.user.username if l.member and l.member.user else ''),
+            'member_name': getattr(l.member.user, 'get_full_name', lambda: '')() or (
+                l.member.user.username if l.member and l.member.user else ''),
             'event_type': l.event_type,
             'status': l.status,
-            'message_preview': (l.message[:80] + '...') if getattr(l, 'message', None) and len(l.message) > 80 else getattr(l, 'message', '') ,
+            'message_preview': (l.message[:80] + '...') if getattr(l, 'message', None) and len(l.message) > 80 else getattr(l, 'message', ''),
             'created_at': timezone.localtime(l.created_at).strftime('%d %b %Y %H:%M') if l.created_at else '',
         }
         for l in recent_sms_logs
     ]
 
-    return render(request, 'sisikwaPamoja/dashboard_admin.html', dashboard_data)
-
+    return render(request,
+        'sisikwaPamoja/dashboard_admin.html', dashboard_data)
 
 
 # ══════════════════════════════════════════════
@@ -427,145 +454,93 @@ def profile_view(request):
 # ══════════════════════════════════════════════
 # EDIT PROFILE
 # ══════════════════════════════════════════════
-from django.shortcuts import get_object_or_404
-from django.forms import modelformset_factory
-from .forms import (
-    MemberProfileEditForm,
-    SpouseEditForm,
-    DependantForm,
-)
-
-
 @login_required
 def profile_edit_view(request):
-    """
-    Allow logged-in member to edit their own profile.
-    Handles: personal details, spouse, dependants.
-    """
+    profile = get_object_or_404(MemberProfile, user=request.user)
 
-    # ── Get the member's profile ──────────────────
-    profile = get_object_or_404(
-        MemberProfile,
-        user=request.user
-    )
-
-    # ── Dependant formset ─────────────────────────
-    # Allows editing multiple dependants at once
     DependantFormSet = modelformset_factory(
         Dependant,
         form=DependantForm,
-        extra=0,        # don't show empty forms
-        can_delete=True # allow removing dependants
+        extra=0,
+        can_delete=True
     )
 
-    # ── Spouse form — only if married ─────────────
     spouse_instance = getattr(profile, 'spouse', None)
-    is_married      = profile.marital_status == 'married'
+    is_married = profile.marital_status == 'married'
 
     if request.method == 'POST':
-
         profile_form = MemberProfileEditForm(
-            request.POST,
-            request.FILES,
-            instance=profile,
-            user=request.user,
+            request.POST, request.FILES,
+            instance=profile, user=request.user,
         )
-
         spouse_form = SpouseEditForm(
-            request.POST,
-            request.FILES,
+            request.POST, request.FILES,
             instance=spouse_instance,
         ) if is_married else None
 
         dependant_formset = DependantFormSet(
-            request.POST,
-            request.FILES,
+            request.POST, request.FILES,
             queryset=Dependant.objects.filter(member=profile),
         )
 
-        # ── Check all forms are valid ─────────────
-        profile_valid   = profile_form.is_valid()
-        spouse_valid    = (
-            spouse_form.is_valid()
-            if spouse_form else True
-        )
+        profile_valid = profile_form.is_valid()
+        spouse_valid = spouse_form.is_valid() if spouse_form else True
         dependants_valid = dependant_formset.is_valid()
 
         if profile_valid and spouse_valid and dependants_valid:
-
-            # Save profile
             profile_form.save()
 
-            # Save spouse if married
             if spouse_form:
                 spouse = spouse_form.save(commit=False)
                 spouse.member = profile
                 spouse.save()
 
-            # Save dependants
             instances = dependant_formset.save(commit=False)
-
             for dep in instances:
                 dep.member = profile
                 dep.save()
 
-            # Delete removed dependants
             for dep in dependant_formset.deleted_objects:
                 dep.delete()
 
-            messages.success(
-                request,
-                'Your profile has been updated successfully!'
-            )
+            messages.success(request,
+                'Your profile has been updated successfully!')
             return redirect('profile_edit')
-
         else:
-            messages.error(
-                request,
-                'Please fix the errors below and try again.'
-            )
+            messages.error(request,
+                'Please fix the errors below and try again.')
 
     else:
-        # GET request — pre-fill forms with existing data
         profile_form = MemberProfileEditForm(
-            instance=profile,
-            user=request.user,
-        )
-
+            instance=profile, user=request.user)
         spouse_form = SpouseEditForm(
-            instance=spouse_instance,
-        ) if is_married else None
-
+            instance=spouse_instance) if is_married else None
         dependant_formset = DependantFormSet(
-            queryset=Dependant.objects.filter(member=profile),
-        )
+            queryset=Dependant.objects.filter(member=profile))
 
     return render(request, 'sisikwaPamoja/profile_edit.html', {
-        'profile_form':       profile_form,
-        'spouse_form':        spouse_form,
-        'dependant_formset':  dependant_formset,
-        'profile':            profile,
-        'is_married':         is_married,
+        'profile_form': profile_form,
+        'spouse_form': spouse_form,
+        'dependant_formset': dependant_formset,
+        'profile': profile,
+        'is_married': is_married,
     })
 
 
 # ══════════════════════════════════════════════
 # CONTRIBUTIONS
-
 # ══════════════════════════════════════════════
 @login_required
 def contributions_view(request):
     profile = MemberProfile.objects.filter(
-        user=request.user
-    ).first()
+        user=request.user).first()
 
     contributions = []
     contribution_obj = None
 
     if profile:
         contributions = Contribution.objects.filter(
-            member=profile
-        ).order_by('-calculated_at')
+            member=profile).order_by('-calculated_at')
         contribution_obj = getattr(profile, 'contribution', None)
 
     return render(request,
@@ -581,11 +556,13 @@ def contributions_view(request):
 # ══════════════════════════════════════════════
 @login_required
 def savings_view(request):
-    profile = MemberProfile.objects.filter(
-        user=request.user
-    ).first()
+    # ── Guard: admins never hit member pages
+    if getattr(request.user, 'role', None) in ('superadmin', 'staff'):
+        return redirect('admin_dashboard')
 
-    # Redirect non-sacco members
+    profile = MemberProfile.objects.filter(
+        user=request.user).first()
+
     if not profile or profile.membership_type != 'sacco':
         messages.error(request,
             'Savings are only available to Sacco members.')
@@ -602,11 +579,13 @@ def savings_view(request):
 # ══════════════════════════════════════════════
 @login_required
 def loans_view(request):
-    profile = MemberProfile.objects.filter(
-        user=request.user
-    ).first()
+    # ── Guard: admins never hit member pages
+    if getattr(request.user, 'role', None) in ('superadmin', 'staff'):
+        return redirect('admin_dashboard')
 
-    # Redirect non-sacco members
+    profile = MemberProfile.objects.filter(
+        user=request.user).first()
+
     if not profile or profile.membership_type != 'sacco':
         messages.error(request,
             'Loans are only available to Sacco members.')
@@ -623,32 +602,120 @@ def loans_view(request):
 # ══════════════════════════════════════════════
 @login_required
 def loan_apply_view(request):
-    profile = MemberProfile.objects.filter(
-        user=request.user
-    ).first()
+    # ── Guard 1: admins and staff never hit this view
+    if getattr(request.user, 'role', None) in ('superadmin', 'staff'):
+        return redirect('admin_dashboard')
 
-    # Redirect non-sacco members
+    profile = MemberProfile.objects.filter(
+        user=request.user).first()
+
+    # ── Guard 2: sacco members only
     if not profile or profile.membership_type != 'sacco':
         messages.error(request,
             'Loans are only available to Sacco members.')
         return redirect('member_dashboard')
 
-    # Must have paid registration fee
+    # ── Guard 3: must have paid registration fee
     if not profile.has_paid:
         messages.error(request,
             'Please complete your registration payment first.')
         return redirect('member_dashboard')
 
     if request.method == 'POST':
-        # Loan application logic comes here
-        messages.info(request,
-            'Loan application submitted. '
-            'We will review and contact you shortly.')
-        return redirect('loans')
+        form = LoanApplicationForm(request.POST, request.FILES)
+
+        if form.is_valid():
+            loan = form.save(commit=False)
+            loan.member = profile
+            loan.save()
+
+            formset = LoanGuarantorFormSet(
+                request.POST, request.FILES, instance=loan)
+
+            if formset.is_valid():
+                formset.save()
+
+                # Notify member via SMS
+                sms_loan_applied(profile, loan.amount_applied)
+
+                messages.success(request,
+                    'Loan application submitted. '
+                    'We will review and contact you shortly.')
+                return redirect('loan_status', pk=loan.pk)
+            else:
+                # Roll back loan if guarantors are invalid
+                loan.delete()
+                messages.error(request,
+                    'Please fix the errors in the '
+                    'guarantor details below.')
+        else:
+            formset = LoanGuarantorFormSet(
+                request.POST, request.FILES)
+            messages.error(request,
+                'Please fix the errors below and try again.')
+    else:
+        form = LoanApplicationForm(initial={
+            'employer_business_name': getattr(
+                profile, 'employer_business_name', ''),
+            'occupation': getattr(
+                profile, 'occupation', ''),
+        })
+        formset = LoanGuarantorFormSet()
 
     return render(request,
         'sisikwaPamoja/loan_apply.html', {
             'profile': profile,
+            'form': form,
+            'formset': formset,
+        })
+
+
+# ══════════════════════════════════════════════
+# LOAN STATUS (Single Application)
+# ══════════════════════════════════════════════
+@login_required
+def loan_status_view(request, pk):
+    # ── Guard: admins never hit member pages
+    if getattr(request.user, 'role', None) in ('superadmin', 'staff'):
+        return redirect('admin_dashboard')
+
+    profile = MemberProfile.objects.filter(
+        user=request.user).first()
+
+    loan = LoanApplication.objects.filter(
+        pk=pk, member=profile).first()
+
+    if not loan:
+        messages.error(request, 'Loan application not found.')
+        return redirect('loans')
+
+    return render(request,
+        'sisikwaPamoja/loan_status.html', {
+            'profile': profile,
+            'loan': loan,
+        })
+
+
+# ══════════════════════════════════════════════
+# MY LOANS (List)
+# ══════════════════════════════════════════════
+@login_required
+def my_loans_view(request):
+    # ── Guard: admins never hit member pages
+    if getattr(request.user, 'role', None) in ('superadmin', 'staff'):
+        return redirect('admin_dashboard')
+
+    profile = MemberProfile.objects.filter(
+        user=request.user).first()
+
+    loans = LoanApplication.objects.filter(
+        member=profile
+    ).order_by('-applied_at') if profile else []
+
+    return render(request,
+        'sisikwaPamoja/my_loans.html', {
+            'profile': profile,
+            'loans': loans,
         })
 
 
@@ -657,11 +724,14 @@ def loan_apply_view(request):
 # ══════════════════════════════════════════════
 @login_required
 def family_view(request):
+    # ── Guard: admins never hit member pages
+    if getattr(request.user, 'role', None) in ('superadmin', 'staff'):
+        return redirect('admin_dashboard')
+
     profile = MemberProfile.objects.filter(
         user=request.user
     ).select_related('user').first()
 
-    # Redirect non last expense members
     if not profile or profile.membership_type != 'last_expense':
         messages.error(request,
             'Family coverage is only available to '
@@ -689,51 +759,34 @@ def family_view(request):
 # ══════════════════════════════════════════════
 @login_required
 def add_dependant_view(request):
-    profile = MemberProfile.objects.filter(
-        user=request.user
-    ).first()
+    # ── Guard: admins never hit member pages
+    if getattr(request.user, 'role', None) in ('superadmin', 'staff'):
+        return redirect('admin_dashboard')
 
-    # Redirect non last expense members
+    profile = MemberProfile.objects.filter(
+        user=request.user).first()
+
     if not profile or profile.membership_type != 'last_expense':
         messages.error(request,
             'This feature is only available to '
             'Last Expense members.')
         return redirect('member_dashboard')
 
-    if request.method == 'POST':
-        full_name = request.POST.get('full_name', '').strip()
-        relationship = request.POST.get('relationship')
-        gender = request.POST.get('gender')
-        date_of_birth = request.POST.get('date_of_birth')
-        phone_number = request.POST.get('phone_number', '').strip()
-        email = request.POST.get('email', '').strip()
-        id_number = request.POST.get('id_number', '').strip()
-        document = request.FILES.get('supporting_document')
+    form = DependantForm(request.POST or None, request.FILES or None)
 
-        if not all([full_name, relationship, gender, date_of_birth]):
-            messages.error(request,
-                'Please fill in all required fields.')
-            return redirect('add_dependant')
-
-        Dependant.objects.create(
-            member=profile,
-            full_name=full_name,
-            relationship=relationship,
-            gender=gender,
-            date_of_birth=date_of_birth,
-            phone_number=phone_number or None,
-            email=email or None,
-            id_or_birth_cert_number=id_number or None,
-            supporting_document=document,
-        )
+    if request.method == 'POST' and form.is_valid():
+        dependant = form.save(commit=False)
+        dependant.member = profile
+        dependant.save()
 
         messages.success(request,
-            f'{full_name} has been added as a dependant.')
+            f'{dependant.full_name} has been added as a dependant.')
         return redirect('family')
 
     return render(request,
         'sisikwaPamoja/add_dependant.html', {
             'profile': profile,
+            'form': form,
         })
 
 
@@ -743,14 +796,12 @@ def add_dependant_view(request):
 @login_required
 def statements_view(request):
     profile = MemberProfile.objects.filter(
-        user=request.user
-    ).first()
+        user=request.user).first()
 
     contributions = []
     if profile:
         contributions = Contribution.objects.filter(
-            member=profile
-        ).order_by('-calculated_at')
+            member=profile).order_by('-calculated_at')
 
     return render(request,
         'sisikwaPamoja/statements.html', {
@@ -765,8 +816,7 @@ def statements_view(request):
 @login_required
 def notifications_view(request):
     profile = MemberProfile.objects.filter(
-        user=request.user
-    ).first()
+        user=request.user).first()
 
     return render(request,
         'sisikwaPamoja/notifications.html', {
@@ -780,13 +830,11 @@ def notifications_view(request):
 @login_required
 def settings_view(request):
     profile = MemberProfile.objects.filter(
-        user=request.user
-    ).first()
+        user=request.user).first()
 
     if request.method == 'POST':
         action = request.POST.get('action')
 
-        # Change password
         if action == 'change_password':
             old_password = request.POST.get('old_password')
             new_password1 = request.POST.get('new_password1')
@@ -809,7 +857,6 @@ def settings_view(request):
                     'Please log in again.')
                 return redirect('login')
 
-        # Update basic profile (first/middle/last name)
         if action == 'update_profile':
             first_name = request.POST.get('first_name', '').strip()
             middle_name = request.POST.get('middle_name', '').strip()
@@ -827,8 +874,6 @@ def settings_view(request):
                 profile.save()
 
             messages.success(request, 'Profile updated successfully.')
-
-        # fallthrough redirects back to settings
 
         return redirect('settings')
 
@@ -860,19 +905,18 @@ def delete_account(request):
     return redirect('member_dashboard')
 
 
+# ══════════════════════════════════════════════
+# MPESA PAYMENT
+# ══════════════════════════════════════════════
 @login_required
 def mpesa_payment_view(request):
-    """
-    Page where member initiates STK Push
-    """
     profile = MemberProfile.objects.filter(
-        user=request.user
-    ).first()
+        user=request.user).first()
 
     if request.method == 'POST':
         phone_number = request.POST.get('phone')
-        amount       = request.POST.get('amount')
-        description  = request.POST.get('description',
+        amount = request.POST.get('amount')
+        description = request.POST.get('description',
             'SisiPamoja Payment')
 
         phone_number = (phone_number or '').strip()
@@ -880,13 +924,10 @@ def mpesa_payment_view(request):
 
         if not (len(phone_check) == 10 and
                 phone_check.startswith(('07', '01'))):
-            messages.error(
-                request,
-                'Invalid phone number. Use format 0712345678.'
-            )
+            messages.error(request,
+                'Invalid phone number. Use format 0712345678.')
             return redirect('mpesa_payment')
 
-        # Send STK Push
         result = stk_push(
             phone_number=phone_number,
             amount=amount,
@@ -895,7 +936,6 @@ def mpesa_payment_view(request):
         )
 
         if result['success']:
-            # Save pending payment
             MpesaPayment.objects.create(
                 member=profile,
                 phone_number=phone_number,
@@ -912,20 +952,16 @@ def mpesa_payment_view(request):
 
         return redirect('mpesa_payment')
 
-    # Get payment history
     payments = MpesaPayment.objects.filter(
         member=profile
     ).order_by('-created_at')[:10] if profile else []
 
-    # Determine amount to pay
     if profile:
         if profile.has_paid:
-            # Monthly contribution
             contribution = getattr(profile, 'contribution', None)
             default_amount = contribution.amount if contribution else 0
             payment_type = 'Monthly Contribution'
         else:
-            # Registration fee
             default_amount = profile.registration_fee or 0
             payment_type = 'Registration Fee'
     else:
@@ -942,12 +978,9 @@ def mpesa_payment_view(request):
         })
 
 
+#MPESA CALLBACK
 @csrf_exempt
 def mpesa_callback(request):
-    """
-    Safaricom sends payment result here
-    This must be a public URL (no login required)
-    """
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
@@ -958,14 +991,13 @@ def mpesa_callback(request):
             result_code = callback.get('ResultCode')
             result_desc = callback.get('ResultDesc')
 
-            # Find the payment
             payment = MpesaPayment.objects.filter(
                 checkout_request_id=checkout_id
             ).first()
 
             if payment:
                 if result_code == 0:
-                    # Payment successful
+                    # Get receipt
                     items = callback.get(
                         'CallbackMetadata', {}
                     ).get('Item', [])
@@ -975,18 +1007,72 @@ def mpesa_callback(request):
                         if item.get('Name') == 'MpesaReceiptNumber':
                             receipt = item.get('Value', '')
 
+                    # Update payment
                     payment.status = 'success'
                     payment.mpesa_receipt = receipt
                     payment.result_description = result_desc
                     payment.save()
 
-                    # Mark member as paid
                     member = payment.member
-                    member.has_paid = True
+
+                    # ── Determine payment type
+                    if not member.registration_fee_paid:
+                        # First payment = registration fee
+                        payment_type = 'registration'
+                        member.registration_fee_paid = True
+
+                    elif not member.annual_fee_paid:
+                        # Second payment = annual fee
+                        payment_type = 'annual'
+                        member.annual_fee_paid = True
+                        member.has_paid = True
+
+                    else:
+                        # Subsequent payments = contributions
+                        payment_type = 'contribution'
+
+                    # ── Record this payment
+                    MemberPayment.objects.create(
+                        member=member,
+                        payment_type=payment_type,
+                        amount=payment.amount,
+                        mpesa_receipt=receipt,
+                        notes=f"M-Pesa payment - {receipt}"
+                    )
+
+                    # ── Update total paid
+                    member.total_paid = (
+                        member.total_paid + payment.amount
+                    )
+
+                    # ── Auto-calculate and save annual fee
+                    member.annual_fee = member.calculate_annual_fee()
                     member.save()
 
+                    # ── Generate serial number
+                    # We need a serial number as soon as the member is marked paid
+                    # (either via callback or via admin action).
+                    # Ensure it happens exactly once.
+                    if member.has_paid and not member.serial_number:
+                        assign_serial_number(member)
+
+
+                    # ── Send SMS
+                    try:
+                        from .sms_service import (
+                            sms_mpesa_success,
+                            sms_member_approved
+                        )
+                        sms_mpesa_success(
+                            member, payment.amount, receipt)
+
+                        if payment_type == 'registration':
+                            sms_member_approved(member)
+
+                    except Exception as sms_error:
+                        print(f"SMS error: {sms_error}")
+
                 else:
-                    # Payment failed or cancelled
                     payment.status = 'failed'
                     payment.result_description = result_desc
                     payment.save()
@@ -994,4 +1080,7 @@ def mpesa_callback(request):
         except Exception as e:
             print(f"Callback error: {e}")
 
-    return JsonResponse({'ResultCode': 0, 'ResultDesc': 'Success'})
+    return JsonResponse({
+        'ResultCode': 0,
+        'ResultDesc': 'Success'
+    })
