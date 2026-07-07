@@ -250,7 +250,17 @@ class LoanApplicationForm(forms.ModelForm):
         widgets = {
             'purpose_of_loan': forms.Textarea(attrs={'rows': 4}),
         }
-
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Make these documents madatory
+        self.fields['id_copy'].required = True
+        self.fields['payslip_or_statement'].required = True
+        self.fields['digital_signature'].required = True
+        #Business permit and Supporting doc stay optional
+        #Sine not everyone is self-employed
+        self.fields['business_permit'].required = False
+        self.fields['supporting_document'].required = False
+        
     def clean(self):
         cleaned = super().clean()
         method = cleaned.get('disbursement_method')

@@ -1,0 +1,9 @@
+{% extends 'admin/base.html' %}
+
+{% block footer %}
+    {% if not is_popup %}
+        <footer class="app-footer {{ jazzmin_ui.footer_classes }}">
+            © 2026 SisiPamoja Welfare Sacco · All rights reserved
+        </footer>
+    {% endif %}
+{% endblock %}

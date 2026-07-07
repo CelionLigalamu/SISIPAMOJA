@@ -771,13 +771,47 @@ class LoanApplicationAdmin(admin.ModelAdmin):
         'security_offered', 'security_other', 'current_sacco_savings',
         'disbursement_method', 'bank_name', 'bank_branch',
         'bank_account_number', 'mpesa_registered_name', 'mpesa_number',
-        'id_copy', 'payslip_or_statement', 'business_permit',
-        'supporting_document', 'digital_signature', 'applied_at',
+        'get_id_copy', 'get_payslip', 'get_business_permit',
+        'get_supporting_doc', 'digital_signature', 'applied_at',
     )
     fields  = readonly_fields + (
         'status', 'admin_notes', 'reviewed_by', 'reviewed_at')
     inlines = [LoanGuarantorInline]
 
+    # ── Document link methods
+    def get_id_copy(self, obj):
+        if obj.id_copy:
+            return format_html(
+                '<a href="{}" target="_blank">📄 View ID Copy</a>',
+                obj.id_copy.url)
+        return '-'
+    get_id_copy.short_description = 'ID Copy'
+
+    def get_payslip(self, obj):
+        if obj.payslip_or_statement:
+            return format_html(
+                '<a href="{}" target="_blank">📄 View Payslip / Statement</a>',
+                obj.payslip_or_statement.url)
+        return '-'
+    get_payslip.short_description = 'Payslip / Statement'
+
+    def get_business_permit(self, obj):
+        if obj.business_permit:
+            return format_html(
+                '<a href="{}" target="_blank">📄 View Business Permit</a>',
+                obj.business_permit.url)
+        return '-'
+    get_business_permit.short_description = 'Business Permit'
+
+    def get_supporting_doc(self, obj):
+        if obj.supporting_document:
+            return format_html(
+                '<a href="{}" target="_blank">📄 View Supporting Document</a>',
+                obj.supporting_document.url)
+        return '-'
+    get_supporting_doc.short_description = 'Supporting Document'
+
+    # ── Save with SMS notifications
     def save_model(self, request, obj, form, change):
         if 'status' in form.changed_data:
             from django.utils import timezone

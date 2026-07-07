@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<style>
+  @page { size: A4; margin: 1.8cm 1.5cm; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: Arial, Helvetica, sans-serif; font-size: 10px; color: #1a1a2e; background: #ffffff; }
+
+  /* HEADER */
+  .header-table { width: 100%; border-collapse: collapse; border-bottom: 4px solid #14532D; padding-bottom: 10px; margin-bottom: 3px; }
+  .logo-box { width: 50px; height: 50px; background: #14532D; border-radius: 6px; text-align: center; padding-top: 11px; color: white; font-size: 16px; font-weight: 900; }
+  .org-name { font-size: 16px; font-weight: 900; color: #14532D; letter-spacing: 0.5px; }
+  .org-tagline { font-size: 8px; color: #EA580C; font-weight: bold; text-transform: uppercase; letter-spacing: 1.5px; margin-top: 3px; }
+  .doc-title { font-size: 13px; font-weight: 900; color: #14532D; text-transform: uppercase; letter-spacing: 0.5px; }
+  .doc-meta { font-size: 8.5px; color: #64748B; margin-top: 4px; line-height: 1.8; }
+  .orange-bar { height: 3px; background: #EA580C; width: 100%; margin-bottom: 14px; }
+
+  /* SECTION HEADERS */
+  .sec-header { background: #14532D; color: white; font-size: 9px; font-weight: bold; text-transform: uppercase; letter-spacing: 1.5px; padding: 5px 10px; margin-top: 14px; margin-bottom: 8px; }
+
+  /* INFO TABLE */
+  .info-table { width: 100%; border-collapse: collapse; }
+  .info-table td { padding: 4px 8px; font-size: 9.5px; border-bottom: 1px solid #F1F5F9; vertical-align: top; }
+  .info-label { color: #64748B; font-weight: bold; width: 110px; }
+  .info-value { color: #1a1a2e; font-weight: bold; }
+  .badge-active { background: #DCFCE7; color: #14532D; font-weight: bold; font-size: 8px; padding: 2px 8px; border-radius: 20px; }
+  .badge-pending { background: #FEF9C3; color: #92400E; font-weight: bold; font-size: 8px; padding: 2px 8px; border-radius: 20px; }
+
+  /* SUMMARY CARDS */
+  .cards-table { width: 100%; border-collapse: separate; border-spacing: 6px; margin-top: 8px; margin-bottom: 8px; }
+  .card-cell { border: 1px solid #E2E8F0; border-radius: 6px; padding: 10px 8px; text-align: center; width: 25%; vertical-align: top; }
+  .card-green  { background: #F0FDF4; border-color: #BBF7D0; }
+  .card-blue   { background: #EFF6FF; border-color: #BFDBFE; }
+  .card-orange { background: #FFF7ED; border-color: #FED7AA; }
+  .card-slate  { background: #F8FAFC; border-color: #CBD5E1; }
+  .card-lbl { font-size: 7.5px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.8px; color: #64748B; margin-bottom: 5px; }
+  .card-val { font-size: 15px; font-weight: 900; line-height: 1; margin-bottom: 3px; }
+  .cv-green  { color: #14532D; }
+  .cv-blue   { color: #1565C0; }
+  .cv-orange { color: #C2410C; }
+  .cv-slate  { color: #475569; }
+  .card-sub { font-size: 7.5px; color: #94A3B8; }
+
+  /* NOTICE BOX */
+  .notice-box { background: #F8FAFB; border: 1px solid #E2E8F0; border-left: 3px solid #14532D; padding: 8px 12px; font-size: 9px; color: #475569; line-height: 1.6; margin-top: 6px; margin-bottom: 6px; }
+
+  /* DATA TABLES */
+  .data-table { width: 100%; border-collapse: collapse; margin-bottom: 6px; font-size: 9px; }
+  .data-table thead tr { background: #1E293B; color: white; }
+  .data-table thead th { padding: 6px 8px; text-align: left; font-size: 8px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap; }
+  .data-table tbody tr.even { background: #F8FAFB; }
+  .data-table tbody tr.odd  { background: #ffffff; }
+  .data-table tbody td { padding: 6px 8px; border-bottom: 1px solid #F1F5F9; vertical-align: middle; }
+  .td-amount { font-weight: bold; color: #14532D; }
+
+  /* EMPTY STATE */
+  .empty-box { background: #F8FAFB; border: 1px dashed #CBD5E1; padding: 14px; text-align: center; margin-bottom: 6px; }
+  .empty-title { font-weight: bold; color: #475569; font-size: 10px; margin-bottom: 4px; }
+  .empty-body { font-size: 8.5px; color: #94A3B8; line-height: 1.5; }
+
+  /* STATS ROW */
+  .stats-table { width: 100%; border-collapse: collapse; border: 1px solid #E2E8F0; margin-bottom: 6px; }
+  .stats-table td { text-align: center; padding: 8px; border-right: 1px solid #E2E8F0; width: 33%; }
+  .stats-table td:last-child { border-right: none; }
+  .stat-lbl { font-size: 7.5px; font-weight: bold; text-transform: uppercase; color: #94A3B8; letter-spacing: 0.5px; margin-bottom: 3px; }
+  .stat-val { font-size: 11px; font-weight: bold; color: #1a1a2e; }
+
+  /* PILLS */
+  .pill { font-size: 7.5px; font-weight: bold; padding: 2px 6px; border-radius: 20px; }
+  .p-success  { background: #DCFCE7; color: #14532D; }
+  .p-pending  { background: #FEF9C3; color: #92400E; }
+  .p-failed   { background: #FEE2E2; color: #DC2626; }
+  .p-approved { background: #DCFCE7; color: #14532D; }
+  .p-rejected { background: #FEE2E2; color: #DC2626; }
+  .p-disbursed{ background: #DBEAFE; color: #1565C0; }
+
+  /* DECLARATION */
+  .decl-box { background: #F8FAFB; border: 1px solid #E2E8F0; padding: 10px 14px; font-size: 8.5px; color: #475569; line-height: 1.7; margin-bottom: 12px; }
+  .decl-title { font-weight: bold; color: #14532D; font-size: 9px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px; }
+
+  /* SIGNATURE */
+  .sig-table { width: 100%; border-collapse: collapse; margin-top: 16px; margin-bottom: 16px; }
+  .sig-table td { width: 50%; text-align: center; padding: 0 20px; vertical-align: bottom; }
+  .sig-line { border-bottom: 1px solid #1a1a2e; margin-bottom: 5px; height: 28px; }
+  .sig-label { font-size: 8.5px; color: #64748B; font-weight: bold; }
+  .sig-sub { font-size: 8px; color: #94A3B8; margin-top: 2px; }
+
+  /* CONTACT */
+  .contact-table { width: 100%; border-collapse: separate; border-spacing: 8px; margin-bottom: 12px; }
+  .contact-cell { background: #F0FDF4; border: 1px solid #BBF7D0; padding: 10px 12px; vertical-align: top; width: 50%; }
+  .contact-title { font-size: 8.5px; font-weight: bold; color: #14532D; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; border-bottom: 1px solid #BBF7D0; padding-bottom: 4px; }
+  .contact-row { font-size: 8.5px; color: #475569; margin-bottom: 3px; line-height: 1.5; }
+
+  /* FOOTER */
+  .footer-table { width: 100%; border-collapse: collapse; border-top: 3px solid #14532D; padding-top: 10px; margin-top: 10px; }
+  .footer-table td { padding: 8px 4px 0; font-size: 8.5px; color: #64748B; line-height: 1.7; vertical-align: top; }
+  .footer-ref { font-size: 8.5px; font-weight: bold; color: #14532D; letter-spacing: 0.5px; text-align: center; }
+  .footer-sub { font-size: 7.5px; color: #94A3B8; text-align: center; margin-top: 2px; }
+  .confidential-bar { margin-top: 10px; background: #FFF7ED; border: 1px solid #FED7AA; padding: 5px 12px; text-align: center; font-size: 8px; font-weight: bold; color: #EA580C; text-transform: uppercase; letter-spacing: 1.5px; }
+</style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <table class="header-table">
+    <tr>
+      <td style="width:52px; vertical-align:middle; padding-right:10px;">
+        <div class="logo-box">SP</div>
+      </td>
+      <td style="vertical-align:middle;">
+        <div class="org-name">SISIPAMOJA WELFARE</div>
+        <div class="org-tagline">Together in Times of Need</div>
+      </td>
+      <td style="text-align:right; vertical-align:middle;">
+        <div class="doc-title">Member Account Statement</div>
+        <div class="doc-meta">
+          <b>Generated:</b> {{ generated_at|date:"d M Y, H:i" }}<br>
+          <b>Reference:</b> SP-{{ generated_at|date:"Ymd" }}-{{ profile.serial_number|default:"PENDING" }}
+        </div>
+      </td>
+    </tr>
+  </table>
+  <div class="orange-bar"></div>
+
+  <!-- MEMBER INFORMATION -->
+  <div class="sec-header">Member Information</div>
+  <table class="info-table">
+    <tr>
+      <td class="info-label">Full Name</td>
+      <td class="info-value">{{ profile.user.get_full_name }}</td>
+      <td class="info-label">Member Number</td>
+      <td class="info-value">{{ profile.serial_number|default:"Pending" }}</td>
+    </tr>
+    <tr>
+      <td class="info-label">National ID</td>
+      <td class="info-value">{{ profile.national_id }}</td>
+      <td class="info-label">Phone Number</td>
+      <td class="info-value">{{ profile.phone_number }}</td>
+    </tr>
+    <tr>
+      <td class="info-label">Email Address</td>
+      <td class="info-value">{{ profile.user.email }}</td>
+      <td class="info-label">Membership Type</td>
+      <td class="info-value">{{ profile.get_membership_type_display }}</td>
+    </tr>
+    <tr>
+      <td class="info-label">County</td>
+      <td class="info-value">{{ profile.county }}</td>
+      <td class="info-label">Date Joined</td>
+      <td class="info-value">{{ profile.date_registered|date:"d M Y" }}</td>
+    </tr>
+    <tr>
+      <td class="info-label">Account Status</td>
+      <td class="info-value">
+        {% if profile.has_paid %}<span class="badge-active">ACTIVE</span>{% else %}<span class="badge-pending">PENDING</span>{% endif %}
+      </td>
+      <td class="info-label">Statement Date</td>
+      <td class="info-value">{{ generated_at|date:"d M Y" }}</td>
+    </tr>
+  </table>
+
+  <!-- ACCOUNT SUMMARY -->
+  <div class="sec-header">Account Summary</div>
+  <table class="cards-table">
+    <tr>
+      <td class="card-cell card-green">
+        <div class="card-lbl">Total Contributions</div>
+        <div class="card-val cv-green">KES {{ real_total|floatformat:0 }}</div>
+        <div class="card-sub">Lifetime Amount Paid</div>
+      </td>
+      <td class="card-cell card-blue">
+        <div class="card-lbl">Total Payments</div>
+        <div class="card-val cv-blue">{{ payment_count }}</div>
+        <div class="card-sub">Successful Transactions</div>
+      </td>
+      <td class="card-cell card-orange">
+        <div class="card-lbl">Loan Applications</div>
+        <div class="card-val cv-orange">{{ loans|length }}</div>
+        <div class="card-sub">Applications Submitted</div>
+      </td>
+      <td class="card-cell card-slate">
+        <div class="card-lbl">Active Loans</div>
+        <div class="card-val cv-slate">{{ active_loans_count }}</div>
+        <div class="card-sub">Approved / Disbursed</div>
+      </td>
+    </tr>
+  </table>
+
+  <div class="notice-box">
+    <b>Member Account Summary</b><br>
+    This statement provides a complete summary of your membership, contributions, loan applications and payment history as of {{ generated_at|date:"d M Y, H:i" }}. Please verify all information carefully and contact the Sacco office immediately if you notice any discrepancies.
+  </div>
+
+  <!-- MPESA PAYMENT HISTORY -->
+  <div class="sec-header">M-Pesa Payment History</div>
+  {% if mpesa_payments %}
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Receipt No.</th>
+        <th>Description</th>
+        <th>Phone</th>
+        <th>Amount (KES)</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for p in mpesa_payments %}
+      <tr class="{% cycle 'odd' 'even' %}">
+        <td>{{ p.created_at|date:"d M Y" }}</td>
+        <td>{{ p.mpesa_receipt|default:"-" }}</td>
+        <td>{{ p.description|default:"M-Pesa Payment" }}</td>
+        <td>{{ p.phone_number }}</td>
+        <td class="td-amount">{{ p.amount|floatformat:0 }}</td>
+        <td><span class="pill p-success">Successful</span></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <table class="stats-table">
+    <tr>
+      <td><div class="stat-lbl">Total Transactions</div><div class="stat-val">{{ mpesa_payments|length }}</div></td>
+      <td><div class="stat-lbl">Total Contributions</div><div class="stat-val">KES {{ real_total|floatformat:0 }}</div></td>
+      <td><div class="stat-lbl">Last Updated</div><div class="stat-val">{{ generated_at|date:"d M Y" }}</div></td>
+    </tr>
+  </table>
+  {% else %}
+  <div class="empty-box">
+    <div class="empty-title">— NO PAYMENT HISTORY —</div>
+    <div class="empty-body">This member has not made any M-Pesa payments yet.<br>Payments will automatically appear in this statement.</div>
+  </div>
+  {% endif %}
+
+  <!-- LOAN HISTORY -->
+  <div class="sec-header">Loan Application History</div>
+  {% if loans %}
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Application Date</th>
+        <th>Loan Product</th>
+        <th>Amount (KES)</th>
+        <th>Period</th>
+        <th>Monthly Install.</th>
+        <th>Security</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for loan in loans %}
+      <tr class="{% cycle 'odd' 'even' %}">
+        <td>{{ loan.applied_at|date:"d M Y" }}</td>
+        <td>{{ loan.get_loan_product_display }}</td>
+        <td class="td-amount">{{ loan.amount_applied|floatformat:0 }}</td>
+        <td>{{ loan.repayment_period_months }} Months</td>
+        <td>{{ loan.proposed_monthly_installment|floatformat:0 }}</td>
+        <td>{{ loan.get_security_offered_display }}</td>
+        <td>
+          {% if loan.status == 'pending' %}<span class="pill p-pending">Pending</span>
+          {% elif loan.status == 'approved' %}<span class="pill p-approved">Approved</span>
+          {% elif loan.status == 'rejected' %}<span class="pill p-rejected">Rejected</span>
+          {% elif loan.status == 'disbursed' %}<span class="pill p-disbursed">Disbursed</span>{% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div class="empty-box">
+    <div class="empty-title">— NO LOAN HISTORY —</div>
+    <div class="empty-body">This member has not submitted any loan applications yet.</div>
+  </div>
+  {% endif %}
+
+  <!-- DECLARATION -->
+  <div class="sec-header">Member Account Declaration</div>
+  <div class="decl-box">
+    <div class="decl-title">Official Statement Declaration</div>
+    This statement has been generated electronically by the SisiPamoja Welfare Sacco Management System. It summarizes the member's contributions, payments, and loan activities as of the date shown on this statement. Members are advised to verify all information carefully and report any discrepancies to the Sacco office within seven (7) working days of receipt. This document does not require a physical signature and is considered an official Sacco record.
+  </div>
+  <table class="sig-table">
+    <tr>
+      <td>
+        <div class="sig-line"></div>
+        <div class="sig-label">Member Signature</div>
+        <div class="sig-sub">{{ profile.user.get_full_name }}</div>
+      </td>
+      <td>
+        <div class="sig-line"></div>
+        <div class="sig-label">Authorized Officer</div>
+        <div class="sig-sub">SisiPamoja Welfare Sacco</div>
+      </td>
+    </tr>
+  </table>
+
+  <!-- CONTACT INFO -->
+  <div class="sec-header">Sacco Contact Information</div>
+  <table class="contact-table">
+    <tr>
+      <td class="contact-cell">
+        <div class="contact-title">Office Details</div>
+        <div class="contact-row"><b>SisiPamoja Welfare Sacco</b></div>
+        <div class="contact-row">Nairobi, Kenya</div>
+        <div class="contact-row">Email: sisipamojarecruitment@gmail.com</div>
+        <div class="contact-row">Phone: +254 XXX XXX XXX</div>
+        <div class="contact-row">Mon – Fri: 8:00 AM – 5:00 PM</div>
+        <div class="contact-row">Saturday: 9:00 AM – 1:00 PM</div>
+      </td>
+      <td class="contact-cell">
+        <div class="contact-title">Statement Details</div>
+        <div class="contact-row"><b>Member:</b> {{ profile.user.get_full_name }}</div>
+        <div class="contact-row"><b>Member No:</b> {{ profile.serial_number|default:"Pending" }}</div>
+        <div class="contact-row"><b>National ID:</b> {{ profile.national_id }}</div>
+        <div class="contact-row"><b>Generated:</b> {{ generated_at|date:"d M Y, H:i" }}</div>
+        <div class="contact-row"><b>Reference:</b> SP-{{ generated_at|date:"Ymd" }}-{{ profile.serial_number|default:"PENDING" }}</div>
+      </td>
+    </tr>
+  </table>
+
+  <!-- FOOTER -->
+  <table class="footer-table">
+    <tr>
+      <td style="width:33%;"><b>SisiPamoja Welfare Sacco</b><br>Nairobi, Kenya<br>sisipamojarecruitment@gmail.com</td>
+      <td style="width:34%; text-align:center; vertical-align:middle;">
+        <div class="footer-ref">SP-{{ generated_at|date:"Ymd" }}-{{ profile.serial_number|default:"PENDING" }}</div>
+        <div class="footer-sub">Generated {{ generated_at|date:"d M Y, H:i" }}</div>
+      </td>
+      <td style="width:33%; text-align:right;">{{ profile.user.get_full_name }}<br>{{ profile.serial_number|default:"Pending" }}<br>Page 1 of 1</td>
+    </tr>
+  </table>
+
+  <div class="confidential-bar">
+    Confidential Document — Intended Solely for {{ profile.user.get_full_name }} — Unauthorized Reproduction or Distribution is Prohibited
+  </div>
+
+</body>
+</html>

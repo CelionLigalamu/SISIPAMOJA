@@ -66,6 +66,12 @@ urlpatterns = [
     path('statements/',
          views.statements_view,
          name='statements'),
+     
+     #statement download
+     path('statements/download/',
+          views.statement_pdf_view,
+          name='statement_pdf'),
+     
 
     # Notifications
     path('notifications/',

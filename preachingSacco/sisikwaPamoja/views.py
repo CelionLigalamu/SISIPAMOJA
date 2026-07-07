@@ -371,17 +371,22 @@ def member_dashboard(request):
     profile = MemberProfile.objects.filter(
         user=request.user
     ).select_related('user').first()
+    payments = []
+    fee_breakdown = None
 
-    contributions = []
+    
     if profile:
-        contributions = Contribution.objects.filter(
+        #Read from members payment contribution
+        payments= MemberPayment.objects.filter(
             member=profile
-        ).order_by('-calculated_at')[:5]
+        ).order_by('-payment_date')[:5]
+        fee_breakdown = profile.get_fee_breakdown()
 
     return render(request,
         'sisikwaPamoja/dashboard_member.html', {
             'profile': profile,
-            'contributions': contributions,
+            'contributions': payments,
+            'fee_breakdown': fee_breakdown,
         })
 
 
@@ -579,7 +584,6 @@ def savings_view(request):
 # ══════════════════════════════════════════════
 @login_required
 def loans_view(request):
-    # ── Guard: admins never hit member pages
     if getattr(request.user, 'role', None) in ('superadmin', 'staff'):
         return redirect('admin_dashboard')
 
@@ -591,11 +595,23 @@ def loans_view(request):
             'Loans are only available to Sacco members.')
         return redirect('member_dashboard')
 
+    # ── Fetch this member's loan applications
+    loans = LoanApplication.objects.filter(
+        member=profile
+    ).order_by('-applied_at')
+
+    active_loans = loans.filter(
+        status__in=['approved', 'disbursed'])
+
     return render(request,
         'sisikwaPamoja/loans.html', {
             'profile': profile,
+            'loans': loans,
+            'active_loans': active_loans,
+            'active_loans_count': active_loans.count(),
+            'total_borrowed': sum(
+                l.amount_applied for l in active_loans),
         })
-
 
 # ══════════════════════════════════════════════
 # LOAN APPLICATION (Sacco Members Only)
@@ -809,18 +825,127 @@ def statements_view(request):
             'contributions': contributions,
         })
 
+# ══════════════════════════════════════════════
+# STATEMENT PDF DOWNLOAD
+# ══════════════════════════════════════════════
+@login_required
+def statement_pdf_view(request):
+    from xhtml2pdf import pisa
+    from django.http import HttpResponse
+    import io
+    from .models import MemberPayment
+
+    profile = MemberProfile.objects.filter(
+        user=request.user).first()
+
+    if not profile:
+        return redirect('member_dashboard')
+
+    # M-Pesa payments
+    mpesa_payments = MpesaPayment.objects.filter(
+        member=profile,
+        status='success'
+    ).order_by('-created_at')
+
+    # Admin recorded payments
+    member_payments = MemberPayment.objects.filter(
+        member=profile
+    ).order_by('-payment_date')
+
+    # Loans
+    loans = LoanApplication.objects.filter(
+        member=profile
+    ).order_by('-applied_at')
+
+    active_loans = loans.filter(
+        status__in=['approved', 'disbursed'])
+
+    # Calculate real total paid
+    mpesa_total = sum(p.amount for p in mpesa_payments)
+    member_total = sum(p.amount for p in member_payments)
+    real_total = mpesa_total + member_total
+
+    context = {
+        'profile':            profile,
+        'mpesa_payments':     mpesa_payments,
+        'member_payments':    member_payments,
+        'loans':              loans,
+        'active_loans_count': active_loans.count(),
+        'generated_at':       timezone.now(),
+        'real_total':         real_total,
+        'payment_count':      mpesa_payments.count() + member_payments.count(),
+    }
+
+    html_string = render_to_string(
+        'sisikwaPamoja/statement_pdf.html', context)
+
+    pdf_buffer = io.BytesIO()
+    pisa.CreatePDF(html_string, dest=pdf_buffer)
+    pdf_file = pdf_buffer.getvalue()
+
+    member_name = profile.user.get_full_name().replace(' ', '_')
+    filename    = f"SisiPamoja_Statement_{member_name}.pdf"
+
+    response = HttpResponse(
+        pdf_file, content_type='application/pdf')
+    response['Content-Disposition'] = (
+        f'attachment; filename="{filename}"')
+    return response
 
 # ══════════════════════════════════════════════
 # NOTIFICATIONS
 # ══════════════════════════════════════════════
 @login_required
 def notifications_view(request):
+    from .models import SMSLog
     profile = MemberProfile.objects.filter(
         user=request.user).first()
 
+    sms_logs = []
+    if profile:
+        sms_logs = SMSLog.objects.filter(
+            member=profile
+        ).order_by('-created_at')[:50]
+
+    # Map event types to display config
+    event_config = {
+        'account_created':       {'title': 'Account Created',          'icon': 'fa-user-check',      'color': '#15803D', 'bg': '#F0FDF4', 'border': '#15803D'},
+        'member_approved':       {'title': 'Membership Approved',       'icon': 'fa-check-circle',    'color': '#15803D', 'bg': '#F0FDF4', 'border': '#15803D'},
+        'mpesa_success':         {'title': 'Payment Received',          'icon': 'fa-money-bill-wave', 'color': '#15803D', 'bg': '#F0FDF4', 'border': '#15803D'},
+        'contribution_received': {'title': 'Contribution Received',     'icon': 'fa-coins',           'color': '#15803D', 'bg': '#F0FDF4', 'border': '#15803D'},
+        'loan_applied':          {'title': 'Loan Application Received', 'icon': 'fa-file-alt',        'color': '#1565C0', 'bg': '#EFF6FF', 'border': '#1565C0'},
+        'loan_approved':         {'title': 'Loan Approved',             'icon': 'fa-thumbs-up',       'color': '#15803D', 'bg': '#F0FDF4', 'border': '#15803D'},
+        'loan_rejected':         {'title': 'Loan Not Approved',         'icon': 'fa-times-circle',    'color': '#DC2626', 'bg': '#FEF2F2', 'border': '#DC2626'},
+        'loan_disbursed':        {'title': 'Loan Disbursed',            'icon': 'fa-hand-holding-usd','color': '#1565C0', 'bg': '#EFF6FF', 'border': '#1565C0'},
+        'dependant_added':       {'title': 'Dependant Added',           'icon': 'fa-users',           'color': '#92400E', 'bg': '#FFF7ED', 'border': '#EA580C'},
+        'password_reset':        {'title': 'Password Reset',            'icon': 'fa-lock',            'color': '#475569', 'bg': '#F8FAFC', 'border': '#94A3B8'},
+    }
+
+    notifications = []
+    for log in sms_logs:
+        config = event_config.get(log.event_type, {
+            'title': log.get_event_type_display(),
+            'icon': 'fa-bell',
+            'color': '#475569',
+            'bg': '#F8FAFC',
+            'border': '#94A3B8',
+        })
+        notifications.append({
+            'title':      config['title'],
+            'icon':       config['icon'],
+            'color':      config['color'],
+            'bg':         config['bg'],
+            'border':     config['border'],
+            'message':    log.message,
+            'created_at': log.created_at,
+            'status':     log.status,
+        })
+
     return render(request,
         'sisikwaPamoja/notifications.html', {
-            'profile': profile,
+            'profile':       profile,
+            'notifications': notifications,
+            'total':         len(notifications),
         })
 
 
@@ -957,16 +1082,35 @@ def mpesa_payment_view(request):
     ).order_by('-created_at')[:10] if profile else []
 
     if profile:
-        if profile.has_paid:
-            contribution = getattr(profile, 'contribution', None)
-            default_amount = contribution.amount if contribution else 0
-            payment_type = 'Monthly Contribution'
-        else:
-            default_amount = profile.registration_fee or 0
+        if not profile.registration_fee_paid:
+            default_amount = 200
             payment_type = 'Registration Fee'
+            description = 'One-time registration fee for new members.'
+        elif not profile.annual_fee_paid:
+            annual = profile.calculate_annual_fee()
+            default_amount = annual
+            if profile.membership_type == 'sacco':
+                payment_type = 'Capital Share'
+                description = 'Capital share payment for Sacco members.'
+            else:
+                payment_type = 'Annual Welfare Contribution'
+                description = 'Annual welfare contribution'
+
+        else:
+            annual = profile.calculate_annual_fee()
+            default_amount = annual
+            if profile.membership_type == 'sacco':
+                payment_type = 'Capital Share'
+                description = 'Capital share payment for Sacco members.'
+            else:
+                payment_type = 'Annual Contribution'
+                description = 'Annual welfare contribution'
+
     else:
         default_amount = 0
         payment_type = 'Payment'
+        description =''
+            
 
     return render(request,
         'sisikwaPamoja/mpesa_payment.html', {
@@ -1019,17 +1163,33 @@ def mpesa_callback(request):
                     if not member.registration_fee_paid:
                         # First payment = registration fee
                         payment_type = 'registration'
+                        description = 'Registration Fee - One time payment'
                         member.registration_fee_paid = True
 
                     elif not member.annual_fee_paid:
-                        # Second payment = annual fee
-                        payment_type = 'annual'
+                        # Second payment
+                        if member.membership_type == 'sacco':
+                            #Sacco members pay capital share
+                            payment_type = 'capital_share'
+                            description = 'Capital Share '
+                        else:   
+                            #Last Expense members pay annual fee
+                            payment_type = 'annual'
+                            description = 'Annual Welfare Contribution'
+
+                        
                         member.annual_fee_paid = True
                         member.has_paid = True
 
                     else:
-                        # Subsequent payments = contributions
-                        payment_type = 'contribution'
+                        # Subsequent payments
+                        if member.membership_type == 'sacco':
+                            payment_type = 'capital_share'
+                            description = 'Capital Share '
+                        else:
+                            payment_type = 'contibution'
+                            description = 'Welfare Contribution'
+                        
 
                     # ── Record this payment
                     MemberPayment.objects.create(
@@ -1037,6 +1197,7 @@ def mpesa_callback(request):
                         payment_type=payment_type,
                         amount=payment.amount,
                         mpesa_receipt=receipt,
+                        description=description,
                         notes=f"M-Pesa payment - {receipt}"
                     )
 

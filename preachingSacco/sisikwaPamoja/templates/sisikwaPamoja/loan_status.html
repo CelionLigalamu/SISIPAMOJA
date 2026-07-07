@@ -1,0 +1,182 @@
+{% extends 'sisikwaPamoja/dashboard_member.html' %}
+{% block title %}Loan Status | SisiPamoja{% endblock %}
+
+{% block dashboard_content %}
+<div style="max-width:700px;">
+
+  <div class="sec-hd">
+    <div class="sec-hd-title">
+      <i class="fas fa-file-alt" style="color:#94A3B8; margin-right:8px;"></i>
+      Loan Application Status
+    </div>
+    <a href="{% url 'loans' %}" class="sec-hd-link">
+      <i class="fas fa-arrow-left"></i> Back to Loans
+    </a>
+  </div>
+
+  <div class="panel">
+
+    <!-- Status Badge -->
+    <div style="text-align:center; padding: 20px 0 10px;">
+      {% if loan.status == 'pending' %}
+        <div style="display:inline-flex; align-items:center; gap:10px;
+                    background:var(--o50); border:1px solid var(--o100);
+                    color:var(--o700); padding:12px 28px;
+                    border-radius:40px; font-weight:800; font-size:1rem;">
+          <i class="fas fa-clock"></i> Pending Review
+        </div>
+        <p style="margin-top:12px; color:var(--neu400); font-size:.85rem;">
+          Your application is being reviewed. We will notify you via SMS.
+        </p>
+      {% elif loan.status == 'approved' %}
+        <div style="display:inline-flex; align-items:center; gap:10px;
+                    background:var(--g50); border:1px solid var(--g100);
+                    color:var(--g900); padding:12px 28px;
+                    border-radius:40px; font-weight:800; font-size:1rem;">
+          <i class="fas fa-check-circle"></i> Approved
+        </div>
+        <p style="margin-top:12px; color:var(--neu400); font-size:.85rem;">
+          Congratulations! Your loan has been approved.
+        </p>
+      {% elif loan.status == 'rejected' %}
+        <div style="display:inline-flex; align-items:center; gap:10px;
+                    background:#FEE2E2; border:1px solid #FECACA;
+                    color:#DC2626; padding:12px 28px;
+                    border-radius:40px; font-weight:800; font-size:1rem;">
+          <i class="fas fa-times-circle"></i> Not Approved
+        </div>
+        {% if loan.admin_notes %}
+        <p style="margin-top:12px; color:var(--neu600); font-size:.85rem;">
+          {{ loan.admin_notes }}
+        </p>
+        {% endif %}
+      {% elif loan.status == 'disbursed' %}
+        <div style="display:inline-flex; align-items:center; gap:10px;
+                    background:#EFF6FF; border:1px solid #BFDBFE;
+                    color:var(--b700); padding:12px 28px;
+                    border-radius:40px; font-weight:800; font-size:1rem;">
+          <i class="fas fa-money-bill-wave"></i> Disbursed
+        </div>
+        <p style="margin-top:12px; color:var(--neu400); font-size:.85rem;">
+          Your loan has been disbursed. Check your account.
+        </p>
+      {% endif %}
+    </div>
+
+    <hr style="border:none; border-top:1px solid var(--neu100); margin:20px 0;">
+
+    <!-- Loan Summary -->
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+
+      <div>
+        <div style="font-size:.72rem; font-weight:800; color:var(--neu400);
+                    text-transform:uppercase; letter-spacing:.5px; margin-bottom:4px;">
+          Loan Product
+        </div>
+        <div style="font-weight:700; color:var(--neu800);">
+          {{ loan.get_loan_product_display }}
+        </div>
+      </div>
+
+      <div>
+        <div style="font-size:.72rem; font-weight:800; color:var(--neu400);
+                    text-transform:uppercase; letter-spacing:.5px; margin-bottom:4px;">
+          Amount Applied
+        </div>
+        <div style="font-weight:700; color:var(--neu800);">
+          KES {{ loan.amount_applied|floatformat:0 }}
+        </div>
+      </div>
+
+      <div>
+        <div style="font-size:.72rem; font-weight:800; color:var(--neu400);
+                    text-transform:uppercase; letter-spacing:.5px; margin-bottom:4px;">
+          Repayment Period
+        </div>
+        <div style="font-weight:700; color:var(--neu800);">
+          {{ loan.repayment_period_months }} months
+        </div>
+      </div>
+
+      <div>
+        <div style="font-size:.72rem; font-weight:800; color:var(--neu400);
+                    text-transform:uppercase; letter-spacing:.5px; margin-bottom:4px;">
+          Monthly Installment
+        </div>
+        <div style="font-weight:700; color:var(--neu800);">
+          KES {{ loan.proposed_monthly_installment|floatformat:0 }}
+        </div>
+      </div>
+
+      <div>
+        <div style="font-size:.72rem; font-weight:800; color:var(--neu400);
+                    text-transform:uppercase; letter-spacing:.5px; margin-bottom:4px;">
+          Security Offered
+        </div>
+        <div style="font-weight:700; color:var(--neu800);">
+          {{ loan.get_security_offered_display }}
+        </div>
+      </div>
+
+      <div>
+        <div style="font-size:.72rem; font-weight:800; color:var(--neu400);
+                    text-transform:uppercase; letter-spacing:.5px; margin-bottom:4px;">
+          Disbursement Method
+        </div>
+        <div style="font-weight:700; color:var(--neu800);">
+          {{ loan.get_disbursement_method_display }}
+        </div>
+      </div>
+
+      <div>
+        <div style="font-size:.72rem; font-weight:800; color:var(--neu400);
+                    text-transform:uppercase; letter-spacing:.5px; margin-bottom:4px;">
+          Date Applied
+        </div>
+        <div style="font-weight:700; color:var(--neu800);">
+          {{ loan.applied_at|date:"d M Y" }}
+        </div>
+      </div>
+
+      {% if loan.reviewed_at %}
+      <div>
+        <div style="font-size:.72rem; font-weight:800; color:var(--neu400);
+                    text-transform:uppercase; letter-spacing:.5px; margin-bottom:4px;">
+          Reviewed On
+        </div>
+        <div style="font-weight:700; color:var(--neu800);">
+          {{ loan.reviewed_at|date:"d M Y" }}
+        </div>
+      </div>
+      {% endif %}
+
+    </div>
+
+    <!-- Purpose -->
+    <div style="margin-top:20px;">
+      <div style="font-size:.72rem; font-weight:800; color:var(--neu400);
+                  text-transform:uppercase; letter-spacing:.5px; margin-bottom:6px;">
+        Purpose of Loan
+      </div>
+      <div style="font-weight:600; color:var(--neu700); font-size:.875rem;
+                  background:var(--neu50); padding:12px; border-radius:8px;
+                  border:1px solid var(--neu200);">
+        {{ loan.purpose_of_loan }}
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div style="margin-top:24px; display:flex; gap:12px; justify-content:flex-end;">
+      <a href="{% url 'my_loans' %}" class="btn-outline-sm">
+        <i class="fas fa-list"></i> My Applications
+      </a>
+      {% if loan.status == 'rejected' %}
+      <a href="{% url 'loan_apply' %}" class="btn-cta-green">
+        <i class="fas fa-redo"></i> Apply Again
+      </a>
+      {% endif %}
+    </div>
+
+  </div>
+</div>
+{% endblock %} 

@@ -2,7 +2,10 @@
 {% block title %}My Loans | SisiPamoja{% endblock %}
 
 {% block dashboard_content %}
+
+<!-- ── STAT CARDS ── -->
 <div class="stat-grid" style="margin-bottom:24px;">
+
   <div class="stat-card green">
     <div class="stat-top">
       <div class="stat-icon si-green">
@@ -14,7 +17,7 @@
     </div>
     <div>
       <div class="stat-label">Borrowing Power</div>
-      <div class="stat-value">{{ profile.borrowing_power|default:"KES 50K" }}</div>
+      <div class="stat-value">KES 50K</div>
       <div class="stat-sub">Available to borrow</div>
     </div>
   </div>
@@ -28,21 +31,23 @@
     </div>
     <div>
       <div class="stat-label">Active Loans</div>
-      <div class="stat-value">{{ active_loans_count|default:"0" }}</div>
-      <div class="stat-sub">No active loans</div>
+      <div class="stat-value">{{ active_loans_count }}</div>
+      <div class="stat-sub">
+        {% if active_loans_count > 0 %}Currently active{% else %}No active loans{% endif %}
+      </div>
     </div>
   </div>
 
   <div class="stat-card orange">
-      <div class="stat-top">
+    <div class="stat-top">
       <div class="stat-icon si-orange">
         <i class="fas fa-percent"></i>
       </div>
-      <div class="stat-trend trend-neu">{{ interest_rate|default:"14%" }}</div>
+      <div class="stat-trend trend-neu">14%</div>
     </div>
     <div>
       <div class="stat-label">Interest Rate</div>
-      <div class="stat-value small">{{ interest_rate|default:"14%" }} p.a.</div>
+      <div class="stat-value small">14% p.a.</div>
       <div class="stat-sub">Competitive rates</div>
     </div>
   </div>
@@ -56,14 +61,16 @@
     </div>
     <div>
       <div class="stat-label">Total Borrowed</div>
-      <div class="stat-value small">{{ total_borrowed|default:"KES 0" }}</div>
+      <div class="stat-value small">KES {{ total_borrowed|floatformat:0 }}</div>
       <div class="stat-sub">Lifetime amount</div>
     </div>
   </div>
+
 </div>
 
-<!-- Apply for Loan CTA -->
-<div class="panel" style="background:linear-gradient(135deg, var(--g900) 0%, var(--g700) 100%); color:white; padding:28px; text-align:center; margin-bottom:20px;">
+<!-- ── APPLY CTA ── -->
+<div class="panel" style="background:linear-gradient(135deg, var(--g900) 0%, var(--g700) 100%);
+     color:white; padding:28px; text-align:center; margin-bottom:20px;">
   <div style="font-size:2rem; margin-bottom:12px;">
     <i class="fas fa-arrow-up-right-from-square"></i>
   </div>
@@ -73,55 +80,142 @@
   <p style="margin-bottom:20px; opacity:0.9;">
     You are eligible to apply for a loan. Get funds within 24 hours of approval.
   </p>
-  <a href="{% url 'loan_apply' %}" class="btn-cta-green" style="background:white; color:#14532D;">
-    <i class="fas fa-hand-holding-usd me-1"></i> Apply for Loan
+  <a href="{% url 'loan_apply' %}" class="btn-cta-green"
+     style="background:white; color:#14532D;">
+    <i class="fas fa-hand-holding-usd"></i> Apply for Loan
   </a>
 </div>
 
-<!-- Active Loans -->
+<!-- ── ALL APPLICATIONS ── -->
 <div class="panel">
   <div class="sec-hd">
     <div class="sec-hd-title">
-      <i class="fas fa-hand-holding-usd" style="color:#94A3B8; margin-right:8px;"></i>
-      Active Loans
+      <i class="fas fa-file-alt" style="color:#94A3B8; margin-right:8px;"></i>
+      My Loan Applications
     </div>
+    <a href="{% url 'loan_apply' %}" class="btn-outline-sm">
+      <i class="fas fa-plus"></i> New Application
+    </a>
   </div>
+
+  {% if loans %}
+  <table class="contrib-table">
+    <thead>
+      <tr>
+        <th>Product</th>
+        <th>Amount (KES)</th>
+        <th>Period</th>
+        <th>Date Applied</th>
+        <th>Status</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for loan in loans %}
+      <tr>
+        <td style="font-weight:700;">
+          {{ loan.get_loan_product_display }}
+        </td>
+        <td>{{ loan.amount_applied|floatformat:0 }}</td>
+        <td>{{ loan.repayment_period_months }} months</td>
+        <td>{{ loan.applied_at|date:"d M Y" }}</td>
+        <td>
+          {% if loan.status == 'pending' %}
+            <span class="status-pill pill-pending">
+              <i class="fas fa-clock"></i> Pending
+            </span>
+          {% elif loan.status == 'approved' %}
+            <span class="status-pill pill-paid">
+              <i class="fas fa-check-circle"></i> Approved
+            </span>
+          {% elif loan.status == 'rejected' %}
+            <span class="status-pill pill-overdue">
+              <i class="fas fa-times-circle"></i> Rejected
+            </span>
+          {% elif loan.status == 'disbursed' %}
+            <span class="status-pill"
+                  style="background:#EFF6FF; color:#1565C0;">
+              <i class="fas fa-money-bill-wave"></i> Disbursed
+            </span>
+          {% endif %}
+        </td>
+        <td>
+          <a href="{% url 'loan_status' pk=loan.pk %}"
+             class="btn-outline-sm">
+            View <i class="fas fa-chevron-right"></i>
+          </a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  {% else %}
   <div class="empty-state" style="padding:48px 20px;">
     <div class="empty-state-icon">
       <i class="fas fa-inbox"></i>
     </div>
-    <div class="empty-state-title">No Active Loans</div>
+    <div class="empty-state-title">No Applications Yet</div>
     <div class="empty-state-body">
-      You currently have no active loans. Apply for a loan when you need financial assistance.
+      You have not submitted any loan applications.
+      Apply when you need financial assistance.
     </div>
+    <a href="{% url 'loan_apply' %}" class="btn-cta-green"
+       style="font-size:.8rem; padding:9px 20px; margin-top:8px;">
+      <i class="fas fa-plus"></i> Apply for a Loan
+    </a>
   </div>
+  {% endif %}
+
 </div>
 
-<!-- Loan Repayment Schedule -->
+<!-- ── LOAN TERMS ── -->
 <div class="panel" style="margin-top:20px;">
   <div class="sec-hd">
     <div class="sec-hd-title">
-      <i class="fas fa-calendar-check" style="color:#94A3B8; margin-right:8px;"></i>
+      <i class="fas fa-calendar-check"
+         style="color:#94A3B8; margin-right:8px;"></i>
       Loan Terms
     </div>
   </div>
   <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:16px;">
     <div style="padding:16px; background:#F8FAFB; border-radius:12px;">
-      <div style="font-size:.75rem; font-weight:800; color:#94A3B8; text-transform:uppercase; margin-bottom:8px;">Maximum Loan</div>
-      <div style="font-size:1.5rem; font-weight:900; color:#14532D;">{{ loan_max|default:"KES 500K" }}</div>
+      <div style="font-size:.75rem; font-weight:800; color:#94A3B8;
+                  text-transform:uppercase; margin-bottom:8px;">
+        Maximum Loan
+      </div>
+      <div style="font-size:1.5rem; font-weight:900; color:#14532D;">
+        KES 500K
+      </div>
     </div>
     <div style="padding:16px; background:#F8FAFB; border-radius:12px;">
-      <div style="font-size:.75rem; font-weight:800; color:#94A3B8; text-transform:uppercase; margin-bottom:8px;">Repayment Period</div>
-        <div style="font-size:1.5rem; font-weight:900; color:#1565C0;">{{ repayment_period|default:"12-60 Months" }}</div>
+      <div style="font-size:.75rem; font-weight:800; color:#94A3B8;
+                  text-transform:uppercase; margin-bottom:8px;">
+        Repayment Period
+      </div>
+      <div style="font-size:1.5rem; font-weight:900; color:#1565C0;">
+        12–60 Months
+      </div>
     </div>
     <div style="padding:16px; background:#F8FAFB; border-radius:12px;">
-      <div style="font-size:.75rem; font-weight:800; color:#94A3B8; text-transform:uppercase; margin-bottom:8px;">Interest Rate</div>
-        <div style="font-size:1.5rem; font-weight:900; color:#EA580C;">{{ interest_rate|default:"14%" }} p.a.</div>
+      <div style="font-size:.75rem; font-weight:800; color:#94A3B8;
+                  text-transform:uppercase; margin-bottom:8px;">
+        Interest Rate
+      </div>
+      <div style="font-size:1.5rem; font-weight:900; color:#EA580C;">
+        14% p.a.
+      </div>
     </div>
     <div style="padding:16px; background:#F8FAFB; border-radius:12px;">
-      <div style="font-size:.75rem; font-weight:800; color:#94A3B8; text-transform:uppercase; margin-bottom:8px;">Processing Fee</div>
-        <div style="font-size:1.5rem; font-weight:900; color:#92400E;">{{ processing_fee|default:"1% Flat" }}</div>
+      <div style="font-size:.75rem; font-weight:800; color:#94A3B8;
+                  text-transform:uppercase; margin-bottom:8px;">
+        Processing Fee
+      </div>
+      <div style="font-size:1.5rem; font-weight:900; color:#92400E;">
+        1% Flat
+      </div>
     </div>
   </div>
 </div>
+
 {% endblock %}

@@ -1009,7 +1009,9 @@ body {
           </div>
           <div>
             <div class="stat-label">Contributions</div>
-            <div class="stat-value">0</div>
+            <div class="stat-value">
+                  {{ contributions.count }}
+            </div>
             <div class="stat-sub">Payments made</div>
           </div>
         </div>
@@ -1207,19 +1209,62 @@ body {
             <table class="contrib-table">
               <thead>
                 <tr>
-                  <th>Month</th>
+                  <th>Date</th>
+                  <th>Payment Type</th>
+                  <th>Description</th>
                   <th>Amount</th>
-                  <th>Method</th>
+                  <th>Receipt</th>
                   <th>Status</th>
                 </tr>
               </thead>
               <tbody>
                 {% if contributions %}
-                  {% for c in contributions %}
+                  {% for payment in contributions %}
                   <tr>
-                    <td>{{ c.calculated_at|date:"M Y" }}</td>
-                    <td>KES {{ c.amount }}</td>
-                    <td>M-Pesa</td>
+                    <td>{{ payment.payment_date|date:"d M Y" }}</td>
+                    <td>
+                      {% if payment.payment_type == 'registration' %}
+                        <span style="font-size:.72rem; font-weight:800;
+                                     background:#DCFCE7; color:#14532D;
+                                     padding:3px 8px; border-radius:20px;">
+                          Registration
+                        </span>
+                      {% elif payment.payment_type == 'capital_share' %}
+                        <span style="font-size:.72rem; font-weight:800;
+                                     background:#DBEAFE; color:#1565C0;
+                                     padding:3px 8px; border-radius:20px;">
+                          Capital Share
+                        </span>
+                      {% elif payment.payment_type == 'annual' %}
+                        <span style="font-size:.72rem; font-weight:800;
+                                     background:#FEF9C3; color:#92400E;
+                                     padding:3px 8px; border-radius:20px;">
+                          Annual Welfare
+                        </span>
+                      {% else %}
+                        <span style="font-size:.72rem; font-weight:800;
+                                     background:#FED7AA; color:#C2410C;
+                                     padding:3px 8px; border-radius:20px;">
+                          Contribution
+                        </span>
+                      {% endif %}
+                    </td>
+                    <td style="font-size:.82rem; color:#475569;">
+                      {% if payment.description %}
+                        {{ payment.description }}
+                      {% else %}
+                        {{ payment.get_payment_type_display }}
+                      {% endif %}
+                    </td>
+                    <td style="font-weight:800; color:#1E293B;">
+                      KES {{ payment.amount|floatformat:0 }}
+                    </td>
+                    <td style="font-family:monospace; font-size:.78rem;
+                               color:#64748B;">
+                      {% if payment.mpesa_receipt %}
+                        {{ payment.mpesa_receipt }}
+                      {% else %}—{% endif %}
+                    </td>
                     <td>
                       <span class="status-pill pill-paid">
                         <i class="fas fa-check-circle"></i> Paid
@@ -1229,19 +1274,19 @@ body {
                   {% endfor %}
                 {% else %}
                 <tr>
-                  <td colspan="4">
+                  <td colspan="6">
                     <div class="empty-state" style="padding:28px 0;">
                       <div class="empty-state-icon">
                         <i class="fas fa-coins"></i>
                       </div>
                       <div class="empty-state-title">
-                        No contributions yet
+                        No payments yet
                       </div>
                       <div class="empty-state-body">
-                        Your contribution history will appear
-                        here once you make your first payment.
+                        Your payment history will appear here
+                        once you make your first payment.
                       </div>
-                       <a href="{% url 'mpesa_payment' %}"
+                      <a href="{% url 'mpesa_payment' %}"
                          class="btn-cta-green"
                          style="font-size:.8rem; padding:9px 20px;">
                         <i class="fas fa-mobile-alt"></i>

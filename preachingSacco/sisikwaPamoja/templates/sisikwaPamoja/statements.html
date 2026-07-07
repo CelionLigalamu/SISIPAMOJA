@@ -60,54 +60,130 @@
   </div>
 </div>
 
-<!-- Download Statements -->
+<!-- ── DOWNLOAD STATEMENT ── -->
 <div class="panel">
   <div class="sec-hd">
     <div class="sec-hd-title">
-      <i class="fas fa-download" style="color:#94A3B8; margin-right:8px;"></i>
+      <i class="fas fa-download"
+         style="color:#94A3B8; margin-right:8px;"></i>
       Download Statements
     </div>
   </div>
-  
-  <div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:16px;">
-    {% for month in "JFMAMJJASOND"|slice:":3" %}
-    <div style="padding:16px; border:1.5px solid #E2E8F0; border-radius:12px; background:#F8FAFB;">
-      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
-        <div style="font-weight:800; color:#1E293B;">{% now "M Y" %}</div>
-        <i class="fas fa-file-pdf" style="color:#EA580C; font-size:1.2rem;"></i>
+
+  <!-- Single full statement card -->
+  <div style="display:grid;
+              grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+              gap:16px;">
+
+    <!-- Current Full Statement -->
+    <div style="padding:20px;
+                border:1.5px solid #BBF7D0;
+                border-radius:12px;
+                background:#F0FDF4;">
+      <div style="display:flex; align-items:center;
+                  justify-content:space-between; margin-bottom:12px;">
+        <div style="font-weight:800; color:#14532D; font-size:.95rem;">
+          Full Account Statement
+        </div>
+        <i class="fas fa-file-pdf"
+           style="color:#EA580C; font-size:1.3rem;"></i>
       </div>
-      <div style="font-size:.8rem; color:#94A3B8; margin-bottom:12px;">
-        Account statement for this period
+      <div style="font-size:.8rem; color:#64748B; margin-bottom:6px;">
+        Includes all payments and loan history
       </div>
-      <a href="#" onclick="alert('Statement will be generated and downloaded')" style="display:inline-flex; align-items:center; gap:6px; color:#1565C0; font-weight:700; font-size:.85rem; text-decoration:none;">
+      <div style="font-size:.75rem; color:#94A3B8; margin-bottom:16px;">
+        Generated instantly as PDF
+      </div>
+      <a href="{% url 'statement_pdf' %}"
+         class="btn-cta-green"
+         style="font-size:.82rem; padding:9px 16px; width:100%;
+                justify-content:center;">
         <i class="fas fa-download"></i> Download PDF
       </a>
     </div>
-    {% endfor %}
+
+    <!-- This Month -->
+    <div style="padding:20px;
+                border:1.5px solid #E2E8F0;
+                border-radius:12px;
+                background:#F8FAFB;">
+      <div style="display:flex; align-items:center;
+                  justify-content:space-between; margin-bottom:12px;">
+        <div style="font-weight:800; color:#1E293B;">
+          {% now "M Y" %}
+        </div>
+        <i class="fas fa-file-pdf"
+           style="color:#EA580C; font-size:1.2rem;"></i>
+      </div>
+      <div style="font-size:.8rem; color:#94A3B8; margin-bottom:16px;">
+        Account statement for this period
+      </div>
+      <a href="{% url 'statement_pdf' %}"
+         style="display:inline-flex; align-items:center; gap:6px;
+                color:#1565C0; font-weight:700; font-size:.85rem;
+                text-decoration:none;">
+        <i class="fas fa-download"></i> Download PDF
+      </a>
+    </div>
+
+    <!-- Last Month -->
+    <div style="padding:20px;
+                border:1.5px solid #E2E8F0;
+                border-radius:12px;
+                background:#F8FAFB;">
+      <div style="display:flex; align-items:center;
+                  justify-content:space-between; margin-bottom:12px;">
+        <div style="font-weight:800; color:#1E293B;">
+          Previous Period
+        </div>
+        <i class="fas fa-file-pdf"
+           style="color:#EA580C; font-size:1.2rem;"></i>
+      </div>
+      <div style="font-size:.8rem; color:#94A3B8; margin-bottom:16px;">
+        Account statement for this period
+      </div>
+      <a href="{% url 'statement_pdf' %}"
+         style="display:inline-flex; align-items:center; gap:6px;
+                color:#1565C0; font-weight:700; font-size:.85rem;
+                text-decoration:none;">
+        <i class="fas fa-download"></i> Download PDF
+      </a>
+    </div>
+
   </div>
 </div>
 
-<!-- Statement Information -->
+<!-- ── STATEMENT INFORMATION ── -->
 <div class="panel" style="margin-top:20px;">
   <div class="sec-hd">
     <div class="sec-hd-title">
-      <i class="fas fa-info-circle" style="color:#94A3B8; margin-right:8px;"></i>
+      <i class="fas fa-info-circle"
+         style="color:#94A3B8; margin-right:8px;"></i>
       Statement Information
     </div>
   </div>
   <div style="padding:16px; line-height:1.8; color:#475569;">
     <p style="margin-bottom:12px;">
-      <strong>What's Included:</strong> Your account statement includes all contributions, withdrawals, interest earned, and fees.
+      <strong>What's Included:</strong>
+      Your account statement includes all M-Pesa payments,
+      loan applications and their current status.
     </p>
     <p style="margin-bottom:12px;">
-      <strong>Format:</strong> Statements are provided as PDF files for easy download, printing, and archiving.
+      <strong>Format:</strong>
+      Statements are provided as PDF files for easy download,
+      printing, and archiving.
     </p>
     <p style="margin-bottom:12px;">
-      <strong>Frequency:</strong> Statements are generated monthly and available for the last 12 months.
+      <strong>Frequency:</strong>
+      You can download your statement at any time —
+      it reflects your most current data.
     </p>
     <p>
-      <strong>Email Delivery:</strong> You can opt to receive statements automatically via email each month.
+      <strong>Confidentiality:</strong>
+      Your statement is personal and confidential.
+      Keep it secure and do not share it with third parties.
     </p>
   </div>
 </div>
+
 {% endblock %}
