@@ -1,0 +1,17 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+
+{% block branding %}
+<div class="text-center mb-4">
+    <img src="{% static 'sisikwaPamoja/images/logo.jpeg' %}" alt="SISIPAMOJA" style="width:80px;height:80px;object-fit:cover;border-radius:50%;border:3px solid #235025;margin-bottom:16px;">
+    <h1 id="site-name" style="font-size:24px;font-weight:900;color:#235025;margin:0;">
+        SISIPAMOJA
+        <span style="color:#cd7f3d;font-size:16px;font-weight:700;letter-spacing:1.5px;display:block;margin-top:-2px;">ADMIN</span>
+    </h1>
+    <p style="color:#cd7f3d;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-top:8px;">
+        Together in Times of Need
+    </p>
+</div>
+{% endblock %}
+
+{% block nav-global %}{% endblock %}
