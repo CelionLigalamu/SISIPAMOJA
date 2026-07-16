@@ -1,9 +1,9 @@
 /* SISIPAMOJA WELFARE - MAIN CSS */
 
 :root {
-    --forest-green: #1B5E20;
+    --forest-green: #235025;
     --deep-green: #2E7D32;
-    --burnt-orange: #E65100;
+    --burnt-orange: #cd7f3d;
     --royal-blue: #1565C0;
     --golden-yellow: #F9A825;
     --warm-brown: #6D4C41;
@@ -11,9 +11,9 @@
     --text-dark: #1a1a1a;
     --text-muted: #5f6368;
 
-    --color-primary: #1B5E20;
+    --color-primary: #235025;
     --color-secondary: #2E7D32;
-    --color-accent-orange: #E65100;
+    --color-accent-orange: #cd7f3d;
     --color-accent-blue: #1565C0;
     --color-highlight: #F9A825;
     --color-warm-brown: #6D4C41;
@@ -241,6 +241,14 @@ h1, h2, h3, h4, h5, h6,
     box-shadow: 0 3px 20px rgba(0, 0, 0, 0.2);
 }
 
+.navbar-logo {
+    width: 45px;
+    height: 45px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.3);
+}
+
 .navbar-brand {
     font-size: 1.4rem;
 }
@@ -321,8 +329,8 @@ h1, h2, h3, h4, h5, h6,
 }
 
 .btn-join:hover {
-    background: #bf360c;
-    border-color: #bf360c;
+    background: #b87333;
+    border-color: #b87333;
     color: white;
     transform: translateY(-1px);
 }
@@ -812,7 +820,7 @@ h1, h2, h3, h4, h5, h6,
 }
 
 .btn-hero-main:hover {
-    background: #bf360c;
+    background: #b87333;
     color: #fff;
     transform: translateY(-3px);
     box-shadow: 0 14px 34px rgba(230, 81, 0, 0.5);
@@ -1349,7 +1357,7 @@ h1, h2, h3, h4, h5, h6,
 }
 
 .cta-section {
-    background: linear-gradient(135deg, var(--burnt-orange) 0%, #bf360c 100%);
+    background: linear-gradient(135deg, var(--burnt-orange) 0%, #b87333 100%);
     padding: 100px 0;
     position: relative;
     overflow: hidden;
