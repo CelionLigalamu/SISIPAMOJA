@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,7 +10,7 @@
 
   /* HEADER */
   .header-table { width: 100%; border-collapse: collapse; border-bottom: 4px solid #14532D; padding-bottom: 10px; margin-bottom: 3px; }
-  .logo-box { width: 50px; height: 50px; background: #14532D; border-radius: 6px; text-align: center; padding-top: 11px; color: white; font-size: 16px; font-weight: 900; }
+  .logo-box img { width: 50px; height: 50px; object-fit: cover; border-radius: 6px; }
   .org-name { font-size: 16px; font-weight: 900; color: #14532D; letter-spacing: 0.5px; }
   .org-tagline { font-size: 8px; color: #EA580C; font-weight: bold; text-transform: uppercase; letter-spacing: 1.5px; margin-top: 3px; }
   .doc-title { font-size: 13px; font-weight: 900; color: #14532D; text-transform: uppercase; letter-spacing: 0.5px; }
@@ -106,7 +107,7 @@
   <table class="header-table">
     <tr>
       <td style="width:52px; vertical-align:middle; padding-right:10px;">
-        <div class="logo-box">SP</div>
+        <div class="logo-box"><img src="{% static 'sisikwaPamoja/images/logo.jpeg' %}" alt="Logo"></div>
       </td>
       <td style="vertical-align:middle;">
         <div class="org-name">SISIPAMOJA WELFARE</div>

@@ -71,6 +71,30 @@ body {
   scrollbar-gutter: stable;
 }
 
+.sidebar-logo {
+  padding: 16px 14px;
+  border-bottom: 1px solid rgba(255,255,255,.12);
+  margin-bottom: 4px;
+}
+.sidebar-logo-img {
+  width: 56px;
+  height: 56px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,.25);
+}
+.sidebar-logo-text {
+  color: #fff;
+  font-size: .95rem;
+  letter-spacing: 1px;
+}
+.sidebar-logo-text .small {
+  color: var(--o500);
+  letter-spacing: 2px;
+  font-size: .65rem;
+  font-weight: 700;
+}
+
 /* Member info pill — now at the very top */
 .sidebar-member {
   margin: 16px 14px 0;
@@ -789,7 +813,16 @@ body {
   <!-- ═══════ SIDEBAR ═══════ -->
   <aside class="sidebar" id="sidebar" tabindex="0">
 
-    <!-- Member Card — TOP of sidebar, no logo/brand -->
+    <!-- Logo — TOP of sidebar -->
+    <div class="sidebar-logo text-center mb-3">
+      <img src="{% static 'sisikwaPamoja/images/logo.jpeg' %}" alt="SISIPAMOJA" class="sidebar-logo-img">
+      <div class="sidebar-logo-text">
+        <span class="fw-bold">SISIPAMOJA</span>
+        <span class="small d-block opacity-75">WELFARE</span>
+      </div>
+    </div>
+
+    <!-- Member Card -->
     <div class="sidebar-member">
       <div class="d-flex align-items-center gap-3 mb-2">
         <div class="sidebar-avatar">
