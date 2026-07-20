@@ -77,6 +77,12 @@ class MemberProfile(models.Model):
     date_of_birth = models.DateField()
     national_id = models.CharField(
         max_length=20, unique=True)
+    kra_pin = models.CharField(
+        max_length=20,
+        blank=True, 
+        null=True,
+        verbose_name='KRA PIN'
+    )
     phone_number = models.CharField(max_length=15)
     county = models.CharField(
         max_length=100, verbose_name='County of Birth')
@@ -395,6 +401,15 @@ class MemberPayment(models.Model):
         ('contribution', 'Monthly Contribution'),
     )
 
+    PAYMENT_METHOD_CHOICES = (
+        ('mpesa', 'M-Pesa'),
+        ('cash',  'Cash'),
+        ('bank',  'Bank Transfer'),
+        ('admin', 'Admin Approval'),
+    )
+
+   
+
     member = models.ForeignKey(
         MemberProfile,
         on_delete=models.CASCADE,
@@ -404,6 +419,11 @@ class MemberPayment(models.Model):
     payment_type  = models.CharField(
         max_length=20, choices=PAYMENT_TYPE_CHOICES)
     amount        = models.DecimalField(max_digits=10, decimal_places=2)
+    payment_method = models.CharField(
+        max_length=20,
+        choices=PAYMENT_METHOD_CHOICES,
+        default='admin'
+    )
     mpesa_receipt = models.CharField(max_length=50, blank=True, null=True)
     payment_date  = models.DateTimeField(auto_now_add=True)
     notes         = models.TextField(blank=True, null=True)
@@ -630,3 +650,50 @@ class LoanGuarantor(models.Model):
 
     def __str__(self):
         return f"{self.full_name} - KES {self.amount_guaranteed}"
+
+
+# ══════════════════════════════════════
+# ANNOUNCEMENTS
+# ══════════════════════════════════════
+class Announcement(models.Model):
+
+    CATEGORY_CHOICES = (
+        ('general',      'General'),
+        ('payment',      'Payment'),
+        ('loan',         'Loan'),
+        ('agm',          'AGM / Meeting'),
+        ('maintenance',  'Maintenance'),
+        ('alert',        'Alert'),
+    )
+
+    COLOR_CHOICES = (
+        ('green',  'Green'),
+        ('orange', 'Orange'),
+        ('blue',   'Blue'),
+        ('gold',   'Gold'),
+    )
+
+    title      = models.CharField(max_length=200)
+    body       = models.TextField()
+    category   = models.CharField(
+        max_length=20,
+        choices=CATEGORY_CHOICES,
+        default='general'
+    )
+    color      = models.CharField(
+        max_length=10,
+        choices=COLOR_CHOICES,
+        default='green'
+    )
+    is_active  = models.BooleanField(
+        default=True,
+        help_text="Uncheck to hide from members"
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.title
+
+    class Meta:
+        ordering = ['-created_at']

@@ -23,10 +23,13 @@
 {% get_admin_log 8 as admin_log for_user user %}
 <div class="sacco-dashboard">
     <div class="dashboard-hero">
-        <div>
+        <div class="d-flex align-items-center gap-3">
+            <img src="{% static 'sisikwaPamoja/images/logo.jpeg' %}" alt="Logo" style="width:55px;height:55px;object-fit:cover;border-radius:50%;border:2px solid rgba(255,255,255,.3);">
+            <div>
             <p class="dashboard-kicker">SisiPamoja Welfare</p>
             <h1>Admin Dashboard</h1>
             <p class="dashboard-subtitle">Live figures from your members, contributions, and registrations.</p>
+        </div>
         </div>
         <div class="dashboard-status">
             <span class="status-dot"></span>

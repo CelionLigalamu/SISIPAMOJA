@@ -1,14 +1,14 @@
 /* Jazzmin admin custom overrides */
 
 :root {
-    --sacco-sidebar: #1B5E20;
+    --sacco-sidebar: #235025;
     --sacco-sidebar-brand: #145214;
     --sacco-brand-gold: #F9A825;
-    --sacco-accent-orange: #E65100;
-    --sacco-topbar: #1B5E20;
+    --sacco-accent-orange: #cd7f3d;
+    --sacco-topbar: #235025;
     --sacco-page-bg: #f4f6f4;
     --sacco-off-white: #F8FBF8;
-    --sacco-page-title: #1B5E20;
+    --sacco-page-title: #235025;
     --sacco-breadcrumb: #888888;
     --sacco-border-soft: rgba(27, 94, 32, 0.15);
     --sacco-border-muted: rgba(27, 94, 32, 0.08);
@@ -39,7 +39,7 @@ body {
 .main-sidebar,
 .main-sidebar::before,
 .sidebar {
-    background-color: #1B5E20 !important;
+    background-color: #235025 !important;
 }
 
 /* Sidebar labels and links */
@@ -84,7 +84,7 @@ body {
 
 .nav-sidebar .nav-item > .nav-link.active,
 .nav-sidebar .nav-item > .nav-link.active p {
-    background-color: #E65100 !important;
+    background-color: #cd7f3d !important;
     color: #ffffff !important;
     font-weight: 700 !important;
     border-left: 4px solid #F9A825 !important;
@@ -124,11 +124,11 @@ body {
 }
 
 .sidebar::-webkit-scrollbar-track {
-    background: #1B5E20 !important;
+    background: #235025 !important;
 }
 
 .sidebar::-webkit-scrollbar-thumb {
-    background: #E65100 !important;
+    background: #cd7f3d !important;
     border-radius: 4px !important;
 }
 
@@ -530,12 +530,12 @@ body {
 
 .badge-paid {
     background: #E8F5E9;
-    color: #1B5E20;
+    color: #235025;
 }
 
 .badge-unpaid {
     background: #FBE9E7;
-    color: #E65100;
+    color: #cd7f3d;
 }
 
 .badge-last-expense {
@@ -641,7 +641,7 @@ body {
 }
 
 .avatar.avatar-orange {
-    background: #E65100;
+    background: #cd7f3d;
 }
 
 .avatar.avatar-brown {
@@ -649,7 +649,7 @@ body {
 }
 
 .avatar.avatar-default {
-    background: #1B5E20;
+    background: #235025;
 }
 
 .recent-panel .panel-header {

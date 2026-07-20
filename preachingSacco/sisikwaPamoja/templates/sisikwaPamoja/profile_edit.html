@@ -8,8 +8,8 @@
 <div class="col-lg-9">
 
   <!-- ── Page Header ── -->
-  <div style="background:#1B5E20;border-radius:14px 14px 0 0;
-              padding:24px 32px;border-bottom:3px solid #E65100;
+  <div style="background:#235025;border-radius:14px 14px 0 0;
+              padding:24px 32px;border-bottom:3px solid #cd7f3d;
               display:flex;align-items:center;gap:16px;">
     <div style="width:52px;height:52px;background:rgba(255,255,255,0.12);
                 border-radius:12px;display:flex;align-items:center;
@@ -52,9 +52,9 @@
         <div style="width:36px;height:36px;background:#E8F5E9;
                     border-radius:9px;display:flex;align-items:center;
                     justify-content:center;">
-          <i class="fas fa-user" style="color:#1B5E20;"></i>
+          <i class="fas fa-user" style="color:#235025;"></i>
         </div>
-        <h6 style="color:#1B5E20;font-weight:700;margin:0;">
+        <h6 style="color:#235025;font-weight:700;margin:0;">
           Personal Details
         </h6>
       </div>
@@ -63,7 +63,7 @@
       <div class="row g-3 mb-3">
         <div class="col-md-4">
           <label class="form-label fw-semibold" style="font-size:13px;">
-            First Name <span style="color:#E65100;">*</span>
+            First Name <span style="color:#cd7f3d;">*</span>
           </label>
           {{ profile_form.first_name }}
           {% if profile_form.first_name.errors %}
@@ -80,7 +80,7 @@
         </div>
         <div class="col-md-4">
           <label class="form-label fw-semibold" style="font-size:13px;">
-            Last Name <span style="color:#E65100;">*</span>
+            Last Name <span style="color:#cd7f3d;">*</span>
           </label>
           {{ profile_form.last_name }}
           {% if profile_form.last_name.errors %}
@@ -95,17 +95,17 @@
       <div class="row g-3 mb-3">
         <div class="col-md-6">
           <label class="form-label fw-semibold" style="font-size:13px;">
-            Gender <span style="color:#E65100;">*</span>
+            Gender <span style="color:#cd7f3d;">*</span>
           </label>
           {{ profile_form.gender }}
         </div>
         <div class="col-md-6">
           <label class="form-label fw-semibold" style="font-size:13px;">
-            Date of Birth <span style="color:#E65100;">*</span>
+            Date of Birth <span style="color:#cd7f3d;">*</span>
           </label>
           {{ profile_form.date_of_birth }}
           <div style="margin-top:5px;">
-            <span style="background:#E8F5E9;color:#1B5E20;
+            <span style="background:#E8F5E9;color:#235025;
                          font-size:11px;font-weight:600;
                          padding:3px 10px;border-radius:20px;">
               🎂 Age: <span id="age-display">
@@ -120,13 +120,13 @@
       <div class="row g-3 mb-3">
         <div class="col-md-6">
           <label class="form-label fw-semibold" style="font-size:13px;">
-            Phone Number <span style="color:#E65100;">*</span>
+            Phone Number <span style="color:#cd7f3d;">*</span>
           </label>
           {{ profile_form.phone_number }}
         </div>
         <div class="col-md-6">
           <label class="form-label fw-semibold" style="font-size:13px;">
-            Marital Status <span style="color:#E65100;">*</span>
+            Marital Status <span style="color:#cd7f3d;">*</span>
           </label>
           {{ profile_form.marital_status }}
         </div>
@@ -136,13 +136,13 @@
       <div class="row g-3 mb-3">
         <div class="col-md-6">
           <label class="form-label fw-semibold" style="font-size:13px;">
-            County of Birth <span style="color:#E65100;">*</span>
+            County of Birth <span style="color:#cd7f3d;">*</span>
           </label>
           {{ profile_form.county }}
         </div>
         <div class="col-md-6">
           <label class="form-label fw-semibold" style="font-size:13px;">
-            Sub County of Birth <span style="color:#E65100;">*</span>
+            Sub County of Birth <span style="color:#cd7f3d;">*</span>
           </label>
           {{ profile_form.sub_county }}
         </div>
@@ -151,7 +151,7 @@
       <!-- Physical address -->
       <div class="mb-3">
         <label class="form-label fw-semibold" style="font-size:13px;">
-          Physical Address <span style="color:#E65100;">*</span>
+          Physical Address <span style="color:#cd7f3d;">*</span>
         </label>
         {{ profile_form.physical_address }}
       </div>
@@ -166,7 +166,7 @@
             <div class="mb-2">
               <img src="{{ profile.passport_photo.url }}"
                    style="width:60px;height:60px;border-radius:50%;
-                          object-fit:cover;border:2px solid #1B5E20;">
+                          object-fit:cover;border:2px solid #235025;">
               <span style="font-size:11px;color:#888;margin-left:8px;">
                 Current photo
               </span>
@@ -184,7 +184,7 @@
           {% if profile.id_copy %}
             <div class="mb-2">
               <a href="{{ profile.id_copy.url }}" target="_blank"
-                 style="font-size:12px;color:#1B5E20;">
+                 style="font-size:12px;color:#235025;">
                 <i class="fas fa-file me-1"></i> View current ID
               </a>
             </div>
@@ -304,9 +304,9 @@
           <div style="width:36px;height:36px;background:#FBE9E7;
                       border-radius:9px;display:flex;align-items:center;
                       justify-content:center;">
-            <i class="fas fa-child" style="color:#E65100;"></i>
+            <i class="fas fa-child" style="color:#cd7f3d;"></i>
           </div>
-          <h6 style="color:#E65100;font-weight:700;margin:0;">
+          <h6 style="color:#cd7f3d;font-weight:700;margin:0;">
             Dependants
           </h6>
         </div>
@@ -316,16 +316,16 @@
 
       {% for dep_form in dependant_formset %}
       <div style="background:#F8FBF8;border:1px solid rgba(27,94,32,0.12);
-                  border-left:4px solid #E65100;border-radius:8px;
+                  border-left:4px solid #cd7f3d;border-radius:8px;
                   padding:20px;margin-bottom:14px;">
 
         {{ dep_form.id }}
 
         <div style="display:flex;align-items:center;
                     justify-content:space-between;margin-bottom:14px;">
-          <span style="font-size:13px;font-weight:700;color:#1B5E20;">
+          <span style="font-size:13px;font-weight:700;color:#235025;">
             <i class="fas fa-user-circle me-2"
-               style="color:#E65100;"></i>
+               style="color:#cd7f3d;"></i>
             Dependant {{ forloop.counter }}
           </span>
           <div style="display:flex;align-items:center;gap:8px;">
@@ -393,7 +393,7 @@
 
       <div class="d-grid">
         <button type="submit"
-                style="background:#1B5E20;color:#fff;border:none;
+                style="background:#235025;color:#fff;border:none;
                        border-radius:9px;font-size:15px;font-weight:700;
                        padding:14px;cursor:pointer;
                        display:flex;align-items:center;
@@ -405,7 +405,7 @@
       <p style="text-align:center;margin-top:14px;font-size:13px;
                 color:#888;">
         <a href="{% url 'member_dashboard' %}"
-           style="color:#1B5E20;font-weight:600;
+           style="color:#235025;font-weight:600;
                   text-decoration:none;">
           ← Back to Dashboard
         </a>

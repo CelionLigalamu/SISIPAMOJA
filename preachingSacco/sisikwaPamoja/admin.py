@@ -14,6 +14,7 @@ from .models import (
     SerialNumberTracker,
     SMSLog,
     MemberPayment,
+    Announcement,
 )
 
 
@@ -285,6 +286,18 @@ def approve_members(modeladmin, request, queryset):
         try:
             member.has_paid = True
             member.save()
+
+            if not MemberPayment.objects.filter(
+                    member=member, payment_type='registration').exists():
+                MemberPayment.objects.create(
+                    member=member,
+                    payment_type='registration',
+                    amount=member.registration_fee or 0,
+                    mpesa_receipt=None,
+                    description='Registration fee approved by admin action',
+                    notes='Recorded by admin bulk approval',
+                )
+
             assign_serial_number(member)
             try:
                 sms_member_approved(member)
@@ -327,6 +340,7 @@ class MemberProfileAdmin(admin.ModelAdmin):
         'get_passport_photo',
         'get_full_name',
         'national_id',
+        'kra_pin',
         'membership_type',
         'gender',
         'get_age',
@@ -381,6 +395,7 @@ class MemberProfileAdmin(admin.ModelAdmin):
                 'date_of_birth',
                 'age_display',
                 'national_id',
+                'kra_pin',
                 'phone_number',
                 'physical_address',
                 'marital_status',
@@ -410,6 +425,24 @@ class MemberProfileAdmin(admin.ModelAdmin):
         if 'has_paid' in form.changed_data and obj.has_paid:
             # Save first so the object exists in DB
             super().save_model(request, obj, form, change)
+
+            # Record the registration payment if not already recorded
+            if not MemberPayment.objects.filter(
+                    member=obj, payment_type='registration').exists():
+                MemberPayment.objects.create(
+                    member=obj,
+                    payment_type='registration',
+                    amount=obj.registration_fee or 200,
+                    payment_method='admin',
+                    mpesa_receipt=None,
+                    description='Registration fee approved by admin',
+                    notes='Recorded by admin approval',
+                )
+
+            # Mark registration as paid if needed
+            if not obj.registration_fee_paid:
+                obj.registration_fee_paid = True
+                obj.save(update_fields=['registration_fee_paid'])
 
             # Assign serial number only if not already assigned
             from .views import assign_serial_number
@@ -737,6 +770,28 @@ class SMSLogAdmin(admin.ModelAdmin):
         'at_message_id', 'at_cost', 'error_message',
         'retry_count', 'created_at', 'sent_at',
     ]
+
+
+# ══════════════════════════════════════
+# ANNOUNCEMENT ADMIN
+# ══════════════════════════════════════
+@admin.register(Announcement)
+class AnnouncementAdmin(admin.ModelAdmin):
+    list_display  = [
+        'title', 'category', 'color',
+        'is_active', 'created_at',
+    ]
+    list_filter   = ['category', 'color', 'is_active']
+    search_fields = ['title', 'body']
+    list_editable = ['is_active']
+    fieldsets = (
+        ('Content', {
+            'fields': ('title', 'body')
+        }),
+        ('Display', {
+            'fields': ('category', 'color', 'is_active')
+        }),
+    )
 
 
 # ══════════════════════════════════════

@@ -130,6 +130,7 @@ def register_view(request):
         gender = request.POST.get('gender')
         date_of_birth = request.POST.get('date_of_birth')
         national_id = request.POST.get('national_id')
+        kra_pin = request.POST.get('kra_pin')
         phone_number = request.POST.get('phone_number')
         email = request.POST.get('email')
         county_of_birth = (
@@ -181,6 +182,11 @@ def register_view(request):
             messages.error(request, 'National ID already registered.')
             return redirect('register')
 
+        if CustomUser.objects.filter(
+            username=national_id).exists():
+            messages.error(request, 'National ID already registered.')
+            return redirect('register')
+
         with transaction.atomic():
             user = CustomUser.objects.create_user(
                 username=national_id,
@@ -198,6 +204,7 @@ def register_view(request):
                 gender=gender,
                 date_of_birth=date_of_birth,
                 national_id=national_id,
+                kra_pin=kra_pin,
                 phone_number=phone_number,
                 county=county_of_birth,
                 sub_county=sub_county_of_birth,
@@ -367,26 +374,33 @@ def forgot_password_view(request):
 def member_dashboard(request):
     if getattr(request.user, 'role', None) != 'member':
         return _dashboard_redirect(request.user)
+    
+    from .models import Announcement
 
     profile = MemberProfile.objects.filter(
         user=request.user
     ).select_related('user').first()
+
+    #Recent Payments
     payments = []
     fee_breakdown = None
-
-    
     if profile:
-        #Read from members payment contribution
-        payments= MemberPayment.objects.filter(
+        payments = MemberPayment.objects.filter(
             member=profile
         ).order_by('-payment_date')[:5]
         fee_breakdown = profile.get_fee_breakdown()
+    
+    #Fetch active announcements
+    announcements = Announcement.objects.filter(
+        is_active=True
+    ).order_by('-created_at')[:5]
 
     return render(request,
         'sisikwaPamoja/dashboard_member.html', {
             'profile': profile,
-            'contributions': payments,
+            'contributions':payments,
             'fee_breakdown': fee_breakdown,
+            'announcements': announcements,
         })
 
 
@@ -847,7 +861,7 @@ def statement_pdf_view(request):
         status='success'
     ).order_by('-created_at')
 
-    # Admin recorded payments
+    # All recorded payments for member, including admin-recorded and M-Pesa payments
     member_payments = MemberPayment.objects.filter(
         member=profile
     ).order_by('-payment_date')
@@ -860,10 +874,9 @@ def statement_pdf_view(request):
     active_loans = loans.filter(
         status__in=['approved', 'disbursed'])
 
-    # Calculate real total paid
-    mpesa_total = sum(p.amount for p in mpesa_payments)
-    member_total = sum(p.amount for p in member_payments)
-    real_total = mpesa_total + member_total
+    # Calculate totals from recorded member payments only
+    payment_total = sum(p.amount for p in member_payments)
+    payment_count = member_payments.count()
 
     context = {
         'profile':            profile,
@@ -872,8 +885,9 @@ def statement_pdf_view(request):
         'loans':              loans,
         'active_loans_count': active_loans.count(),
         'generated_at':       timezone.now(),
-        'real_total':         real_total,
-        'payment_count':      mpesa_payments.count() + member_payments.count(),
+        'payment_total':      payment_total,
+        'real_total':         payment_total,
+        'payment_count':      payment_count,
     }
 
     html_string = render_to_string(

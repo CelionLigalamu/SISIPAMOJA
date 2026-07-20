@@ -16,6 +16,7 @@
 <nav class="navbar navbar-expand-lg">
     <div class="container">
         <a href="#" class="text-decoration-none d-flex align-items-center gap-3">
+            <img src="{% static 'sisikwaPamoja/images/logo.jpeg' %}" alt="Logo" class="navbar-logo">
             <div>
                 <div class="brand-line">
                     <span class="brand-sisi">SISIPAMOJA</span>
@@ -214,47 +215,39 @@
             <div class="col-lg-7">
                 <div class="row g-4">
                     <div class="col-md-6 reveal delay-1">
-                        <div class="about-value-card">
-                            <div class="val-icon vi-green">
-                                <i class="fas fa-shield-alt"></i>
+                        <div class="img-card">
+                            <img src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=400&h=250&fit=crop" alt="Secure & Reliable">
+                            <div class="img-card-body">
+                                <h5 class="fw-bold mb-2">Secure & Reliable</h5>
+                                <p class="text-muted-sm">Your savings and personal data are protected with top-level security and transparency.</p>
                             </div>
-                            <h5 class="fw-bold mb-2">Secure & Reliable</h5>
-                            <p class="text-muted-sm">
-                                Your savings and personal data are protected with top-level security and transparency.
-                            </p>
                         </div>
                     </div>
                     <div class="col-md-6 reveal delay-2">
-                        <div class="about-value-card orange">
-                            <div class="val-icon vi-orange">
-                                <i class="fas fa-users"></i>
+                        <div class="img-card">
+                            <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=400&h=250&fit=crop" alt="Community First">
+                            <div class="img-card-body">
+                                <h5 class="fw-bold mb-2">Community First</h5>
+                                <p class="text-muted-sm">Every decision we make centres our members and their families above all else.</p>
                             </div>
-                            <h5 class="fw-bold mb-2">Community First</h5>
-                            <p class="text-muted-sm">
-                                Every decision we make centres our members and their families above all else.
-                            </p>
                         </div>
                     </div>
                     <div class="col-md-6 reveal delay-3">
-                        <div class="about-value-card blue">
-                            <div class="val-icon vi-blue">
-                                <i class="fas fa-chart-line"></i>
+                        <div class="img-card">
+                            <img src="https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=400&h=250&fit=crop" alt="Financial Growth">
+                            <div class="img-card-body">
+                                <h5 class="fw-bold mb-2">Financial Growth</h5>
+                                <p class="text-muted-sm">Competitive savings rates and affordable loans designed to help you grow.</p>
                             </div>
-                            <h5 class="fw-bold mb-2">Financial Growth</h5>
-                            <p class="text-muted-sm">
-                                Competitive savings rates and affordable loans designed to help you grow.
-                            </p>
                         </div>
                     </div>
                     <div class="col-md-6 reveal delay-4">
-                        <div class="about-value-card gold">
-                            <div class="val-icon vi-gold">
-                                <i class="fas fa-heart"></i>
+                        <div class="img-card">
+                            <img src="https://images.unsplash.com/photo-1469571486292-0ba58a3f068b?w=400&h=250&fit=crop" alt="Welfare Support">
+                            <div class="img-card-body">
+                                <h5 class="fw-bold mb-2">Welfare Support</h5>
+                                <p class="text-muted-sm">We stand with members and families during bereavement and hardship.</p>
                             </div>
-                            <h5 class="fw-bold mb-2">Welfare Support</h5>
-                            <p class="text-muted-sm">
-                                We stand with members and families during bereavement and hardship.
-                            </p>
                         </div>
                     </div>
                 </div>
@@ -336,31 +329,39 @@
 
         <div class="row g-4">
             <div class="col-md-6 col-lg-3 reveal delay-1">
-                <div class="svc-card">
-                    <div class="svc-icon"><i class="fas fa-piggy-bank"></i></div>
-                    <h5>Savings</h5>
-                    <p>Grow your money with competitive interest rates through our structured savings programme.</p>
+                <div class="svc-card-img">
+                    <img src="https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?w=400&h=250&fit=crop" alt="Savings">
+                    <div class="svc-card-img-body">
+                        <h5>Savings</h5>
+                        <p>Grow your money with competitive interest rates through our structured savings programme.</p>
+                    </div>
                 </div>
             </div>
             <div class="col-md-6 col-lg-3 reveal delay-2">
-                <div class="svc-card">
-                    <div class="svc-icon"><i class="fas fa-hand-holding-usd"></i></div>
-                    <h5>Emergency Loans</h5>
-                    <p>Access affordable loans quickly with flexible repayment terms tailored to your needs.</p>
+                <div class="svc-card-img">
+                    <img src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=400&h=250&fit=crop" alt="Emergency Loans">
+                    <div class="svc-card-img-body">
+                        <h5>Emergency Loans</h5>
+                        <p>Access affordable loans quickly with flexible repayment terms tailored to your needs.</p>
+                    </div>
                 </div>
             </div>
             <div class="col-md-6 col-lg-3 reveal delay-3">
-                <div class="svc-card">
-                    <div class="svc-icon"><i class="fas fa-heart"></i></div>
-                    <h5>Last Expense Cover</h5>
-                    <p>Welfare support for members and families during bereavement and times of hardship.</p>
+                <div class="svc-card-img">
+                    <img src="https://images.unsplash.com/photo-1509099836639-18ba1795216d?w=400&h=250&fit=crop" alt="Last Expense Cover">
+                    <div class="svc-card-img-body">
+                        <h5>Last Expense Cover</h5>
+                        <p>Welfare support for members and families during bereavement and times of hardship.</p>
+                    </div>
                 </div>
             </div>
             <div class="col-md-6 col-lg-3 reveal delay-4">
-                <div class="svc-card">
-                    <div class="svc-icon"><i class="fas fa-mobile-alt"></i></div>
-                    <h5>M-Pesa Payments</h5>
-                    <p>Seamless M-Pesa integration for deposits, loan repayments and withdrawals anywhere.</p>
+                <div class="svc-card-img">
+                    <img src="https://images.unsplash.com/photo-1556742111-a301076d9d18?w=400&h=250&fit=crop" alt="M-Pesa Payments">
+                    <div class="svc-card-img-body">
+                        <h5>M-Pesa Payments</h5>
+                        <p>Seamless M-Pesa integration for deposits, loan repayments and withdrawals anywhere.</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -538,9 +539,8 @@
                 </p>
                 <div>
                     <a href="https://www.facebook.com/share/1Bza413dk1/" target="_blank" rel="noopener noreferrer" class="social-icon"><i class="fab fa-facebook-f"></i></a>
-                    <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
-                    <a href="#" class="social-icon"><i class="fab fa-whatsapp"></i></a>
-                    <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+                    <a href="https://wa.me/254780388433" target="_blank" rel="noopener noreferrer" class="social-icon"><i class="fab fa-whatsapp"></i></a>
+                    <a href="mailto:sisipamojarecruitment@gmail.com" class="social-icon"><i class="fas fa-envelope"></i></a>
                 </div>
             </div>
 
@@ -565,11 +565,11 @@
                 <div class="footer-head">Contact Us</div>
                 <div class="footer-contact">
                     <i class="fas fa-map-marker-alt"></i>
-                    Nairobi, Kenya
+                    <a href="https://maps.google.com/?q=Nairobi,Kenya" target="_blank" rel="noopener noreferrer">Nairobi, Kenya</a>
                 </div>
                 <div class="footer-contact">
                     <i class="fas fa-phone"></i>
-                    <a href="tel:+254780388433">+25480388433</a>
+                    <a href="tel:+254780388433">+254780388433</a>
                 </div>
                 <div class="footer-contact">
                     <i class="fas fa-envelope"></i>

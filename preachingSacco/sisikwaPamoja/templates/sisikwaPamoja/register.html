@@ -1,4 +1,5 @@
 {% extends 'sisikwaPamoja/base.html' %}
+{% load static %}
 {% block title %}SISIPAMOJA | Create Account{% endblock %}
 
 {% block extra_css %}
@@ -599,6 +600,7 @@
 
   <!-- Page Header -->
   <div class="reg-header">
+    <img src="{% static 'sisikwaPamoja/images/logo.jpeg' %}" alt="SISIPAMOJA" style="width:70px;height:70px;object-fit:cover;border-radius:50%;border:3px solid #14532D;margin-bottom:16px;">
     <h1>Create <span>Your Account</span></h1>
     <p>Join SisiPamoja Welfare Sacco and enjoy the benefits of being a member.</p>
   </div>
@@ -651,7 +653,7 @@
 
   <!-- Main Card -->
   <div class="reg-card">
-  <form method="POST" enctype="multipart/form-data" id="regForm">
+  <form method="POST" action="{% url 'register' %}" enctype="multipart/form-data" id="regForm" onsubmit="return handleRegSubmit(event)">
     {% csrf_token %}
     
 
@@ -777,6 +779,18 @@
           <label class="form-label">National ID Number *</label>
           <input type="text" name="national_id" class="form-control" placeholder="e.g. 12345678" required>
         </div>
+        <div class="col-md-6">
+          <label class="form-label">KRA PIN *</label>
+          <input type="text" name="kra_pin" 
+          class="form-control"
+          maxlength="20"
+          placeholder="e.g. A012345678B" required>
+          <div class="field-note" style="font-size:.75rem;color:#94A3B8;margin-top:4px;">Optional but recommended</div>
+        </div>
+      </div>
+
+      <!-- Phone Number -->
+      <div class="row g-3 mb-3">
         <div class="col-md-6">
           <label class="form-label">Phone Number *</label>
           <div class="input-group">
@@ -1004,7 +1018,7 @@
         <div class="contrib-box">
           <div class="contrib-icon"><i class="fas fa-calculator"></i></div>
           <div>
-            <div class="contrib-label">Estimated Monthly Contribution</div>
+            <div class="contrib-label">Estimated Yearly Contribution</div>
             <div class="contrib-amount" id="contribution-amount">KES 0</div>
             <div class="contrib-reason" id="contribution-reason"></div>
           </div>
@@ -1055,7 +1069,7 @@
 
       <div class="review-section" id="rv-contrib-section" style="display:none;">
         <div class="review-section-head">Contribution</div>
-        <div class="review-row"><div class="review-key">Monthly Amount</div><div class="review-val" id="rv-contrib">—</div></div>
+        <div class="review-row"><div class="review-key">Yearly Amount</div><div class="review-val" id="rv-contrib">—</div></div>
         <div class="review-row"><div class="review-key">Reason</div><div class="review-val" id="rv-contrib-reason">—</div></div>
       </div>
 
@@ -1074,7 +1088,7 @@
       <button type="button" class="btn-next" id="btnNext">
         Next: Personal Details <i class="fas fa-arrow-right"></i>
       </button>
-      <button type="submit" class="btn-submit" id="btnSubmit" style="display:none;">
+      <button type="submit" class="btn-submit" id="btnSubmit" style="display:none;" onclick="return handleRegSubmit(event)">
         <i class="fas fa-check-circle"></i> Create My Account
       </button>
     </div>
@@ -1443,7 +1457,7 @@ document.getElementById('add-dependant-btn').addEventListener('click', function(
       </div>
       <div class="col-md-6">
         <label class="form-label">Relationship *</label>
-        <select name="dep_relationship_${dependantCount}" class="form-select" required>
+        <select name="dep_relationship_${dependantCount}" class="form-select dep-relationship" required>
           <option value="">Select</option>
           <option value="child">Child</option>
           <option value="parent">Parent</option>
@@ -1501,6 +1515,13 @@ document.getElementById('add-dependant-btn').addEventListener('click', function(
   container.appendChild(div);
   calculateContribution();
 
+  const relationshipSelect = document.querySelector(
+    `select[name="dep_relationship_${dependantCount}"]`
+  );
+  if (relationshipSelect) {
+    relationshipSelect.addEventListener('change', calculateContribution);
+  }
+
   // DOB listener
   document.getElementById(`dep_dob_${dependantCount}`).addEventListener('change', function() {
     const dob = new Date(this.value);
@@ -1549,6 +1570,13 @@ function toggleDepContactFields(idx, hide) {
   emailWrap.style.display = hide ? 'none' : '';
 }
 
+document.getElementById('dependants-container').addEventListener('change', function(event) {
+  const target = event.target;
+  if (target.matches('select[name^="dep_relationship_"]')) {
+    calculateContribution();
+  }
+});
+
 // ══════════════════════════════════════
 // CONTRIBUTION ENGINE
 // ══════════════════════════════════════
@@ -1556,9 +1584,11 @@ function calculateContribution() {
   const preview = document.getElementById('contribution-preview');
   if (membershipType !== 'last_expense') { preview.style.display='none'; return; }
 
-  const depDobs = document.querySelectorAll('.dep-dob');
-  let hasOver70 = false;
-  let hasDeps   = depDobs.length > 0;
+  const depDobs          = document.querySelectorAll('.dep-dob');
+  const depRelationships = document.querySelectorAll('.dep-relationship');
+  let hasOver70          = false;
+  let hasChild           = false;
+  let hasDeps            = depDobs.length > 0;
 
   depDobs.forEach(input => {
     if (input.value) {
@@ -1571,9 +1601,23 @@ function calculateContribution() {
     }
   });
 
-  let amount = 2500, reason = 'Immediate family only';
-  if (hasDeps && hasOver70)  { amount = 3500; reason = 'Has dependant aged 70 years or above'; }
-  else if (hasDeps)          { amount = 3000; reason = 'Has dependant(s) below 70 years'; }
+  depRelationships.forEach(select => {
+    if (select.value === 'child') {
+      hasChild = true;
+    }
+  });
+
+  let amount = 2500, reason = 'Nuclear family';
+  if (hasChild) {
+    amount = 2500;
+    reason = 'Nuclear family';
+  } else if (hasDeps && hasOver70) {
+    amount = 3500;
+    reason = 'Extended family with dependant aged 70 years or above';
+  } else if (hasDeps) {
+    amount = 3000;
+    reason = 'Extended family with dependant(s) below 70 years';
+  }
 
   document.getElementById('contribution-amount').textContent = `KES ${amount.toLocaleString()}`;
   document.getElementById('contribution-reason').textContent  = reason;
@@ -1622,9 +1666,12 @@ function fillReview() {
 // ══════════════════════════════════════
 // FORM SUBMIT GUARD
 // ══════════════════════════════════════
-document.getElementById('regForm').addEventListener('submit', function(e) {
-  if (!checkPassword()) { e.preventDefault(); alert('Please meet all password requirements.'); return; }
-  if (!checkMatch())    { e.preventDefault(); alert('Passwords do not match.'); return; }
-});
+function handleRegSubmit(e) {
+  if (!checkPassword()) { e.preventDefault(); alert('Please meet all password requirements.'); return false; }
+  if (!checkMatch())    { e.preventDefault(); alert('Passwords do not match.'); return false; }
+  return true;
+}
+
+document.getElementById('regForm').addEventListener('submit', handleRegSubmit);
 </script>
 {% endblock %}
