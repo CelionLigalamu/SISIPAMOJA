@@ -194,43 +194,43 @@
   </div>
 
   <!-- MPESA PAYMENT HISTORY -->
-  <div class="sec-header">M-Pesa Payment History</div>
-  {% if mpesa_payments %}
+  <div class="sec-header">Payment History</div>
+  {% if member_payments %}
   <table class="data-table">
     <thead>
       <tr>
         <th>Date</th>
-        <th>Receipt No.</th>
+        <th>Type</th>
         <th>Description</th>
-        <th>Phone</th>
+        <th>Reference</th>
         <th>Amount (KES)</th>
-        <th>Status</th>
+        <th>Source</th>
       </tr>
     </thead>
     <tbody>
-      {% for p in mpesa_payments %}
+      {% for p in member_payments %}
       <tr class="{% cycle 'odd' 'even' %}">
-        <td>{{ p.created_at|date:"d M Y" }}</td>
-        <td>{{ p.mpesa_receipt|default:"-" }}</td>
-        <td>{{ p.description|default:"M-Pesa Payment" }}</td>
-        <td>{{ p.phone_number }}</td>
+        <td>{{ p.payment_date|date:"d M Y" }}</td>
+        <td>{{ p.get_payment_type_display }}</td>
+        <td>{{ p.description|default:"Payment recorded" }}</td>
+        <td>{{ p.mpesa_receipt|default:p.notes|default:"-" }}</td>
         <td class="td-amount">{{ p.amount|floatformat:0 }}</td>
-        <td><span class="pill p-success">Successful</span></td>
+        <td>{% if p.mpesa_receipt %}M-Pesa{% else %}Admin{% endif %}</td>
       </tr>
       {% endfor %}
     </tbody>
   </table>
   <table class="stats-table">
     <tr>
-      <td><div class="stat-lbl">Total Transactions</div><div class="stat-val">{{ mpesa_payments|length }}</div></td>
-      <td><div class="stat-lbl">Total Contributions</div><div class="stat-val">KES {{ real_total|floatformat:0 }}</div></td>
+      <td><div class="stat-lbl">Total Transactions</div><div class="stat-val">{{ payment_count }}</div></td>
+      <td><div class="stat-lbl">Total Contributions</div><div class="stat-val">KES {{ payment_total|floatformat:0 }}</div></td>
       <td><div class="stat-lbl">Last Updated</div><div class="stat-val">{{ generated_at|date:"d M Y" }}</div></td>
     </tr>
   </table>
   {% else %}
   <div class="empty-box">
     <div class="empty-title">— NO PAYMENT HISTORY —</div>
-    <div class="empty-body">This member has not made any M-Pesa payments yet.<br>Payments will automatically appear in this statement.</div>
+    <div class="empty-body">This member has no recorded payments yet. Payments and admin-recorded fees will appear here when they occur.</div>
   </div>
   {% endif %}
 
@@ -305,7 +305,7 @@
         <div class="contact-row"><b>SisiPamoja Welfare Sacco</b></div>
         <div class="contact-row">Nairobi, Kenya</div>
         <div class="contact-row">Email: sisipamojarecruitment@gmail.com</div>
-        <div class="contact-row">Phone: +254 XXX XXX XXX</div>
+        <div class="contact-row">Phone: +254 780 388 433</div>
         <div class="contact-row">Mon – Fri: 8:00 AM – 5:00 PM</div>
         <div class="contact-row">Saturday: 9:00 AM – 1:00 PM</div>
       </td>

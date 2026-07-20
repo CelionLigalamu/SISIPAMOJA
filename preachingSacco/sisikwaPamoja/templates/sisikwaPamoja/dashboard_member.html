@@ -1041,11 +1041,13 @@ body {
             </div>
           </div>
           <div>
-            <div class="stat-label">Contributions</div>
-            <div class="stat-value">
-                  {{ contributions.count }}
+            <div class="stat-label">Contribution</div>
+            <div class="stat-value small">
+              {% if user.profile.contribution %}
+                KES {{ user.profile.contribution.amount }}
+              {% else %}KES 0{% endif %}
             </div>
-            <div class="stat-sub">Payments made</div>
+            <div class="stat-sub">Contribution</div>
           </div>
         </div>
 
@@ -1117,13 +1119,13 @@ body {
             <div class="stat-trend trend-up">Paid</div>
           </div>
           <div>
-            <div class="stat-label">Monthly Contribution</div>
+            <div class="stat-label">Contribution only</div>
             <div class="stat-value small">
               {% if user.profile.contribution %}
                 KES {{ user.profile.contribution.amount }}
               {% else %}KES 0{% endif %}
             </div>
-            <div class="stat-sub">Per month</div>
+            <div class="stat-sub">Contribution only</div>
           </div>
         </div>
 
@@ -1495,126 +1497,105 @@ body {
 
           <!-- Announcements -->
           <div class="panel">
-            <div class="sec-hd">
-              <div class="sec-hd-title">
-                <i class="fas fa-bullhorn"
-                   style="color:#94A3B8; margin-right:8px;"></i>
-                Announcements
-              </div>
-            </div>
+           <div class="sec-hd">
+    <div class="sec-hd-title">
+      <i class="fas fa-bullhorn"
+         style="color:#94A3B8; margin-right:8px;"></i>
+      Announcements
+    </div>
+  </div>
 
-            <div class="announcement-item">
-              <div class="ann-dot green"></div>
-              <div>
-                <div class="ann-title">Welcome to SisiPamoja!</div>
-                <div class="ann-body">
-                  Your account has been created. Complete your
-                  payment to activate full membership benefits.
-                </div>
-                <div class="ann-date">
-                  <i class="fas fa-clock"
-                     style="margin-right:4px;"></i> Today
-                </div>
-              </div>
-            </div>
-
-            <div class="announcement-item">
-              <div class="ann-dot gold"></div>
-              <div>
-                <div class="ann-title">Monthly Contributions Due</div>
-                <div class="ann-body">
-                  June 2026 contributions are now due. Kindly
-                  pay via M-Pesa to remain in good standing.
-                </div>
-                <div class="ann-date">
-                  <i class="fas fa-clock"
-                     style="margin-right:4px;"></i> 1 Jun 2026
-                </div>
-              </div>
-            </div>
-
-            <div class="announcement-item">
-              <div class="ann-dot blue"></div>
-              <div>
-                <div class="ann-title">AGM Notice</div>
-                <div class="ann-body">
-                  The Annual General Meeting is scheduled for
-                  July 15, 2026. All members are encouraged
-                  to attend.
-                </div>
-                <div class="ann-date">
-                  <i class="fas fa-clock"
-                     style="margin-right:4px;"></i> 28 May 2026
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Documents -->
-          <div class="panel">
-            <div class="sec-hd">
-              <div class="sec-hd-title">
-                <i class="fas fa-folder"
-                   style="color:#94A3B8; margin-right:8px;"></i>
-                Documents
-              </div>
-            </div>
-
-            <a href="{% url 'statements' %}"
-               class="action-btn"
-               style="flex-direction:row; padding:12px 14px;
-                      justify-content:flex-start; gap:12px;
-                      margin-bottom:8px;">
-              <div class="action-icon"
-                   style="width:38px; height:38px;
-                          background:#DCFCE7; color:#14532D;
-                          border-radius:10px;">
-                <i class="fas fa-file-pdf"></i>
-              </div>
-              <div>
-                <div style="font-size:.82rem; font-weight:800;
-                            color:#1E293B;">
-                  Membership Certificate
-                </div>
-                <div style="font-size:.72rem; color:#94A3B8;">
-                  PDF · Available after payment
-                </div>
-              </div>
-              <i class="fas fa-download ms-auto"
-                 style="color:#94A3B8;"></i>
-            </a>
-
-            <a href="{% url 'statements' %}"
-               class="action-btn"
-               style="flex-direction:row; padding:12px 14px;
-                      justify-content:flex-start; gap:12px;">
-              <div class="action-icon"
-                   style="width:38px; height:38px;
-                          background:#DBEAFE; color:#1565C0;
-                          border-radius:10px;">
-                <i class="fas fa-file-alt"></i>
-              </div>
-              <div>
-                <div style="font-size:.82rem; font-weight:800;
-                            color:#1E293B;">
-                  Account Statement
-                </div>
-                <div style="font-size:.72rem; color:#94A3B8;">
-                  PDF · Last 12 months
-                </div>
-              </div>
-              <i class="fas fa-download ms-auto"
-                 style="color:#94A3B8;"></i>
-            </a>
-          </div>
-
+  {% if announcements %}
+    {% for ann in announcements %}
+    <div class="announcement-item">
+      <div class="ann-dot
+        {% if ann.color == 'green' %}green
+        {% elif ann.color == 'orange' %}orange
+        {% elif ann.color == 'blue' %}blue
+        {% elif ann.color == 'gold' %}gold
+        {% endif %}">
+      </div>
+      <div>
+        <div class="ann-title">{{ ann.title }}</div>
+        <div class="ann-body">{{ ann.body }}</div>
+        <div class="ann-date">
+          <i class="fas fa-clock"
+             style="margin-right:4px;"></i>
+          {{ ann.created_at|date:"d M Y" }}
         </div>
       </div>
+    </div>
+    {% endfor %}
+
+  {% else %}
+  <div class="empty-state" style="padding:24px 0;">
+    <div class="empty-state-icon">
+      <i class="fas fa-bullhorn"></i>
+    </div>
+    <div class="empty-state-title">No announcements yet</div>
+    <div class="empty-state-body">
+      Check back here for updates from SisiPamoja.
+    </div>
+  </div>
+  {% endif %}
+
+</div>
+
+          <!-- Documents -->
+<div class="panel">
+  <div class="sec-hd">
+    <div class="sec-hd-title">
+      <i class="fas fa-folder"
+         style="color:#94A3B8; margin-right:8px;"></i>
+      Documents
+    </div>
+  </div>
+
+  {% if profile.has_paid %}
+  <a href="{% url 'statement_pdf' %}"
+     class="action-btn"
+     style="flex-direction:row; padding:12px 14px;
+            justify-content:flex-start; gap:12px;
+            margin-bottom:8px;">
+    <div class="action-icon"
+         style="width:38px; height:38px;
+                background:#DBEAFE; color:#1565C0;
+                border-radius:10px;">
+      <i class="fas fa-file-alt"></i>
+    </div>
+    <div>
+      <div style="font-size:.82rem; font-weight:800;
+                  color:#1E293B;">Account Statement</div>
+      <div style="font-size:.72rem; color:#94A3B8;">
+        PDF · Click to download
+      </div>
+    </div>
+    <i class="fas fa-download ms-auto"
+       style="color:#94A3B8;"></i>
+  </a>
+  {% else %}
+  <div style="padding:12px 14px; border:1px solid var(--neu200);
+              border-radius:10px; margin-bottom:8px;
+              background:var(--neu50);">
+    <div style="font-size:.82rem; font-weight:800;
+                color:#94A3B8;">Account Statement</div>
+    <div style="font-size:.72rem; color:#94A3B8; margin-top:2px;">
+      Available after payment is completed
+    </div>
+  </div>
+  {% endif %}
+
+</div><!-- END Documents -panel-->
+
+        </div><!-- END RIGHT COLUMN -->
+
+      </div><!-- END dash-GRID -->
 
     {% endblock %}
     </main>
-  </div>
-</div>
+  </div><!-- END MAIN AREA -->
+
+</div><!-- END dash-LAYOUT -->
 
 <!-- LOGOUT MODAL -->
 <div class="modal fade" id="logoutModal" tabindex="-1">
