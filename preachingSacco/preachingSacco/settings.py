@@ -23,9 +23,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-0!!-*lv$#!f&hf9**8#620=6bv2mfqf=w(f!f!5iu%0=pibcvl'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'localhost',
+    '127.0.0.1'
+    'onrender.com',
+]
 
 
 # Application definition
@@ -44,6 +48,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -51,6 +56,8 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 ROOT_URLCONF = 'preachingSacco.urls'
 
@@ -131,7 +138,7 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     BASE_DIR / 'static',
 ]
-STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 #Media files
 MEDIA_URL = '/media/'
@@ -145,7 +152,7 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'sisipamojarecruitment@gmail.com'
 EMAIL_HOST_PASSWORD = 'lvjnvtvpvbswpjns'
-DEFAULT_FROM_EMAIL = 'SISIPAMOJA <sisipamojarecruitment@gmail.com >'
+DEFAULT_FROM_EMAIL = 'SISIPAMOJA <sisipamojarecruitment@gmail.com>'
 
 JAZZMIN_SETTINGS = {
     # ── Brand ──────────────────────────────────────────────
@@ -289,3 +296,12 @@ MPESA_CALLBACK_URL = 'https://mydomain.com/mpesa/callback/'
 AT_USERNAME = 'sandbox'  # Use 'sandbox' for testing
 AT_API_KEY  = 'atsk_ca1a8ff451a1b6e7a4eb6a5e67bbee037095f8f2800ff832208321749a85a11ac676720d'
 AT_SENDER_ID = None  # Leave None for sandbox
+
+
+#Production database from envrionment
+import dj_database_url
+DATABASES = {
+    'default': dj_database_url.config(
+        default=os.environ.get('DATABASE_URL')
+    )
+}
