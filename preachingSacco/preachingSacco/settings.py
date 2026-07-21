@@ -293,8 +293,8 @@ MPESA_CALLBACK_URL = 'https://mydomain.com/mpesa/callback/'
 # ══════════════════════════════════════
 # AFRICA'S TALKING SMS SETTINGS
 # ══════════════════════════════════════
-AT_USERNAME = 'sandbox'  # Use 'sandbox' for testing
-AT_API_KEY  = 'atsk_ca1a8ff451a1b6e7a4eb6a5e67bbee037095f8f2800ff832208321749a85a11ac676720d'
+AT_USERNAME = 'celion'
+AT_API_KEY  = 'atsk_b770ef8e63c50e643bdcfe419c37f84d6473f7eab64da0d82c9a44fa4418f535a397c06e'
 AT_SENDER_ID = None  # Leave None for sandbox
 
 
