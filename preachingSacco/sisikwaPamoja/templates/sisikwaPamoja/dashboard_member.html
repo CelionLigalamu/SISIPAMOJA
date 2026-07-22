@@ -817,8 +817,8 @@ body {
     <div class="sidebar-logo text-center mb-3">
       <img src="{% static 'sisikwaPamoja/images/logo.jpeg' %}" alt="SISIPAMOJA" class="sidebar-logo-img">
       <div class="sidebar-logo-text">
-        <span class="fw-bold">SISIPAMOJA</span>
-        <span class="small d-block opacity-75">WELFARE</span>
+        <span class="fw-bold">SISIPAMOJA PLCM</span>
+        <span class="small d-block opacity-75">SACCO</span>
       </div>
     </div>
 
@@ -1041,11 +1041,9 @@ body {
             </div>
           </div>
           <div>
-            <div class="stat-label">Contribution</div>
+            <div class="stat-label">Total Paid</div>
             <div class="stat-value small">
-              {% if user.profile.contribution %}
-                KES {{ user.profile.contribution.amount }}
-              {% else %}KES 0{% endif %}
+              KES {{ total_contributions|floatformat:0 }}
             </div>
             <div class="stat-sub">Contribution</div>
           </div>
@@ -1119,13 +1117,11 @@ body {
             <div class="stat-trend trend-up">Paid</div>
           </div>
           <div>
-            <div class="stat-label">Contribution only</div>
+            <div class="stat-label">Total Paid</div>
             <div class="stat-value small">
-              {% if user.profile.contribution %}
-                KES {{ user.profile.contribution.amount }}
-              {% else %}KES 0{% endif %}
+              KES {{ total_contributions|floatformat:0 }}
             </div>
-            <div class="stat-sub">Contribution only</div>
+            <div class="stat-sub">Total contributions</div>
           </div>
         </div>
 

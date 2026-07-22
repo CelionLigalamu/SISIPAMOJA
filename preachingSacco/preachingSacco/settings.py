@@ -11,25 +11,36 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 from pathlib import Path
 import os
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+env_file = BASE_DIR.parent / '.env'
+if env_file.exists():
+    for line in env_file.read_text().splitlines():
+        line = line.strip()
+        if line and not line.startswith('#') and '=' in line:
+            key, value = line.split('=', 1)
+            os.environ.setdefault(key.strip(), value.strip())
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-0!!-*lv$#!f&hf9**8#620=6bv2mfqf=w(f!f!5iu%0=pibcvl'
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-change-me-in-production')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG', 'False') == 'True'
+DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
 
 ALLOWED_HOSTS = [
-    'sisipamoja.onrender.com',
-    'localhost',
-    '127.0.0.1'
-    'onrender.com',
+    host.strip()
+    for host in os.environ.get(
+        'ALLOWED_HOSTS',
+        'localhost,127.0.0.1,sisipamoja.onrender.com'
+    ).split(',')
+    if host.strip()
 ]
 
 
@@ -87,15 +98,13 @@ WSGI_APPLICATION = 'preachingSacco.wsgi.application'
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
 DATABASES = {
-        'default':{
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'Sacco_db',
-        'USER': 'postgres',
-        'PASSWORD': '2027',
-        'HOST': 'localhost',
-        'PORT': '5432',
-
-    }         
+    'default': dj_database_url.config(
+        default=os.environ.get(
+            'DATABASE_URL',
+            'postgres://postgres:2027@localhost:5432/Sacco_db'
+        ),
+        conn_max_age=600,
+    )
 }
 
 
@@ -148,12 +157,12 @@ AUTH_USER_MODEL = 'sisikwaPamoja.CustomUser'
 
 # Email Configuration
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'sisipamojarecruitment@gmail.com'
-EMAIL_HOST_PASSWORD = 'lvjnvtvpvbswpjns'
-DEFAULT_FROM_EMAIL = 'SISIPAMOJA <sisipamojarecruitment@gmail.com>'
+EMAIL_HOST = os.environ.get('EMAIL_HOST', 'smtp.gmail.com')
+EMAIL_PORT = int(os.environ.get('EMAIL_PORT', '587'))
+EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', 'True').lower() == 'true'
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
+DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', EMAIL_HOST_USER)
 
 JAZZMIN_SETTINGS = {
     # ── Brand ──────────────────────────────────────────────
@@ -284,25 +293,16 @@ JAZZMIN_UI_TWEAKS = {
 
 
 # MPESA Configuration
-MPESA_ENVIRONMENT = 'sandbox'  # Use 'sandbox' for testing, 'production' for live
-MPESA_SHORTCODE = '174379'  # Your business short code
-MPESA_CONSUMER_KEY = 'QtBlH1tqPlDeqi7BuKCnCT9Qrvec31fFKaQr5PyOkSURZG5n'
-MPESA_CONSUMER_SECRET = 'uJmZ0BubQ2E8zLkpWkG6ga7ZNJLWGenUDrp9r0rQnHpW3q8netAAfz94AJhd9rAL'
-MPESA_PASSKEY = 'bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919'
-MPESA_CALLBACK_URL = 'https://mydomain.com/mpesa/callback/'
+MPESA_ENVIRONMENT = os.environ.get('MPESA_ENVIRONMENT', 'sandbox')
+MPESA_SHORTCODE = os.environ.get('MPESA_SHORTCODE', '174379')
+MPESA_CONSUMER_KEY = os.environ.get('MPESA_CONSUMER_KEY', '')
+MPESA_CONSUMER_SECRET = os.environ.get('MPESA_CONSUMER_SECRET', '')
+MPESA_PASSKEY = os.environ.get('MPESA_PASSKEY', '')
+MPESA_CALLBACK_URL = os.environ.get('MPESA_CALLBACK_URL', 'https://example.com/mpesa/callback/')
 
 # ══════════════════════════════════════
 # AFRICA'S TALKING SMS SETTINGS
 # ══════════════════════════════════════
-AT_USERNAME = 'celion'
-AT_API_KEY  = 'atsk_b770ef8e63c50e643bdcfe419c37f84d6473f7eab64da0d82c9a44fa4418f535a397c06e'
-AT_SENDER_ID = None  # Leave None for sandbox
-
-
-#Production database from envrionment
-import dj_database_url
-DATABASES = {
-    'default': dj_database_url.config(
-        default=os.environ.get('DATABASE_URL')
-    )
-}
+AT_USERNAME = os.environ.get('AT_USERNAME', 'sandbox')
+AT_API_KEY = os.environ.get('AT_API_KEY', '')
+AT_SENDER_ID = os.environ.get('AT_SENDER_ID') or None

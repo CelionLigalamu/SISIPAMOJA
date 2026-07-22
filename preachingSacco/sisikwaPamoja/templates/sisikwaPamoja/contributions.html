@@ -3,6 +3,8 @@
 
 {% block dashboard_content %}
 <div class="stat-grid" style="margin-bottom:24px;">
+
+  <!-- Card 1 — Total Contributions -->
   <div class="stat-card green">
     <div class="stat-top">
       <div class="stat-icon si-green">
@@ -14,13 +16,14 @@
     </div>
     <div>
       <div class="stat-label">Total Contributions</div>
-      <div class="stat-value">
-        KES {% if contributions %}{{ contributions|length }}{% else %}0{% endif %}
+      <div class="stat-value small">
+        KES {{ total_contributions|floatformat:0 }}
       </div>
       <div class="stat-sub">Payments recorded</div>
     </div>
   </div>
 
+  <!-- Card 2 — Amount Paid This Month -->
   <div class="stat-card blue">
     <div class="stat-top">
       <div class="stat-icon si-blue">
@@ -30,13 +33,14 @@
     </div>
     <div>
       <div class="stat-label">Amount Paid</div>
-      <div class="stat-value">
-        KES {% if profile.contribution %}{{ profile.contribution.amount }}{% else %}0{% endif %}
+      <div class="stat-value small">
+        KES {{ amount_paid_this_month|floatformat:0 }}
       </div>
       <div class="stat-sub">This month</div>
     </div>
   </div>
 
+  <!-- Card 3 — Next Due Date -->
   <div class="stat-card orange">
     <div class="stat-top">
       <div class="stat-icon si-orange">
@@ -47,27 +51,36 @@
     <div>
       <div class="stat-label">Next Due Date</div>
       <div class="stat-value small">
-        {% now "d M Y" %}
+        {% if next_due_date %}
+          {{ next_due_date|date:"d M Y" }}
+        {% else %}
+          —
+        {% endif %}
       </div>
       <div class="stat-sub">Monthly cycle</div>
     </div>
   </div>
 
+  <!-- Card 4 — Payment Status -->
   <div class="stat-card gold">
     <div class="stat-top">
       <div class="stat-icon si-gold">
-        <i class="fas fa-history"></i>
+        <i class="fas fa-clock"></i>
       </div>
-      <div class="stat-trend trend-warn">Active</div>
+      <div class="stat-trend
+        {% if payment_status == 'Current' %}trend-up
+        {% elif payment_status == 'Partial' %}trend-warn
+        {% else %}trend-warn{% endif %}">
+        {{ payment_status }}
+      </div>
     </div>
     <div>
       <div class="stat-label">Payment Status</div>
-      <div class="stat-value small">
-        {% if profile.has_paid %}Current{% else %}Pending{% endif %}
-      </div>
+      <div class="stat-value small">{{ payment_status }}</div>
       <div class="stat-sub">Account status</div>
     </div>
   </div>
+
 </div>
 
 <!-- Contribution History Table -->
@@ -86,9 +99,10 @@
       <thead>
         <tr>
           <th>Date</th>
+          <th>Payment Type</th>
+          <th>Description</th>
           <th>Amount</th>
-          <th>Method</th>
-          <th>Reference</th>
+          <th>Receipt</th>
           <th>Status</th>
         </tr>
       </thead>
@@ -96,44 +110,45 @@
         {% for contribution in contributions %}
         <tr>
           <td>
-            {% if contribution.calculated_at %}
-              {{ contribution.calculated_at|date:"d M Y" }}
+            {% if contribution.payment_date %}
+              {{ contribution.payment_date|date:"d M Y" }}
             {% else %}
               —
             {% endif %}
           </td>
-          <td style="font-weight:800; color:#14532D;">
-            KES {{ contribution.amount|default:"0" }}
-          </td>
           <td>
-            <span style="font-size:.75rem; font-weight:700;">
-              {% if contribution.payment_method %}
-                {{ contribution.payment_method|upper }}
-              {% else %}
-                M-Pesa
-              {% endif %}
-            </span>
+            {% if contribution.payment_type == 'registration' %}
+              Registration
+            {% elif contribution.payment_type == 'capital_share' %}
+              Capital Share
+            {% elif contribution.payment_type == 'annual' %}
+              Annual Welfare
+            {% else %}
+              Contribution
+            {% endif %}
+          </td>
+          <td style="font-size:.82rem; color:#475569;">
+            {% if contribution.description %}
+              {{ contribution.description }}
+            {% else %}
+              {{ contribution.get_payment_type_display }}
+            {% endif %}
+          </td>
+          <td style="font-weight:800; color:#14532D;">
+            KES {{ contribution.amount|floatformat:0 }}
           </td>
           <td style="font-family:'Courier New',monospace; font-size:.8rem; color:#94A3B8;">
-            {% if contribution.id %}TXN-{{ contribution.id }}{% else %}—{% endif %}
+            {% if contribution.mpesa_receipt %}
+              {{ contribution.mpesa_receipt }}
+            {% else %}
+              —
+            {% endif %}
           </td>
           <td>
-            {% if contribution.status == 'completed' or contribution.calculated_at %}
-              <span class="status-pill pill-paid">
-                <i class="fas fa-check-circle" style="font-size:.6rem;"></i>
-                Paid
-              </span>
-            {% elif contribution.status == 'pending' %}
-              <span class="status-pill pill-pending">
-                <i class="fas fa-hourglass-half" style="font-size:.6rem;"></i>
-                Pending
-              </span>
-            {% else %}
-              <span class="status-pill pill-overdue">
-                <i class="fas fa-exclamation-circle" style="font-size:.6rem;"></i>
-                Overdue
-              </span>
-            {% endif %}
+            <span class="status-pill pill-paid">
+              <i class="fas fa-check-circle" style="font-size:.6rem;"></i>
+              Paid
+            </span>
           </td>
         </tr>
         {% endfor %}
@@ -173,8 +188,8 @@
       <div style="font-size:.8rem; color:#94A3B8; margin-bottom:12px;">
         Pay via USSD or App
       </div>
-      <a href="tel:*256#" style="color:#1565C0; font-weight:700; font-size:.85rem; text-decoration:none;">
-        Dial *256# <i class="fas fa-arrow-right ms-1"></i>
+      <a href="tel:*334#" style="color:#1565C0; font-weight:700; font-size:.85rem; text-decoration:none;">
+        Dial *334# <i class="fas fa-arrow-right ms-1"></i>
       </a>
     </div>
     <div style="padding:16px; border:1.5px solid #E2E8F0; border-radius:12px; background:#F8FAFB; text-align:center;">

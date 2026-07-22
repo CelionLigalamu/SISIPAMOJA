@@ -5,6 +5,7 @@ from .mpesa import stk_push
 from .models import MpesaPayment
 from django.views.decorators.csrf import csrf_exempt
 from django.db import transaction
+from django.db import models
 from django.db.models import Sum
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
@@ -384,10 +385,14 @@ def member_dashboard(request):
     #Recent Payments
     payments = []
     fee_breakdown = None
+    total_contributions = 0
     if profile:
         payments = MemberPayment.objects.filter(
             member=profile
         ).order_by('-payment_date')[:5]
+        total_contributions = MemberPayment.objects.filter(
+            member=profile
+        ).aggregate(total=Sum('amount'))['total'] or 0
         fee_breakdown = profile.get_fee_breakdown()
     
     #Fetch active announcements
@@ -398,7 +403,8 @@ def member_dashboard(request):
     return render(request,
         'sisikwaPamoja/dashboard_member.html', {
             'profile': profile,
-            'contributions':payments,
+            'contributions': payments,
+            'total_contributions': total_contributions,
             'fee_breakdown': fee_breakdown,
             'announcements': announcements,
         })
@@ -551,22 +557,62 @@ def profile_edit_view(request):
 # ══════════════════════════════════════════════
 @login_required
 def contributions_view(request):
+    from django.utils import timezone
+    from datetime import date
+
     profile = MemberProfile.objects.filter(
-        user=request.user).first()
+        user=request.user
+    ).first()
 
     contributions = []
-    contribution_obj = None
+    total_contributions = 0
+    amount_paid_this_month = 0
+    next_due_date = None
+    payment_status = 'Pending'
 
     if profile:
-        contributions = Contribution.objects.filter(
-            member=profile).order_by('-calculated_at')
-        contribution_obj = getattr(profile, 'contribution', None)
+        # Get all payments
+        contributions = MemberPayment.objects.filter(
+            member=profile
+        ).order_by('-payment_date')
+
+        # Total amount ever paid
+        total_contributions = contributions.aggregate(
+            total=Sum('amount')
+        )['total'] or 0
+
+        # Amount paid this month
+        today = date.today()
+        amount_paid_this_month = MemberPayment.objects.filter(
+            member=profile,
+            payment_date__year=today.year,
+            payment_date__month=today.month
+        ).aggregate(
+            total=Sum('amount')
+        )['total'] or 0
+
+        # Next due date — first day of next month (no external deps)
+        if today.month == 12:
+            next_due_date = date(today.year + 1, 1, 1)
+        else:
+            next_due_date = date(today.year, today.month + 1, 1)
+
+        # Payment status
+        if profile.has_paid and profile.annual_fee_paid:
+            payment_status = 'Current'
+        elif profile.registration_fee_paid:
+            payment_status = 'Partial'
+        else:
+            payment_status = 'Pending'
 
     return render(request,
         'sisikwaPamoja/contributions.html', {
             'profile': profile,
             'contributions': contributions,
-            'contribution_obj': contribution_obj,
+            'total_contributions': total_contributions,
+            'amount_paid_this_month': amount_paid_this_month,
+            'next_due_date': next_due_date,
+            'payment_status': payment_status,
         })
 
 
