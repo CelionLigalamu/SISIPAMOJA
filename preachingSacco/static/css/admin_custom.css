@@ -19,6 +19,21 @@ body {
     background: var(--sacco-page-bg) !important;
 }
 
+.login-page .login-logo img,
+.login-box .login-logo img {
+    width: 96px !important;
+    height: 96px !important;
+    max-width: 96px !important;
+    max-height: 96px !important;
+    object-fit: cover !important;
+    border-radius: 50% !important;
+}
+
+.login-page .login-logo,
+.login-box .login-logo {
+    margin-bottom: 1rem !important;
+}
+
 .content-wrapper {
     background: var(--sacco-page-bg) !important;
 }
