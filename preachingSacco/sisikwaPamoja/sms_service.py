@@ -1,10 +1,14 @@
 import africastalking
 from django.conf import settings
+from django.utils import timezone
 from .models import SMSLog
 
 
 def _init_sms():
     """Initialize Africa's Talking SDK"""
+    if not settings.AT_API_KEY:
+        raise ValueError('AT_API_KEY is not configured')
+
     africastalking.initialize(
         settings.AT_USERNAME,
         settings.AT_API_KEY
@@ -48,7 +52,11 @@ def send_sms(phone_number, message, event_type, member=None, max_retries=2):
     while attempt <= max_retries:
         try:
             sms = _init_sms()
-            response = sms.send(message, [formatted_phone])
+            kwargs = {}
+            if settings.AT_SENDER_ID:
+                kwargs['sender_id'] = settings.AT_SENDER_ID
+
+            response = sms.send(message, [formatted_phone], **kwargs)
 
             recipients = response.get('SMSMessageData', {}).get('Recipients', [])
 
@@ -202,16 +210,6 @@ def sms_loan_disbursed(member, amount):
     return send_sms(
         member.phone_number, message,
         'loan_disbursed', member
-    )
-
-def sms_loan_approved(member, amount):
-    message = (
-        f"Good news! KES {amount} has been disbursed to you. "
-        f"Check your account/M-Pesa. Thank you - SisiPamoja Welfare."
-    )
-    return send_sms(
-        member.phone_number, message,
-        'loan_approved', member  # see note below
     )
 
 

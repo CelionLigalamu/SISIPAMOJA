@@ -653,7 +653,7 @@
 
   <!-- Main Card -->
   <div class="reg-card">
-  <form method="POST" action="{% url 'register' %}" enctype="multipart/form-data" id="regForm" onsubmit="return handleRegSubmit(event)">
+  <form method="POST" action="{% url 'register' %}" enctype="multipart/form-data" id="regForm">
     {% csrf_token %}
     
 
@@ -1088,7 +1088,7 @@
       <button type="button" class="btn-next" id="btnNext">
         Next: Personal Details <i class="fas fa-arrow-right"></i>
       </button>
-      <button type="submit" class="btn-submit" id="btnSubmit" style="display:none;" onclick="return handleRegSubmit(event)">
+      <button type="submit" class="btn-submit" id="btnSubmit" style="display:none;">
         <i class="fas fa-check-circle"></i> Create My Account
       </button>
     </div>
@@ -1334,9 +1334,9 @@ function goToStep(n) {
   btnPrev.style.visibility = isFirst ? 'hidden' : 'visible';
   btnNext.style.display     = isLast  ? 'none'  : 'flex';
   btnSubmit.style.display   = isLast  ? 'flex'  : 'none';
-  btnSubmit.disabled        = !isLast;
-  btnSubmit.style.pointerEvents = isLast ? 'auto' : 'none';
-  btnSubmit.style.opacity = isLast ? '1' : '0';
+  btnSubmit.disabled        = false;
+  btnSubmit.style.pointerEvents = 'auto';
+  btnSubmit.style.opacity = '1';
 
   // Next button label
   if (!isLast) {
@@ -1666,9 +1666,59 @@ function fillReview() {
 // ══════════════════════════════════════
 // FORM SUBMIT GUARD
 // ══════════════════════════════════════
+function showFirstInvalidField(form) {
+  const invalid = form.querySelector(':invalid');
+  if (!invalid) return false;
+
+  const panel = invalid.closest('.step-panel');
+  if (panel && panel.id) {
+    const stepNumber = Number(panel.id.replace('step-', ''));
+    if (stepNumber && stepNumber !== currentStep) {
+      goToStep(stepNumber);
+    }
+  }
+
+  setTimeout(() => invalid.reportValidity(), 50);
+  return true;
+}
+
 function handleRegSubmit(e) {
-  if (!checkPassword()) { e.preventDefault(); alert('Please meet all password requirements.'); return false; }
-  if (!checkMatch())    { e.preventDefault(); alert('Passwords do not match.'); return false; }
+  const form = document.getElementById('regForm');
+  const steps = getSteps();
+  const lastStep = steps[steps.length - 1];
+
+  if (currentStep !== lastStep) {
+    e.preventDefault();
+    if (validateStep(currentStep)) goToStep(lastStep);
+    return false;
+  }
+
+  if (!validateStep(2)) {
+    e.preventDefault();
+    goToStep(2);
+    return false;
+  }
+
+  if (!form.checkValidity()) {
+    e.preventDefault();
+    showFirstInvalidField(form);
+    return false;
+  }
+
+  if (!checkPassword()) {
+    e.preventDefault();
+    alert('Please meet all password requirements.');
+    return false;
+  }
+
+  if (!checkMatch()) {
+    e.preventDefault();
+    alert('Passwords do not match.');
+    return false;
+  }
+
+  const btnSubmit = document.getElementById('btnSubmit');
+  btnSubmit.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating Account...';
   return true;
 }
 
