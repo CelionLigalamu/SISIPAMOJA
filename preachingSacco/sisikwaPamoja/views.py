@@ -219,8 +219,11 @@ def register_view(request):
             member_profile.annual_fee = member_profile.calculate_annual_fee()
             member_profile.save()
 
-            # Send SMS after account creation
-            sms_account_created(member_profile)
+            # SMS should never block account creation.
+            try:
+                sms_account_created(member_profile)
+            except Exception as sms_error:
+                print(f"Registration SMS error for {member_profile}: {sms_error}")
 
             # Last Expense: save spouse and dependants
             if membership_type == 'last_expense':
@@ -281,8 +284,13 @@ def register_view(request):
                         supporting_document=request.FILES.get(f'dep_doc_{idx}'),
                     )
 
-                    # Send SMS per dependant created
-                    sms_dependant_added(member_profile, new_dependant)
+                    try:
+                        sms_dependant_added(member_profile, new_dependant)
+                    except Exception as sms_error:
+                        print(
+                            f"Dependant SMS error for {new_dependant}: "
+                            f"{sms_error}"
+                        )
 
             # Send welcome email
         try:
