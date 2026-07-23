@@ -211,10 +211,13 @@ JAZZMIN_SETTINGS = {
         "sisikwapamoja.spouse",
         "sisikwapamoja.dependant",
         "sisikwapamoja.serialnumbertracker",
+        "sisikwapamoja.announcement",
+        "sisikwapamoja.loanapplication",
+        "sisikwapamoja.memberpayment",
+        "sisikwapamoja.smslog",
         "auth",
-        "auth.User",
         "auth.Group",
-        "sisikwapamoja.Lastexpense",
+        "auth.User",
     ],
 
     "custom_links": {
